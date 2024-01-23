@@ -18,3 +18,9 @@ We've decided to use one repository holding two folders for code: one for fronte
 4. Run `npm install -g express`to install express
 5. Run `npm install --save @types/express` for TS to understand express types
 6. Run `ts-node index.ts` to start the server
+
+## React Server Setup
+0. Opena  terminal under this directory
+1. Run `npm install react react-dom` to check whether setup works
+2. Run `cd client`
+3. Run `npm run start` to start server
