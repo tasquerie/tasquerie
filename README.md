@@ -23,4 +23,4 @@ We've decided to use one repository holding two folders for code: one for fronte
 0. Opena  terminal under this directory
 1. Run `npm install react react-dom` to check whether setup works
 2. Run `cd client`
-3. Run `npm run start` to start server
+3. Run `npm run start:windows` to start server for windows and `npm run start:nix` to start server for Linux & Mac
