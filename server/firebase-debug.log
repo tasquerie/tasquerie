@@ -1,0 +1,63 @@
+[debug] [2024-01-23T22:15:36.307Z] ----------------------------------------------------------------------
+[debug] [2024-01-23T22:15:36.310Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\samsh\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-01-23T22:15:36.311Z] CLI Version:   12.4.5
+[debug] [2024-01-23T22:15:36.311Z] Platform:      win32
+[debug] [2024-01-23T22:15:36.312Z] Node Version:  v18.17.0
+[debug] [2024-01-23T22:15:36.313Z] Time:          Tue Jan 23 2024 14:15:36 GMT-0800 (Pacific Standard Time)
+[debug] [2024-01-23T22:15:36.313Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-01-23T22:15:36.320Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-01-23T22:15:36.321Z] > authorizing via signed-in user (tasquerie@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\samsh\OneDrive - UW\CSE426\Desktop\tasquerie\server
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2024-01-23T22:15:47.621Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2024-01-23T22:15:47.962Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2024-01-23T22:15:47.963Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project tasquerie-9e335 (Tasquerie) 
+[info] 
+=== Firestore Setup
+[debug] [2024-01-23T22:15:48.911Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/tasquerie-9e335/services/firestore.googleapis.com [none]
+[debug] [2024-01-23T22:15:48.911Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/tasquerie-9e335/services/firestore.googleapis.com x-goog-quota-user=projects/tasquerie-9e335
+[debug] [2024-01-23T22:15:49.490Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/tasquerie-9e335/services/firestore.googleapis.com 200
+[debug] [2024-01-23T22:15:49.491Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/tasquerie-9e335/services/firestore.googleapis.com [omitted]
+[debug] [2024-01-23T22:15:49.492Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/tasquerie-9e335/databases/(default) [none]
+[debug] [2024-01-23T22:15:49.628Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/tasquerie-9e335/databases/(default) 200
+[debug] [2024-01-23T22:15:49.628Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/tasquerie-9e335/databases/(default) {"name":"projects/tasquerie-9e335/databases/(default)","uid":"75b1f48c-d1ab-46a8-a1c0-a7a43c297722","createTime":"2024-01-23T22:13:11.058898Z","updateTime":"2024-01-23T22:13:11.058898Z","locationId":"us-west1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2024-01-23T22:13:11.058898Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"zuw","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","etag":"INz38M3E9IMDMLeakKHE9IMD"}
+[debug] [2024-01-23T22:15:49.628Z] database_type: FIRESTORE_NATIVE
+[debug] [2024-01-23T22:15:49.629Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-01-23T22:15:49.630Z] > authorizing via signed-in user (tasquerie@gmail.com)
+[debug] [2024-01-23T22:15:49.630Z] [iam] checking project tasquerie-9e335 for permissions ["firebase.projects.get"]
+[debug] [2024-01-23T22:15:49.631Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasquerie-9e335:testIamPermissions [none]
+[debug] [2024-01-23T22:15:49.631Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasquerie-9e335:testIamPermissions x-goog-quota-user=projects/tasquerie-9e335
+[debug] [2024-01-23T22:15:49.632Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasquerie-9e335:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-01-23T22:15:49.712Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasquerie-9e335:testIamPermissions 200
+[debug] [2024-01-23T22:15:49.712Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasquerie-9e335:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[info] 
+=== Hosting Setup
