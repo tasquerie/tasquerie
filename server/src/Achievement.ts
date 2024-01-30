@@ -1,4 +1,4 @@
-class Achievement {
+export class Achievement {
   
  
   constructor() {

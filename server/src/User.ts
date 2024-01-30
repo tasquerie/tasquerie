@@ -1,4 +1,8 @@
-class User {
+import { Egg } from "./Egg.ts";
+import { Achievement } from "./Achievement.ts";
+import { Task } from "./Task.ts";
+
+export class User {
   readonly uniqueID: number;
   username: string;
   password: string;  // will turn into bit array eventially for security

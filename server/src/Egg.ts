@@ -1,5 +1,4 @@
-class Task {
-  
+export class Egg {
  
   constructor() {
     

@@ -1,6 +1,0 @@
-class Egg {
- 
-  constructor() {
-    
-  }
-}
