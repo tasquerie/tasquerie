@@ -1,6 +1,6 @@
-import { Egg } from "./Egg.ts";
-import { Achievement } from "./Achievement.ts";
-import { Task } from "./Task.ts";
+import { Egg } from "./Egg";
+import { Achievement } from "./Achievement";
+import { Task } from "./Task";
 
 export class User {
   readonly uniqueID: number;
