@@ -1,8 +1,8 @@
 export class Task {
-  
- 
+
+
   constructor() {
-    
+
   }
 }
 
