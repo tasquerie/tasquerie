@@ -24,3 +24,11 @@ We've decided to use one repository holding two folders for code: one for fronte
 1. Run `npm install react react-dom` to check whether setup works
 2. Run `cd client`
 3. Run `npm run start:windows` to start server for windows and `npm run start:nix` to start server for Linux & Mac
+
+## Testing - How to add a new test to the code base.
+See https://www.testim.io/blog/mocha-for-typescript-testing/ for a tutorial
+
+See server\test\User.spec.ts for an example test
+
+By using assertions, each test can compare expected output to actual output.
+Assertions can be imported via “  import { assert } from "chai";  “ and called via “  assert.equal(actual, expected);  “
