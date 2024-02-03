@@ -6,8 +6,8 @@ export class Egg {
  
   constructor(eggType: string) {
     this.eggType = eggType;
-    this.allowedAccessories = new Set<string>;
-    this.equippedAccessories = new Set<string>;
+    this.allowedAccessories = new Set<string>();
+    this.equippedAccessories = new Set<string>();
     switch (eggType) {
       case "Type A": {
         this.graphicLink = "Graphic A"

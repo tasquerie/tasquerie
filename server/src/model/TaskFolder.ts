@@ -17,6 +17,6 @@ export class TaskFolder {
     this.egg = new Egg(eggType);
 
     this.credits = 0;
-    this.tasks = new Map<TaskID, Task>;
+    this.tasks = new Map<TaskID, Task>();
   }
 }

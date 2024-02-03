@@ -26,7 +26,7 @@ export class User {
     this.password = password;
 
     this.taskFolders = new Map<string, TaskFolder>();
-    this.taskIDToFolder = new Map<TaskID, TaskFolder>;
+    this.taskIDToFolder = new Map<TaskID, TaskFolder>();
     this.univCredits = 0;
     this.streak = 0;
   }

@@ -9,8 +9,8 @@ export class IDManager {
   task_ids: Set<number>;
  
   constructor() {
-    this.user_ids = new Set<number>;
-    this.task_ids = new Set<number>;
+    this.user_ids = new Set<number>();
+    this.task_ids = new Set<number>();
   }
 
   public nextTaskID(): TaskID {
