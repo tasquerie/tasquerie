@@ -2,6 +2,7 @@ import { Egg } from "./Egg";
 import { Achievement } from "./Achievement";
 import { Task } from "./Task";
 import { TaskFolder } from "./TaskFolder";
+import { IDManager } from "./IDManager";
 
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
@@ -18,8 +19,9 @@ export class User {
   univCredits: number;
   streak: number;
  
-  constructor(uniqueID: UserID, username: string, password: string) {
-    this.uniqueID = uniqueID;
+  constructor(idMan: IDManager,
+              uniqueID: UserID, username: string, password: string) {
+    this.uniqueID = idMan.nextUserID();
     this.username = username;
     this.password = password;
 

@@ -6,10 +6,11 @@ import { TaskFolder } from "./model/TaskFolder";
 
 import { DateTime } from "./types/DateTime";
 import { Duration } from "./types/Duration";
+import { UserID } from "./types/UserID";
 
 export class Controller {
-  currentUserID?: number;
-  currentUser?: number;
+  currentUserID?: UserID;
+  currentUser?: User;
 
   constructor() {
 
