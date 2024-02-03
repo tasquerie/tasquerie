@@ -1,5 +1,4 @@
-export class Achievement {
-  
+export class IDManager {
  
   constructor() {
     

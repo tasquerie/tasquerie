@@ -1,6 +1,10 @@
 import { Egg } from "./Egg";
 import { Achievement } from "./Achievement";
 import { Task } from "./Task";
+import { TaskFolder } from "./TaskFolder";
+
+import { DateTime } from "../types/DateTime";
+import { Duration } from "../types/Duration";
 
 export class User {
   readonly uniqueID: number;

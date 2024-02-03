@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { add } from '../src/Task';
+import { add } from '../src/model/Task';
 
 describe('Add Function', function () {
   describe('add', function () {
