@@ -3,27 +3,29 @@ import { Achievement } from "./Achievement";
 import { Task } from "./Task";
 import { TaskFolder } from "./TaskFolder";
 
+import { UserID } from "../types/UserID";
+import { TaskID } from "../types/TaskID";
 import { DateTime } from "../types/DateTime";
 import { Duration } from "../types/Duration";
 
 export class User {
-  readonly uniqueID: number;
+  readonly uniqueID: UserID;
   username: string;
-  password: string;  // will turn into bit array eventially for security
-  tasks: Set<Task>;
-  eggs: Egg[];
-  achievements: Set<Achievement>;
-  credits: number;
+  password: string;
+
+  taskFolders: Map<string, TaskFolder>;
+  taskIDToFolder: Map<TaskID, TaskFolder>;
+  univCredits: number;
   streak: number;
  
-  constructor(uniqueID: number, username: string, password: string) {
+  constructor(uniqueID: UserID, username: string, password: string) {
     this.uniqueID = uniqueID;
     this.username = username;
     this.password = password;
-    this.tasks = new Set<Task>;
-    this.eggs = [];
-    this.achievements = new Set<Achievement>;
-    this.credits = 0;
+
+    this.taskFolders = new Map<string, TaskFolder>();
+    this.taskIDToFolder = new Map<TaskID, TaskFolder>;
+    this.univCredits = 0;
     this.streak = 0;
   }
 }
