@@ -5,26 +5,24 @@ import { UserID } from "../types/UserID";
 import { IDManager } from "./IDManager";
 
 export class Task {
-  uniqueID: TaskID;
-  name: string;
-  isComplete: boolean;
-  description: string;
-  tags: string[];
-  owner: UserID;
-  whoSharedWith: UserID[];
+  private readonly uniqueID: TaskID;
+  private name: string;
+  private isComplete: boolean;
+  private description: string;
+  private tags: string[];
+  private owner: UserID;
+  private whoSharedWith: UserID[];
 
-  startDate?: DateTime;
-  cycleDuration?: Duration;
-  deadline?: DateTime;
+  private startDate?: DateTime;
+  private cycleDuration?: Duration;
+  private deadline?: DateTime;
 
   constructor(idMan: IDManager,
               name: string, description: string, tags: string[],
               owner: UserID, whoSharedWith: UserID[],
-              startDate: DateTime | undefined = undefined,
-              cycleDuration: Duration | undefined = undefined,
-              deadline: DateTime | undefined = undefined,
+              startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime,
               ) {
-    this.uniqueID = idMan.nextTaskID();
+    this.uniqueID = idMan.nextTaskID(this);
     this.name = name;
     this.isComplete = false;
     this.description = description;
@@ -35,6 +33,63 @@ export class Task {
     this.startDate = startDate;
     this.cycleDuration = cycleDuration;
     this.deadline = deadline;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  setName(name: string) {
+    this.name = name;
+  }
+
+  getIsComplete(): boolean {
+    return this.isComplete;
+  }
+
+  setIsComplete(isComplete: boolean) {
+    this.isComplete = isComplete;
+  }
+
+  getDescription(): string {
+    return this.description;
+  }
+
+  setDescription(description: string) {
+    this.description = description;
+  }
+
+  getTags(): string[] {
+    return this.tags;
+  }
+
+  getOwner(): UserID {
+    return this.owner;
+  }
+
+  setOwner(owner: UserID) {
+    this.owner = owner;
+  }
+
+  getWhoSharedWith(): UserID[] {
+    return this.whoSharedWith;
+  }
+
+  getStartDate(): DateTime | undefined {
+    return this.startDate;
+  }
+
+  getCycleDuration(): Duration | undefined {
+    return this.cycleDuration;
+  }
+
+  getDeadline(): DateTime | undefined {
+    return this.deadline;
+  }
+
+  // TODO: implement this
+  getJSON(): string {
+    return "";
   }
 }
 

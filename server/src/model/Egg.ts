@@ -1,26 +1,46 @@
 export class Egg {
-  eggType: string;
-  graphicLink: string;
-  allowedAccessories: Set<string>;
-  equippedAccessories: Set<string>;
+  private eggType: string;
+  private eggStage: number;
+  private exp: number;
+  private equippedAccessories: Set<string>;
  
   constructor(eggType: string) {
     this.eggType = eggType;
-    this.allowedAccessories = new Set<string>();
+    this.eggStage = -1;
+    this.exp = 0;
     this.equippedAccessories = new Set<string>();
-    switch (eggType) {
-      case "Type A": {
-        this.graphicLink = "Graphic A"
-        this.allowedAccessories.add("Acc A");
-      }
-      case "Type B": {
-        this.graphicLink = "Graphic B"
-        this.allowedAccessories.add("Acc B");
-      }
-      default: {
-        this.graphicLink = "Graphic Default"
-        this.allowedAccessories.add("Acc Default");
-      }
-    }
+  }
+
+  getEggType(): string {
+    return this.eggType;
+  }
+
+  setEggType(eggType: string): void {
+    this.eggType = eggType;
+  }
+
+  getEggStage(): number {
+    return this.eggStage;
+  }
+
+  setEggStage(eggStage: number): void {
+    this.eggStage = eggStage;
+  }
+
+  getExp(): number {
+    return this.exp;
+  }
+
+  setExp(exp: number): void {
+    this.exp = exp;
+  }
+
+  getEquippedAccessories(): Set<string> {
+    return this.equippedAccessories;
+  }
+
+  // TODO: implement this
+  getJSON(): string {
+    return "";
   }
 }
