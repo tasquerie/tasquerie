@@ -8,16 +8,16 @@ export class IDManager {
   readonly MAX_USER_ID = 1000000000  // 10^9
   readonly MAX_TASK_ID = 1000000000  // 10^9
 
-  private userIDToUser: Map<number, User>;
-  private taskIDToTask: Map<number, Task>;
+  private userIDToUser: Map<number, User | undefined>;
+  private taskIDToTask: Map<number, Task | undefined>;
  
   constructor() {
-    this.userIDToUser = new Map<number, User>;
-    this.taskIDToTask = new Map<number, Task>;
+    this.userIDToUser = new Map<number, User | undefined>;
+    this.taskIDToTask = new Map<number, Task | undefined>;
   }
 
   // TODO: Integrate with database
-  public nextUserID(user: User): UserID {
+  public nextUserID(user: User | undefined): UserID {
     // temporary. will be replaced by call to DB later
     var next_id = Math.floor(Math.random() * this.MAX_USER_ID);
     while (this.userIDToUser.has(next_id)) {
@@ -32,7 +32,7 @@ export class IDManager {
   }
 
   // TODO: Integrate with database
-  public nextTaskID(task: Task): TaskID {
+  public nextTaskID(task: Task | undefined): TaskID {
     // temporary. will be replaced by call to DB later
     var next_id = Math.floor(Math.random() * this.MAX_TASK_ID);
     while (this.taskIDToTask.has(next_id)) {

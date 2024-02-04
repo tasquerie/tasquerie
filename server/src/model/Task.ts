@@ -35,6 +35,10 @@ export class Task {
     this.deadline = deadline;
   }
 
+  getID(): TaskID {
+    return this.uniqueID;
+  }
+
   getName(): string {
     return this.name;
   }
