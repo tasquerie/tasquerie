@@ -1,4 +1,6 @@
 import { Egg } from "./model/Egg";
+import { Task } from "./model/Task";
+import { TaskFolder } from "./model/TaskFolder";
 import { User } from "./model/User";
 import { DateTime } from "./types/DateTime";
 import { Duration } from "./types/Duration";
@@ -41,8 +43,25 @@ export class ModelController {
 
   // data manipulation methods
   // TODO: implement this
+  // TALK: are we going to use the HTTP Request/Response here?
   addFolder(name: string, description: string, egg: Egg): void {
     this.assertUserIsSignedIn();
+
+    // reference to the taskfolder of the current user.
+    // CHECK:
+    // ? means that currentUser can be undefined but it is checked in this.assertUserIsSignedIn method...
+    // is it safe to erase it?
+    const taskFolderMap:Map<string, TaskFolder> | undefined = this.currentUser?.getTaskFolders();
+
+    if (taskFolderMap === undefined) {
+      throw new Error('NoSuchElement: the taskfolder of the user is not defined');
+    } else if (taskFolderMap.has(name)) {
+      throw new Error('Duplicated value: the given name already exists');
+    }
+
+    const eggType = egg.getEggType();
+    const newFolder = new TaskFolder(name, description, eggType);
+    taskFolderMap.set(name, newFolder);
   }
 
   // TODO: implement this
