@@ -62,7 +62,7 @@ export class User {
   getJSON(): string {
     const jsonUser = {
       // Take ID out when testing
-      //uniqueID: this.uniqueID,
+      uniqueID: this.uniqueID,
       username:this.username,
       taskFolders: this.taskFolders,
       taskIDToFolder: this.taskIDToFolder,
