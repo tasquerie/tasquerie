@@ -93,7 +93,19 @@ export class Task {
 
   // TODO: implement this
   getJSON(): string {
-    return "";
+    const jsonTask = {
+      uniqueID: this.uniqueID,
+      name:this.name,
+      isComplete: this.isComplete,
+      description: this.description,
+      tags:this.tags,
+      owner:this.owner,
+      whoSharedWith: this.whoSharedWith,
+      startDate: this.startDate, 
+      cycleDuration: this.cycleDuration, 
+      deadline: this.deadline 
+    };
+    return JSON.stringify(jsonTask);
   }
 }
 
