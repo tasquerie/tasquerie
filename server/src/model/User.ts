@@ -60,6 +60,15 @@ export class User {
 
   // TODO: implement this
   getJSON(): string {
-    return "";
+    const jsonUser = {
+      // Take ID out when testing
+      //uniqueID: this.uniqueID,
+      username:this.username,
+      taskFolders: this.taskFolders,
+      taskIDToFolder: this.taskIDToFolder,
+      univCredits:this.univCredits,
+      streak:this.streak
+    };
+    return JSON.stringify(jsonUser);
   }
 }

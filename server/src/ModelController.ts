@@ -43,7 +43,6 @@ export class ModelController {
 
   // data manipulation methods
   // TODO: implement this
-  // TALK: are we going to use the HTTP Request/Response here?
   addFolder(name: string, description: string, egg: Egg): void {
     this.assertUserIsSignedIn();
 

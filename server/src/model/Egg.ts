@@ -40,7 +40,14 @@ export class Egg {
   }
 
   // TODO: implement this
+  // CHECK: frontend will parse the JSON String or if it should be given after travesered.
   getJSON(): string {
-    return "";
+    const jsonEgg = {
+      eggType: this.eggType,
+      eggStage:this.eggStage,
+      exp:this.exp,
+      equippedAccessories:this.equippedAccessories
+    };
+    return JSON.stringify(jsonEgg);
   }
 }

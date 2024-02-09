@@ -50,6 +50,13 @@ export class TaskFolder {
 
   // TODO: implement this
   getJSON(): string {
-    return "";
+    const jsonTaskFolder = {
+      name: this.name,
+      description: this.description,
+      egg: this.egg,
+      eggCredits: this.eggCredits,
+      taskIDtoTasks: this.taskIDtoTasks,
+    };
+    return JSON.stringify(jsonTaskFolder);
   }
 }
