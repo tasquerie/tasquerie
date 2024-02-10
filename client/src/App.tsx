@@ -35,23 +35,12 @@ class App extends Component<{}, AppState> {
     if (this.state.currentPage === 'home') {
       return (
         <div>
-          <p>This is the home page</p>
-          {/* Button to switch to home page */}
-          <button onClick={() => this.switchState('/home')}>
-            Go to Home
-          </button>
-          {/* Button to switch to profile page */}
-          <button onClick={() => this.switchState('/profile')}>
-            Go to Profile
-          </button>
-          {/* Button to switch to archive page */}
-          <button onClick={() => this.switchState('/archive')}>
-            Go to Archive
-          </button>
-          {/* Button to switch to settings page */}
-          <button onClick={() => this.switchState('/settings')}>
-            Go to Settings
-          </button>
+          <Home updateState={
+            (selected: string) => {
+              console.log(`switch page to ${selected}`);
+              this.setState({currentPage: selected});
+            }
+          }/>
         </div>
       );
     } else if (this.state.currentPage === 'profile') {
