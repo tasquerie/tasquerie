@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.content {
+  position: relative;
+}
+
+#eggContainer {
+  position: absolute;
+}
+
+.egg {
+  border: blue solid 2em;
+  width: 350px;
+  height: 350px;
+}

@@ -13,6 +13,9 @@ import React, { Component } from 'react';
 import UpcomingTasks from '../Components/UpcomingTasks';
 import '../Components/EggCollection';
 import TaskCollection from '../Components/EggCollection';
+import { Egg } from '../Components/Egg';
+import { tempEgg } from '../App';
+
 
 interface HomeProps {
     updateState(selected: string): void;
@@ -49,6 +52,12 @@ class Home extends Component<HomeProps> {
                 <button onClick={() => this.props.updateState('settings')}>
                     Go to Settings
                 </button>
+                <div id="eggContainer">
+                    <Egg
+                    imgUrl={tempEgg.imgUrl}
+                    activeAccessories={tempEgg.activeAccessories}
+                    ></Egg>
+                </div>
             </div>
         );
     }

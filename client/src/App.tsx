@@ -7,6 +7,19 @@ import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
 
+///// MOCKS /////
+export let tempEgg: any = {
+  imgUrl: "https://d2bzx2vuetkzse.cloudfront.net/unshoppable_producs/0531b2f0-6899-4a27-82e6-c47e98b14494.jpeg",
+  activeAccessories: [
+    {
+      name: 'hat',
+      imgUrl: 'https://media.discordapp.net/attachments/874365985002500126/1206479114123354112/top_hat.png?ex=65dc283c&is=65c9b33c&hm=99d4d8914a985a986f2f608fba758a5763c454ecb3fb95e4a519ddb6a6f3fe78&=&format=webp&quality=lossless&width=337&height=337',
+      location: [-10,15],
+      scale: 1
+    }
+  ]
+}
+
 export interface AppState {
   currentPage: string;
   userID: number;
