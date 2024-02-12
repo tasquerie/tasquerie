@@ -36,10 +36,6 @@ class Home extends Component<HomeProps> {
                 {/* <UpcomingTasks tasks={this.state.tasks} /> */}
                 {/* <TaskCollection tasks={this.state.tasks} /> */}
                 <p>This is the home page</p>
-                {/* Button to switch to home page */}
-                <button onClick={() => this.props.updateState('home')}>
-                    Go to Home
-                </button>
                 {/* Button to switch to profile page */}
                 <button onClick={() => this.props.updateState('profile')}>
                     Go to Profile
@@ -52,12 +48,12 @@ class Home extends Component<HomeProps> {
                 <button onClick={() => this.props.updateState('settings')}>
                     Go to Settings
                 </button>
-                <div id="eggContainer">
+                {/* <div id="eggContainer">
                     <Egg
                     imgUrl={tempEgg.imgUrl}
                     activeAccessories={tempEgg.activeAccessories}
                     ></Egg>
-                </div>
+                </div> */}
             </div>
         );
     }

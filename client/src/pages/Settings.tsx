@@ -7,16 +7,28 @@
 
 import React, {Component} from 'react';
 import logo from './logo.svg';
-import './App.css';
 import {AppState} from '../App';
 
-class Settings extends Component<{}, AppState > {
-    render() {
+interface SettingsProps {
+    updateState(selected: string): void;
+}
 
+class Settings extends Component<SettingsProps, AppState> {
+
+    constructor(props: any){
+        super(props);
+        // no state
+    }
+
+    render() {
         return (
-            <p> Settings </p>
+            <div id="settings-general">
+                <h1>General Settings</h1>
+                <p>Yooo settings stuff here yay</p>
+                <button onClick={() => this.props.updateState('home')}>Back to Home</button>
+            </div>
         );
     }
 }
 
-export default Settings
+export default Settings;

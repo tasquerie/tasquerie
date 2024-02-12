@@ -45,8 +45,8 @@ export class Egg extends Component<EggProps> {
                 key={this.props.imgUrl}
                 style={{
                     position: 'absolute',
-                    top: '30%',
-                    left: '20%'
+                    top: '0%',
+                    left: '0%'
                 }}
                 src={this.props.imgUrl}></img>
                 {accessories}
