@@ -6,7 +6,7 @@ let tempEgg1: any = {
       "https://media.discordapp.net/attachments/874365985002500126/1206833440511492096/egg1.png?ex=65dd723a&is=65cafd3a&hm=5a186ab84f24c59d4dba3dc11fd0543426aec4aada210b014874175902ef2172&=&format=webp&quality=lossless&width=192&height=192",
       "https://media.discordapp.net/attachments/874365985002500126/1206833440800903168/egg1-1.png?ex=65dd723a&is=65cafd3a&hm=76c091b3fa80ab77edf9b66c7304c30481d8dffbb44ef96edef237a62e9d9e54&=&format=webp&quality=lossless&width=192&height=192"
     ],
-    stage: 1,
+    stage: 0,
     activeAccessories: []
   }
   
