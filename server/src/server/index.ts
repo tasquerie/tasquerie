@@ -21,6 +21,17 @@ app.get("/user", (req: Request, res: Response) => {
      *  'var2': 'value2'
      * }
      */
+    /**
+     * /////// SPECS ///////////
+     * endpoints correspond to data classes/types
+     * frontend can call a function associated with a class with the following format:
+     * localhost:3232/[class]?target=[function name]&[parameters]
+     * parameters should match target function parameters directly
+     * for example, to call getEggType(name: string),
+     * [parameters] would be name=[query name]
+     * the whole request would look like:
+     * localhost:3232/egg?target=getEggType&name=[query name]
+     */
 });
 
 app.listen(port, () => {
