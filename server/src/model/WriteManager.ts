@@ -20,4 +20,12 @@ export class WriteManager {
     }
     // nothing to write if no DB exists....
   }
+
+  // TODO: integrate with database
+  public deleteTask(task: Task) {
+    if (this.USE_DB) {
+      throw new Error("not Implemented");
+    }
+    // nothing to delete if no DB exists....
+  }
 }

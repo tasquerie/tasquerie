@@ -1,4 +1,5 @@
 import { Egg } from "./model/Egg";
+import { EggManager } from "./model/EggManager";
 import { IDManager } from "./model/IDManager";
 import { Task } from "./model/Task";
 import { TaskFolder } from "./model/TaskFolder";
@@ -11,14 +12,21 @@ import { TaskID } from "./types/TaskID";
 import { UserID } from "./types/UserID";
 
 export class ModelController {
+  public readonly USER_NOT_SIGNED_IN: string;
+  public readonly NEGATIVE_VALUE: string;
   private userManager: UserManager;
   private idManager: IDManager;
+  private eggManager: EggManager;
   private writeManager: WriteManager;
   private currentUser?: User;
 
-  constructor(userManager: UserManager, idManager: IDManager, writeManager: WriteManager) {
+  constructor(userManager: UserManager, idManager: IDManager, eggManager: EggManager,
+              writeManager: WriteManager) {
+    this.USER_NOT_SIGNED_IN = 'Illegal operation: user is not signed-in!';
+    this.NEGATIVE_VALUE = 'Illegal operation: negative credit value'
     this.userManager = userManager;
     this.idManager = idManager;
+    this.eggManager = eggManager;
     this.writeManager = writeManager;
     this.currentUser = undefined;
   }
@@ -46,51 +54,84 @@ export class ModelController {
     if (password.length < 8) {
       throw new Error('Password must be at least 8 characters long.');
     }
-    let newUser = new User(this.idManager, username, password);
-    this.writeManager.writeUser(newUser);
+    this.currentUser = new User(this.idManager, username, password);
+    this.writeUserToDB();
   }
 
+  // PRIVATE HELPERS
   // If user is not signed-in, throws an Error.
-  private assertUserIsSignedIn(): void {
-    if (this.currentUser === undefined) {
-      throw new Error('Illegal operation: user is not signed-in!');
+  private writeUserToDB() {
+    if (this.currentUser !== undefined) {
+      this.writeManager.writeUser(this.currentUser);
     }
+  }
+  private writeTaskToDB(task: Task) {
+    this.writeManager.writeTask(task);
+  }
+  private deleteTaskFromDB(task: Task) {
+    this.writeManager.deleteTask(task);
   }
 
 
   // data manipulation methods
   // TODO: implement this
   // TODO: test me
-  addFolder(name: string, description: string, egg: Egg): void {
-    this.assertUserIsSignedIn();
-
-    // reference to the taskfolder of the current user.
-    // CHECK:
-    // ? means that currentUser can be undefined but it is checked in this.assertUserIsSignedIn method...
-    // is it safe to erase it?
-    const taskFolderMap:Map<string, TaskFolder> | undefined = this.currentUser?.getTaskFolders();
-
-    if (taskFolderMap === undefined) {
-      throw new Error('NoSuchElement: the taskfolder of the user is not defined');
-    } else if (taskFolderMap.has(name)) {
-      throw new Error('Duplicated value: the given name already exists');
+  addFolder(name: string, description: string, eggType: string): void {
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
     }
-
-    const eggType = egg.getEggType();
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    if (taskFolderMap.has(name)) {
+      throw new Error('Duplicated value: the given folder name already exists');
+    }
     const newFolder = new TaskFolder(name, description, eggType);
     taskFolderMap.set(name, newFolder);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   setFolder(name: string, newName?: string, description?: string): void {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(name);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    if (newName !== undefined && taskFolderMap.has(newName)) {
+      throw new Error('Duplicated value: the new folder name already exists');
+    }
+    if (newName !== undefined) {
+      folder.setName(newName);
+    }
+    if (description !== undefined) {
+      folder.setDescription(description);
+    }
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   deleteFolder(name: string): void {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(name);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    let taskIDtoTask = folder.getTasks();
+    taskIDtoTask.forEach((value: Task, key: TaskID) => {
+      this.deleteTaskFromDB(value);
+    })
+    taskFolderMap.delete(name);  // remove task folder
+    this.writeUserToDB();
   }
 
   // TODO: implement this
@@ -98,69 +139,235 @@ export class ModelController {
   addTask(folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    let folder = this.currentUser.getTaskFolders().get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    let task = new Task(this.idManager,
+                        taskName, description, tags, this.currentUser.getID(),
+                        whoSharedWith, startDate, cycleDuration, deadline);
+    folder.getTasks().set(task.getID(), task);  // add task to folder
+    this.writeTaskToDB(task);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  setTask(id: TaskID, isComplete?: boolean, taskName?: string,
+  setTask(folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    let taskIDtoTask = folder.getTasks();
+    let task = taskIDtoTask.get(id);
+    if (task === undefined) {
+      throw new Error('The taskID does not exist in this folder');
+    }
+    if (isComplete !== undefined) {
+      task.setIsComplete(isComplete);
+    }
+    if (taskName !== undefined) {
+      task.setName(taskName);
+    }
+    if (description !== undefined) {
+      task.setDescription(description);
+    }
+    if (tags !== undefined) {
+      task.setTags(tags);
+    }
+    if (whoSharedWith !== undefined) {
+      task.setWhoSharedWith(whoSharedWith);
+    }
+    if (startDate !== undefined) {
+      task.setStartDate(startDate);
+    }
+    if (cycleDuration !== undefined) {
+      task.setCycleDuration(cycleDuration);
+    }
+    if (deadline !== undefined) {
+      task.setDeadline(deadline);
+    }
+    this.writeTaskToDB(task);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  deleteTask(id: TaskID): void {
-    this.assertUserIsSignedIn();
+  deleteTask(folderName: string, id: TaskID): void {
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    let taskIDtoTask = folder.getTasks();
+    let task = taskIDtoTask.get(id);
+    if (task === undefined) {
+      throw new Error('The taskID does not exist in this folder');
+    }
+    this.deleteTaskFromDB(task);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   addUnivCredits(amount: number): void {
-    this.assertUserIsSignedIn();
-    if (amount > 0) {
-
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
     }
+    if (amount < 0) {
+      throw new Error(this.NEGATIVE_VALUE);
+    }
+    const sum = this.currentUser.getUnivCredits() + amount;
+    this.currentUser.setUnivCredits(sum);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   removeUnivCredits(amount: number): void {
-    this.assertUserIsSignedIn();
-    if (amount > 0) {
-      
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
     }
+    if (amount < 0) {
+      throw new Error(this.NEGATIVE_VALUE);
+    }
+    const diff = this.currentUser.getUnivCredits() - amount;
+    this.currentUser.setUnivCredits(diff);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   addEggCredits(amount: number, folderName: string): void {
-    this.assertUserIsSignedIn();
-    if (amount > 0) {
-
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
     }
+    if (amount < 0) {
+      throw new Error(this.NEGATIVE_VALUE);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    const sum = folder.getEggCredits() + amount;
+    folder.setEggCredits(sum);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   removeEggCredits(amount: number, folderName: string): void {
-    this.assertUserIsSignedIn();
-    if (amount > 0) {
-      
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
     }
+    if (amount < 0) {
+      throw new Error(this.NEGATIVE_VALUE);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    const diff = folder.getEggCredits() - amount;
+    folder.setEggCredits(diff);
+    this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
   buyAccessory(folderName: string, accesssoryType: string): boolean {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    const eggTypeName = folder.getEgg().getEggType();
+    const eggType = this.eggManager.getEggType(eggTypeName);
+    if (eggType === undefined) {
+      throw new Error('Impossible: undefined eggType');
+    }
+    if (!eggType.allowedAccessories.has(accesssoryType)) {
+      throw new Error('not allowed to buy this accessory')
+    }
+    const accessory = this.eggManager.getAccessory(accesssoryType);
+    if (accessory === undefined) {
+      throw new Error('Impossible: undefined accessory');
+    }
+    const eggCred = folder.getEggCredits();
+    const univCred = this.currentUser.getUnivCredits();
+    if (eggCred + univCred < accessory.cost) {
+      return false;  // not enough credits to buy this accessory
+    }
+
+    // actual purchase
+    if (eggCred >= accessory.cost) {
+      this.removeEggCredits(accessory.cost, folderName);
+    } else {
+      this.removeEggCredits(eggCred, folderName);
+      this.removeUnivCredits(accessory.cost - eggCred);
+    }
+    // adding the actual accessory
+    folder.getEgg().getEquippedAccessories().add(accesssoryType);
+
+    this.writeUserToDB();
     return true;
   }
 
   // TODO: implement this
   // TODO: test me
   gainExp(amount: number, folderName: string) {
-    this.assertUserIsSignedIn();
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    if (amount < 0) {
+      throw new Error(this.NEGATIVE_VALUE);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+
+    // raise exp
+    const newExp = folder.getEgg().getExp() + amount;
+    folder.getEgg().setExp(amount);
+
+    // raise evolution level
+    const eggTypeName = folder.getEgg().getEggType();
+    const eggType = this.eggManager.getEggType(eggTypeName);
+    if (eggType === undefined) {
+      throw new Error('Impossible: undefined eggType');
+    }
+    let levelBounds: number[] = eggType.levelBoundaries;
+    for (let i = 0; i < levelBounds.length; i++) {
+      if (newExp >= levelBounds[i]) {
+        folder.getEgg().setEggStage(i + 1);
+      }
+    }
+
+
+    this.writeUserToDB();
   }
 }

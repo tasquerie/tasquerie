@@ -7,7 +7,7 @@ describe('GetJson Function', function () {
 			let first = new Egg("eggType");
       const result = first.getJSON();
 
-      assert.strictEqual(result, "{\"eggType\":\"eggType\",\"eggStage\":-1,\"exp\":0,\"equippedAccessories\":{}}");
+      assert.strictEqual(result, "{\"eggType\":\"eggType\",\"eggStage\":0,\"exp\":0,\"equippedAccessories\":{}}");
     });
   });
 });
