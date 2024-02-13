@@ -9,13 +9,13 @@ export class IDManager {
   private USE_DB: boolean = false;
   readonly MAX_USER_ID = 1000000000;  // 10^9
   readonly MAX_TASK_ID = 1000000000 ; // 10^9
-  private userIDToUser: Map<number, User | undefined>;
-  private taskIDToTask: Map<number, Task | undefined>;
+  private userIDToUser: Map<string, User | undefined>;
+  private taskIDToTask: Map<string, Task | undefined>;
  
   // CONSTRUCTOR FOR TESTING ONLY!!
   constructor() {
-    this.userIDToUser = new Map<number, User | undefined>;
-    this.taskIDToTask = new Map<number, Task | undefined>;
+    this.userIDToUser = new Map<string, User | undefined>;
+    this.taskIDToTask = new Map<string, Task | undefined>;
   }
 
   // TODO: Integrate with database
@@ -24,13 +24,13 @@ export class IDManager {
       throw new Error("not Implemented");
     } else {
       var next_id = Math.floor(Math.random() * this.MAX_USER_ID);
-      while (this.userIDToUser.has(next_id)) {
+      while (this.userIDToUser.has(next_id.toString())) {
         next_id = Math.floor(Math.random() * this.MAX_USER_ID);
       }
-      this.userIDToUser.set(next_id, user);
+      this.userIDToUser.set(next_id.toString(), user);
 
       const idObj: UserID = {
-        id: next_id
+        id: next_id.toString()
       };
       return idObj;
     }
@@ -43,13 +43,13 @@ export class IDManager {
     } else {
       // temporary. will be replaced by call to DB later
       var next_id = Math.floor(Math.random() * this.MAX_TASK_ID);
-      while (this.taskIDToTask.has(next_id)) {
+      while (this.taskIDToTask.has(next_id.toString())) {
         next_id = Math.floor(Math.random() * this.MAX_TASK_ID);
       }
-      this.taskIDToTask.set(next_id, task);
+      this.taskIDToTask.set(next_id.toString(), task);
 
       const idObj: TaskID = {
-        id: next_id
+        id: next_id.toString()
       };
       return idObj;
     }

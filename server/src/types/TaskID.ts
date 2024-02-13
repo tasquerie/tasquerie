@@ -1,3 +1,3 @@
 export type TaskID = {
-  id: number;
+  id: string;
 };
