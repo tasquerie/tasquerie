@@ -13,7 +13,7 @@ export class UserManager {
     this.nameToPass = new Map<string, string>;
   }
 
-  // FOR UNIT TESTING ONLY!! (should uncomment when done)
+  // FOR UNIT TESTING ONLY!! (should comment out when done)
   public addUser(username: string, password: string, user: User) {
     this.nameToPass.set(username, password);
     this.nameToUser.set(username, user);
