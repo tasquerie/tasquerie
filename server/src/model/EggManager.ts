@@ -103,7 +103,7 @@ export class EggManager {
   }
 
   // TODO: Integrate with database
-  public getAccessoriesJSON(name: string): string {
+  public getAccessoryJSON(name: string): string {
     let accessory = this.getAccessory(name);
     if (accessory === undefined) {
       return "";
