@@ -18,17 +18,20 @@ export class ModelController {
 
   // login methods
   // TODO: implement this
+  // TODO: test me
   login(username: string, password: string): boolean {
     return true;
   }
 
   // TODO: implement this (may need DB call?)
+  // TODO: test me
   logout(): void {
     this.currentUserID = undefined;
     this.currentUser = undefined;
   }
 
   // TODO: implement this
+  // TODO: test me
   signup(username: string, password: string): void {
     
   }
@@ -43,6 +46,7 @@ export class ModelController {
 
   // data manipulation methods
   // TODO: implement this
+  // TODO: test me
   addFolder(name: string, description: string, egg: Egg): void {
     this.assertUserIsSignedIn();
 
@@ -64,16 +68,19 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   setFolder(name: string, newName?: string, description?: string): void {
     this.assertUserIsSignedIn();
   }
 
   // TODO: implement this
+  // TODO: test me
   deleteFolder(name: string): void {
     this.assertUserIsSignedIn();
   }
 
   // TODO: implement this
+  // TODO: test me
   addTask(folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
@@ -81,6 +88,7 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   setTask(id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
@@ -88,11 +96,13 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   deleteTask(id: TaskID): void {
     this.assertUserIsSignedIn();
   }
 
   // TODO: implement this
+  // TODO: test me
   addUnivCredits(amount: number): void {
     this.assertUserIsSignedIn();
     if (amount > 0) {
@@ -101,6 +111,7 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   removeUnivCredits(amount: number): void {
     this.assertUserIsSignedIn();
     if (amount > 0) {
@@ -109,6 +120,7 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   addEggCredits(amount: number, folderName: string): void {
     this.assertUserIsSignedIn();
     if (amount > 0) {
@@ -117,6 +129,7 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   removeEggCredits(amount: number, folderName: string): void {
     this.assertUserIsSignedIn();
     if (amount > 0) {
@@ -125,12 +138,14 @@ export class ModelController {
   }
 
   // TODO: implement this
+  // TODO: test me
   buyAccessory(folderName: string, accesssoryType: string): boolean {
     this.assertUserIsSignedIn();
     return true;
   }
 
   // TODO: implement this
+  // TODO: test me
   gainExp(amount: number, folderName: string) {
     this.assertUserIsSignedIn();
   }
