@@ -10,13 +10,7 @@ import React, { Component } from 'react';
 import { Egg, EggType } from './Egg';
 import { EggCard } from './EggCard';
 import { AddEggCard } from './AddEggCard';
-import { eggCollection, folderNames } from '../App';
-
-interface Task {
-  id: number;
-  title: string;
-  photoUrl: string;
-}
+import { eggCollection, folderNames } from '../Mocks';
 
 interface EggCollectionProps {
   displayTaskFolder(eggId: number): void;
@@ -33,7 +27,8 @@ class EggCollection extends Component<EggCollectionProps> {
   render() {
     let eggs = [];
     for(let i = 0; i < eggCollection.length; i++){
-      eggs.push(<button className="invisibleButton" id={folderNames[i]}>
+      eggs.push(<button className="invisibleButton" id={folderNames[i]}
+      onClick={() => this.props.displayTaskFolder(i)}>
         <EggCard
         cardName={folderNames[i]}
         egg={eggCollection[i]}

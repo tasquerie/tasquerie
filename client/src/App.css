@@ -66,3 +66,14 @@
 
   width: 750px;
 }
+
+.taskHeader {
+  display: flex;
+  justify-content: start;
+
+  font-size: 25px;
+}
+
+.task {
+  margin-bottom: 20px;
+}
