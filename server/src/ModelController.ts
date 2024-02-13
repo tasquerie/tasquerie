@@ -1,18 +1,25 @@
 import { Egg } from "./model/Egg";
+import { IDManager } from "./model/IDManager";
 import { Task } from "./model/Task";
 import { TaskFolder } from "./model/TaskFolder";
 import { User } from "./model/User";
+import { UserManager } from "./model/UserManager";
+import { WriteManager } from "./model/WriteManager";
 import { DateTime } from "./types/DateTime";
 import { Duration } from "./types/Duration";
 import { TaskID } from "./types/TaskID";
 import { UserID } from "./types/UserID";
 
 export class ModelController {
-  currentUserID?: UserID;
-  currentUser?: User;
+  private userManager: UserManager;
+  private idManager: IDManager;
+  private writeManager: WriteManager;
+  private currentUser?: User;
 
-  constructor() {
-    this.currentUserID = undefined;
+  constructor(userManager: UserManager, idManager: IDManager, writeManager: WriteManager) {
+    this.userManager = userManager;
+    this.idManager = idManager;
+    this.writeManager = writeManager;
     this.currentUser = undefined;
   }
 
@@ -20,25 +27,32 @@ export class ModelController {
   // TODO: implement this
   // TODO: test me
   login(username: string, password: string): boolean {
-    return true;
+    this.currentUser = this.userManager.getUserFromLogin(username, password);
+    return this.currentUser !== undefined;
   }
 
   // TODO: implement this (may need DB call?)
   // TODO: test me
   logout(): void {
-    this.currentUserID = undefined;
     this.currentUser = undefined;
   }
 
   // TODO: implement this
   // TODO: test me
   signup(username: string, password: string): void {
-    
+    if (this.userManager.usernameExists(username)) {
+      throw new Error('Username already exists!');
+    }
+    if (password.length < 8) {
+      throw new Error('Password must be at least 8 characters long.');
+    }
+    let newUser = new User(this.idManager, username, password);
+    this.writeManager.writeUser(newUser);
   }
 
   // If user is not signed-in, throws an Error.
   private assertUserIsSignedIn(): void {
-    if (this.currentUserID === undefined || this.currentUser === undefined) {
+    if (this.currentUser === undefined) {
       throw new Error('Illegal operation: user is not signed-in!');
     }
   }

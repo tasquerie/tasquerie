@@ -5,19 +5,19 @@ import { Interaction } from "../types/Interaction";
 export class EggManager {
   // ALL FIELDS FOR TESTING ONLY!!
   private USE_DB: boolean = false;
-  private eggs: Map<string, EggType>;
+  private eggTypes: Map<string, EggType>;
   private interactions: Map<string, Interaction>;
   private accessories: Map<string, Accessory>;
 
   // TODO: Integrate with database to populate these maps
   constructor() {
-    this.eggs = new Map<string, EggType>();
+    this.eggTypes = new Map<string, EggType>();
     this.interactions = new Map<string, Interaction>();
     this.accessories = new Map<string, Accessory>();
 
     if (!this.USE_DB) {
-      this.eggs.set("egg1", this.makeEggType("egg1"))
-      this.eggs.set("egg2", this.makeEggType("egg2"))
+      this.eggTypes.set("egg1", this.makeEggType("egg1"))
+      this.eggTypes.set("egg2", this.makeEggType("egg2"))
 
       this.interactions.set("inter1", this.makeInteraction("inter1"))
       this.interactions.set("inter2", this.makeInteraction("inter2"))
@@ -58,11 +58,11 @@ export class EggManager {
   }
 
   // TODO: Integrate with database
-  public getEgg(name: string): EggType | undefined {
+  public getEggType(name: string): EggType | undefined {
     if (this.USE_DB) {
       throw new Error("not Implemented");
     } else {
-      return this.eggs.get(name);
+      return this.eggTypes.get(name);
     }
   }
 
@@ -76,11 +76,38 @@ export class EggManager {
   }
 
   // TODO: Integrate with database
-  public getAccessories(name: string): Accessory | undefined {
+  public getAccessory(name: string): Accessory | undefined {
     if (this.USE_DB) {
       throw new Error("not Implemented");
     } else {
       return this.accessories.get(name);
     }
+  }
+
+  // TODO: Integrate with database
+  public getEggTypeJSON(name: string): string {
+    let eggType = this.getEggType(name);
+    if (eggType === undefined) {
+      return "";
+    }
+    return JSON.stringify(eggType);
+  }
+
+  // TODO: Integrate with database
+  public getInteractionJSON(name: string): string {
+    let interaction = this.getInteraction(name);
+    if (interaction === undefined) {
+      return "";
+    }
+    return JSON.stringify(interaction);
+  }
+
+  // TODO: Integrate with database
+  public getAccessoriesJSON(name: string): string {
+    let accessory = this.getAccessory(name);
+    if (accessory === undefined) {
+      return "";
+    }
+    return JSON.stringify(accessory);
   }
 }
