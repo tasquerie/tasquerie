@@ -7,6 +7,10 @@
 // notification icons) for certain eggs in this component.
 
 import React, { Component } from 'react';
+import { Egg, EggType } from './Egg';
+import { EggCard } from './EggCard';
+import { AddEggCard } from './AddEggCard';
+import { eggCollection, folderNames } from '../App';
 
 interface Task {
   id: number;
@@ -14,32 +18,36 @@ interface Task {
   photoUrl: string;
 }
 
-interface TaskCollectionProps {
-  tasks: Task[];
+interface EggCollectionProps {
+  displayTaskFolder(eggId: number): void;
+  eggs: EggType[];
 }
 
-class TaskCollection extends Component<TaskCollectionProps> {
+class EggCollection extends Component<EggCollectionProps> {
+
+  constructor(props: EggCollectionProps){
+    super(props);
+    // no state for now
+  }
+
   render() {
-    const { tasks } = this.props;
+    let eggs = [];
+    for(let i = 0; i < eggCollection.length; i++){
+      eggs.push(<button className="invisibleButton" id={folderNames[i]}>
+        <EggCard
+        cardName={folderNames[i]}
+        egg={eggCollection[i]}
+        />
+      </button>)
+    }
 
     return (
-      <div>
-        <h2>Task Collection</h2>
-        {tasks.length === 0 ? (
-          <p>No tasks available</p>
-        ) : (
-          <div className="task-grid">
-            {tasks.map(task => (
-              <div key={task.id} className="task-item">
-                <img src={task.photoUrl} alt={task.title} />
-                <p>{task.title}</p>
-              </div>
-            ))}
-          </div>
-        )}
+      <div id="egg-collection">
+        {eggs}
+        <button className="invisibleButton" id={'yahaha'}><AddEggCard/></button>
       </div>
     );
   }
 }
 
-export default TaskCollection;
+export default EggCollection;

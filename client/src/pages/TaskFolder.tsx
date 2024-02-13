@@ -5,6 +5,7 @@ import {AppState} from '../App';
 
 interface TaskFolderProps {
     updateState(selected: string): void;
+
 }
 
 class TaskFolder extends Component<TaskFolderProps, AppState> {
@@ -16,7 +17,7 @@ class TaskFolder extends Component<TaskFolderProps, AppState> {
 
     render() {
         return (
-            <div id="profile">
+            <div id="taskFolder">
                 <h1>Task Folder</h1>
                 <p>Yooo task folder stuff here yay</p>
                 <button onClick={() => this.props.updateState('home')}>Back to Home</button>

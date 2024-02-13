@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 import { Accessory, dressEgg } from './Accessory';
 
-interface EggProps {
-    imgUrl : string;
+// NOTE: egg image sizes are strictly 256x256. Otherwise things break
+
+export interface EggType {
+    imgUrls : string[];
+    stage : number;
     activeAccessories : Accessory[];
+}
+
+interface EggProps {
+    egg: EggType
 }
 
 export class Egg extends Component<EggProps> {
@@ -34,21 +41,21 @@ export class Egg extends Component<EggProps> {
     render() {
 
         let accessories : JSX.Element[] = [];
-        for(let i = 0; i < this.props.activeAccessories.length; i++){
-            accessories.push(dressEgg(this.props.activeAccessories[i]));
+        for(let i = 0; i < this.props.egg.activeAccessories.length; i++){
+            accessories.push(dressEgg(this.props.egg.activeAccessories[i]));
         }
 
         return(
             <div className="egg" style={{position: 'relative'}}>
                 <img
                 id="eggImg"
-                key={this.props.imgUrl}
+                key={this.props.egg.imgUrls[this.props.egg.stage]}
                 style={{
                     position: 'absolute',
                     top: '0%',
                     left: '0%'
                 }}
-                src={this.props.imgUrl}></img>
+                src={this.props.egg.imgUrls[this.props.egg.stage]}></img>
                 {accessories}
             </div>
         )
