@@ -4,7 +4,7 @@ import { Interaction } from "../types/Interaction";
 
 export class EggManager {
   // ALL FIELDS FOR TESTING ONLY!!
-  private USE_DB: boolean = false;
+  public USE_DB: boolean = false;
   private eggTypes: Map<string, EggType>;
   private interactions: Map<string, Interaction>;
   private accessories: Map<string, Accessory>;
