@@ -36,6 +36,10 @@ export class TaskFolder {
     this.description = description;
   }
 
+  getEgg(): Egg {
+    return this.egg;
+  }
+
   getEggCredits(): number {
     return this.eggCredits;
   }
