@@ -336,6 +336,50 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
+  buyInteraction(folderName: string, interactionType: string): boolean {
+    if (this.currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    // reference to the taskfolder of the current user.
+    const taskFolderMap = this.currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    const eggTypeName = folder.getEgg().getEggType();
+    const eggType = this.eggManager.getEggType(eggTypeName);
+    if (eggType === undefined) {
+      throw new Error('Impossible: undefined eggType');
+    }
+    if (!eggType.allowedInteractions.has(interactionType)) {
+      throw new Error('not allowed to buy this interaction')
+    }
+    const interaction = this.eggManager.getInteraction(interactionType);
+    if (interaction === undefined) {
+      throw new Error('Impossible: undefined accessory');
+    }
+    const eggCred = folder.getEggCredits();
+    const univCred = this.currentUser.getUnivCredits();
+    if (eggCred + univCred < interaction.cost) {
+      return false;  // not enough credits to buy this accessory
+    }
+
+    // actual purchase
+    if (eggCred >= interaction.cost) {
+      this.removeEggCredits(interaction.cost, folderName);
+    } else {
+      this.removeEggCredits(eggCred, folderName);
+      this.removeUnivCredits(interaction.cost - eggCred);
+    }
+    // applying the actual interaction -> gain exp
+    this.gainExp(interaction.expGained, folderName);
+
+    this.writeUserToDB();
+    return true;
+  }
+
+  // TODO: implement this
+  // TODO: test me
   gainExp(amount: number, folderName: string) {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
