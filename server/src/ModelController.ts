@@ -83,6 +83,15 @@ export class ModelController {
     // for testing only.
     return this.currentUser;
   }
+  public getIDManager(): IDManager {
+    // for testing only.
+    return this.idManager;
+  }
+  public getEggManager(): EggManager {
+    // for testing only.
+    return this.eggManager;
+  }
+
 
 
   // data manipulation methods
