@@ -336,7 +336,10 @@ export class ModelController {
       throw new Error('Impossible: undefined eggType');
     }
     if (!eggType.allowedAccessories.has(accesssoryType)) {
-      throw new Error('not allowed to buy this accessory')
+      throw new Error('not allowed to buy this accessory');
+    }
+    if (folder.getEgg().getEquippedAccessories().has(accesssoryType)) {
+      throw new Error('you already purchased this accessory');
     }
     const accessory = this.eggManager.getAccessory(accesssoryType);
     if (accessory === undefined) {
@@ -424,7 +427,7 @@ export class ModelController {
 
     // raise exp
     const newExp = folder.getEgg().getExp() + amount;
-    folder.getEgg().setExp(amount);
+    folder.getEgg().setExp(newExp);
 
     // raise evolution level
     const eggTypeName = folder.getEgg().getEggType();

@@ -29,12 +29,18 @@ export class EggManager {
 
   // PRIVATE HELPERS FOR TESTING
   private makeEggType(name: string): EggType {
+    let allowedAcc = new Set<string>();
+    allowedAcc.add("acc1");
+    allowedAcc.add("acc2");
+    let allowedInt = new Set<string>();
+    allowedInt.add("inter1");
+    allowedInt.add("inter2");
     const eggType: EggType = {
       name: name,
       levelBoundaries: [],
       graphicLinks: [],
-      allowedAccessories: new Set<string>,
-      allowedInteractions: new Set<string>,
+      allowedAccessories: allowedAcc,
+      allowedInteractions: allowedInt,
     }
     return eggType;
   }

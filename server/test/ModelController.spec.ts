@@ -661,6 +661,15 @@ describe('removeEggCredits', function () {
 
 describe('buyAccessory', function () {
   /* for reference, types in EggManager are
+  
+      makeAccessory(name: string): Accessory {
+        const acc: Accessory = {
+          name: name,
+          graphicLink: "",
+          cost: 100,
+        }
+      }
+
       this.eggTypes.set("egg1", this.makeEggType("egg1"))
       this.eggTypes.set("egg2", this.makeEggType("egg2"))
 
@@ -672,49 +681,99 @@ describe('buyAccessory', function () {
     */
   describe('normal case →', function () {
     it('should have correct data shown for Acc && return true', function () {
+      // can only test if DB is not there
       let contr = getContr();
-      let user = getDefaultUser(contr);
-      let viewer = getViewer(contr);
-      let folderName = "name";
-      contr.addFolder(folderName, "desc", "eggType")
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(true);
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        contr.addUnivCredits(10000 * MAX_CASES);
+        for (let i = 0; i < MAX_CASES; i++) {
+          let ret = contr.buyAccessory(folderName, "acc1");
+          let folder = user.getTaskFolders().get(folderName);
+          assert(folder !== undefined);
+          let accs = folder.getEgg().getEquippedAccessories();  // should have exactly one acc
+          accs.forEach(function (accType) {
+            const accessory = contr.getEggManager().getAccessory(accType);
+            assert(accessory !== undefined);
+            assert.strictEqual(accessory.cost, 100);
+            assert.strictEqual(accessory.name, "acc1");
+            assert.strictEqual(accessory.graphicLink, "");
+          });
+          folder.getEgg().getEquippedAccessories().clear();
+          assert(ret);
+        }
       }
     });
   });
+  // 'you already purchased this accessory'
+
   describe('credit-check case when eggCredits >= cost', function () {
     it('should spends egg-specific credits + return true', function () {
+      // can only test if DB is not there
       let contr = getContr();
-      let user = getDefaultUser(contr);
-      let viewer = getViewer(contr);
-      let folderName = "name";
-      contr.addFolder(folderName, "desc", "eggType")
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(true);
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let eggCredits = 10000 * MAX_CASES;
+        contr.addEggCredits(eggCredits, folderName);
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          assert(contr.buyAccessory(folderName, "acc1"));
+          eggCredits -= 100;  // default accesory cost
+          assert.strictEqual(eggCredits, folder.getEggCredits());
+          folder.getEgg().getEquippedAccessories().clear();
+        }
       }
     });
   });
   describe('credit-check case when eggCredits < cost but can still afford', function () {
     it('should return true && eggCredits == 0 && univCredits -= (cost - eggCredits)', function () {
+      // can only test if DB is not there
       let contr = getContr();
-      let user = getDefaultUser(contr);
-      let viewer = getViewer(contr);
-      let folderName = "name";
-      contr.addFolder(folderName, "desc", "eggType")
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(true);
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let folder = user.getTaskFolders().get(folderName);
+        let univCredits = MAX_CASES * 100;
+        contr.addUnivCredits(univCredits);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          let eggCredits = 50 + (i % 17);
+          contr.addEggCredits(eggCredits, folderName);  // varying egg credits
+          assert(contr.buyAccessory(folderName, "acc1"));
+          univCredits -= (100 - eggCredits);
+          assert.strictEqual(0, folder.getEggCredits());
+          assert.strictEqual(univCredits, user.getUnivCredits());
+          folder.getEgg().getEquippedAccessories().clear();
+        }
       }
     });
   });
   describe('credit-check case when there are not enough credits', function () {
-    it('should return false', function () {
+    it('should return false and spend no credits', function () {
+      // can only test if DB is not there
       let contr = getContr();
-      let user = getDefaultUser(contr);
-      let viewer = getViewer(contr);
-      let folderName = "name";
-      contr.addFolder(folderName, "desc", "eggType")
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(true);
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          let eggCredits = 50 + (i % 17);
+          contr.addEggCredits(eggCredits, folderName);  // varying egg credits
+          assert(!contr.buyAccessory(folderName, "acc1"));  // assert we cannot buy
+          assert.strictEqual(eggCredits, folder.getEggCredits());
+          contr.removeEggCredits(eggCredits, folderName);
+        }
       }
     });
   });
@@ -723,10 +782,10 @@ describe('buyAccessory', function () {
       let contr = getContr();
       getDefaultUser(contr);
       let folderName = "name ";
-      contr.addFolder(folderName, "desc", "eggType");
+      contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(() => contr.buyAccessory(folderName + i, "acc"), Error,
+        assert.throws(() => contr.buyAccessory(folderName + i, "acc1"), Error,
                       'The folder name does not exist');
       }
     });
@@ -746,6 +805,148 @@ describe('buyAccessory', function () {
   });
 });
 
+
+
+
+describe('buyInteraction', function () {
+  /* for reference, types in EggManager are
+  
+      makeInteraction(name: string): Interaction {
+        const inter: Interaction = {
+          name: name,
+          cost: 100,
+          expGained: 100,
+        }
+        return inter;
+      }
+
+      this.eggTypes.set("egg1", this.makeEggType("egg1"))
+      this.eggTypes.set("egg2", this.makeEggType("egg2"))
+
+      this.interactions.set("inter1", this.makeInteraction("inter1"))
+      this.interactions.set("inter2", this.makeInteraction("inter2"))
+
+      this.accessories.set("acc1", this.makeAccessory("acc1"))
+      this.accessories.set("acc2", this.makeAccessory("acc2"))
+    */
+  describe('normal case →', function () {
+    it('should have exp is correctly gained && return true', function () {
+      // can only test if DB is not there
+      let contr = getContr();
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        contr.addUnivCredits(10000 * MAX_CASES);
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        let exp = folder.getEgg().getExp();
+        for (let i = 0; i < MAX_CASES; i++) {
+          assert(contr.buyInteraction(folderName, "inter1"));
+          exp += 100;  // default exp value
+          assert.strictEqual(exp, folder.getEgg().getExp());
+        }
+      }
+    });
+  });
+  // 'you already purchased this accessory'
+
+  describe('credit-check case when eggCredits >= cost', function () {
+    it('should spends egg-specific credits + return true', function () {
+      // can only test if DB is not there
+      let contr = getContr();
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let eggCredits = 10000 * MAX_CASES;
+        contr.addEggCredits(eggCredits, folderName);
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          assert(contr.buyInteraction(folderName, "inter1"));
+          eggCredits -= 100;  // default accesory cost
+          assert.strictEqual(eggCredits, folder.getEggCredits());
+          folder.getEgg().getEquippedAccessories().clear();
+        }
+      }
+    });
+  });
+  describe('credit-check case when eggCredits < cost but can still afford', function () {
+    it('should return true && eggCredits == 0 && univCredits -= (cost - eggCredits)', function () {
+      // can only test if DB is not there
+      let contr = getContr();
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let folder = user.getTaskFolders().get(folderName);
+        let univCredits = MAX_CASES * 100;
+        contr.addUnivCredits(univCredits);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          let eggCredits = 50 + (i % 17);
+          contr.addEggCredits(eggCredits, folderName);  // varying egg credits
+          assert(contr.buyInteraction(folderName, "inter1"));
+          univCredits -= (100 - eggCredits);
+          assert.strictEqual(0, folder.getEggCredits());
+          assert.strictEqual(univCredits, user.getUnivCredits());
+          folder.getEgg().getEquippedAccessories().clear();
+        }
+      }
+    });
+  });
+  describe('credit-check case when there are not enough credits', function () {
+    it('should return false and spend no credits', function () {
+      // can only test if DB is not there
+      let contr = getContr();
+      if (!contr.getEggManager().USE_DB) {
+        let user = getDefaultUser(contr);
+        let viewer = getViewer(contr);
+        let folderName = "name";
+        contr.addFolder(folderName, "desc", "egg1");
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        for (let i = 0; i < MAX_CASES; i++) {
+          let eggCredits = 50 + (i % 17);
+          contr.addEggCredits(eggCredits, folderName);  // varying egg credits
+          assert(!contr.buyInteraction(folderName, "inter1"));  // assert we cannot buy
+          assert.strictEqual(eggCredits, folder.getEggCredits());
+          contr.removeEggCredits(eggCredits, folderName);
+        }
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "egg1");
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.buyInteraction(folderName + i, "inter1"), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('accessory/inter not allowed → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "egg1");
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.buyInteraction(folderName, "fakeInter" + i), Error,
+                      'not allowed to buy this interaction');
+      }
+    });
+  });
+});
 
 
 
