@@ -446,3 +446,306 @@ describe('deleteTask', function () {
     });
   });
 });
+
+
+describe('addUnivCredits', function () {
+  describe('0 → adds 0 creds && 1 → adds 1 creds && 10000 → adds 10000 creds', function () {
+    it('should have correct num of univ credit', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      // 0 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.addUnivCredits(0);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
+      }
+      // 1 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.addUnivCredits(1);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits + 1, userAfter.univCredits);
+      }
+      // 10000 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.addUnivCredits(10000);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits + 10000, userAfter.univCredits);
+      }
+    });
+  });
+  describe('-1 → exception && -10000 → exception', function () {
+    it('should throw an error && num credits stays the same', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      // -1 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert.throws(() => contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+      }
+      // -10000 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        assert.throws(() => contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
+      }
+    });
+  });
+});
+
+
+
+describe('removeUnivCredits', function () {
+  describe('0 → adds 0 creds && 1 → removes 1 creds && 10000 → removes 10000 creds', function () {
+    it('should have correct num of univ credit', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      // 0 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.removeUnivCredits(0);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
+      }
+      // 1 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.removeUnivCredits(1);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits - 1, userAfter.univCredits);
+      }
+      // 10000 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        contr.removeUnivCredits(10000);
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits - 10000, userAfter.univCredits);
+      }
+    });
+  });
+  describe('-1 → exception && -10000 → exception', function () {
+    it('should throw an error && num credits stays the same', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      // -1 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert.throws(() => contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+      }
+      // -10000 case
+      for (let i = 0; i < MAX_CASES; i++) {
+        let userBefore = JSON.parse(viewer.getUserInfo(user.getID()));
+        assert.throws(() => contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        let userAfter = JSON.parse(viewer.getUserInfo(user.getID()));
+
+        assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
+      }
+    });
+  });
+});
+
+
+
+
+describe('addEggCredits', function () {
+  describe('0 → adds 0 creds && 1 → adds 1 creds && 10000 → adds 10000 creds', function () {
+    it('should have correct num of univ credit', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      function checker(num: number): void {
+        for (let i = 0; i < MAX_CASES; i++) {
+          let folderBefore = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+          contr.addEggCredits(num, folderName);
+          let folderAfter = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+  
+          assert.strictEqual(folderBefore.eggCredits + num, folderAfter.eggCredits);
+        }
+      }
+      // cases 0, 1, 10000
+      checker(0);
+      checker(1);
+      checker(10000);
+    });
+  });
+  describe('-1 → exception && -10000 → exception', function () {
+    it('should throw an error && num credits stays the same', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      function checker(num: number): void {
+        for (let i = 0; i < MAX_CASES; i++) {
+          let folderBefore = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+          assert.throws(() => contr.addEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          let folderAfter = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+  
+          assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
+        }
+      }
+      // -1, 10000 cases
+      checker(-1);
+      checker(-10000);
+    });
+  });
+});
+
+
+describe('removeEggCredits', function () {
+  describe('0 → adds 0 creds && 1 → removes 1 creds && 10000 → removes 10000 creds', function () {
+    it('should have correct num of univ credit', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      function checker(num: number): void {
+        for (let i = 0; i < MAX_CASES; i++) {
+          let folderBefore = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+          contr.removeEggCredits(num, folderName);
+          let folderAfter = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+  
+          assert.strictEqual(folderBefore.eggCredits - num, folderAfter.eggCredits);
+        }
+      }
+      // cases 0, 1, 10000
+      checker(0);
+      checker(1);
+      checker(10000);
+    });
+  });
+  describe('-1 → exception && -10000 → exception', function () {
+    it('should throw an error && num credits stays the same', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      function checker(num: number): void {
+        for (let i = 0; i < MAX_CASES; i++) {
+          let folderBefore = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+          assert.throws(() => contr.removeEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          let folderAfter = JSON.parse(viewer.getTaskFolderInfo(user.getID(), folderName));
+  
+          assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
+        }
+      }
+      // -1, 10000 cases
+      checker(-1);
+      checker(-10000);
+    });
+  });
+});
+
+
+// BELOW NOT IMPLEMENTED YET!!
+// BELOW NOT IMPLEMENTED YET!!
+// BELOW NOT IMPLEMENTED YET!!        just copy and make same test cases for buyInteraction
+// BELOW NOT IMPLEMENTED YET!!
+// BELOW NOT IMPLEMENTED YET!!
+
+describe('buyAccessory', function () {
+  /* for reference, types in EggManager are
+      this.eggTypes.set("egg1", this.makeEggType("egg1"))
+      this.eggTypes.set("egg2", this.makeEggType("egg2"))
+
+      this.interactions.set("inter1", this.makeInteraction("inter1"))
+      this.interactions.set("inter2", this.makeInteraction("inter2"))
+
+      this.accessories.set("acc1", this.makeAccessory("acc1"))
+      this.accessories.set("acc2", this.makeAccessory("acc2"))
+    */
+  describe('normal case →', function () {
+    it('should have correct data shown for Acc && return true', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert(true);
+      }
+    });
+  });
+  describe('credit-check case when eggCredits >= cost', function () {
+    it('should spends egg-specific credits + return true', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert(true);
+      }
+    });
+  });
+  describe('credit-check case when eggCredits < cost but can still afford', function () {
+    it('should return true && eggCredits == 0 && univCredits -= (cost - eggCredits)', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert(true);
+      }
+    });
+  });
+  describe('credit-check case when there are not enough credits', function () {
+    it('should return false', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      for (let i = 0; i < MAX_CASES; i++) {
+        assert(true);
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "eggType");
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.buyAccessory(folderName + i, "acc"), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('accessory/inter not allowed → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "egg1");
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.buyAccessory(folderName, "fakeAcc" + i), Error,
+                      'not allowed to buy this accessory');
+      }
+    });
+  });
+});
+
+
+
+

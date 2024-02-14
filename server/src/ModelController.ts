@@ -23,7 +23,7 @@ export class ModelController {
   constructor(userManager: UserManager, idManager: IDManager, eggManager: EggManager,
               writeManager: WriteManager) {
     this.USER_NOT_SIGNED_IN = 'Illegal operation: user is not signed-in!';
-    this.NEGATIVE_VALUE = 'Illegal operation: negative credit value'
+    this.NEGATIVE_VALUE = 'Illegal operation: negative credit value';
     this.userManager = userManager;
     this.idManager = idManager;
     this.eggManager = eggManager;
