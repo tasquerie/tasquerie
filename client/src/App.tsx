@@ -47,10 +47,6 @@ class App extends Component<{}, AppState> {
     });
   }
 
-  addTask(eggId: number, task: TaskType) {
-    mocks.tasksList[eggId].push(task);
-  }
-
   render() {
     // Use this.state.currentPage to check the current page
     if (this.state.currentPage === 'home') {
@@ -109,11 +105,6 @@ class App extends Component<{}, AppState> {
           <TaskFolder
           updateState = {
             (selected: string) => this.setState({currentPage : selected})
-          }
-          addTask = {
-            (task: TaskType) => {
-              this.addTask(this.state.displayingEggId, task);
-            }
           }
           eggId = {
             this.state.displayingEggId

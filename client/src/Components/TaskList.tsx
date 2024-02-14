@@ -1,63 +1,74 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
+import { Task, TaskType } from './Task'
+import { AddTaskWindow } from '../Components/AddTaskWindow';
+import * as mocks from '../Mocks'
 
-interface Task {
-    id: number;
-    title: string;
-    description: string;
-    completed: boolean;
-    deadline: string; // Add the deadline property here
+interface TaskListProps {
+  updateCredits(newAmount: number): void;
+  eggId: number;
+}
+
+interface TaskListState {
+  addTaskWindowState: string // 'hidden' or 'shown'
+}
+
+export class TaskList extends Component<TaskListProps, TaskListState> {
+  constructor(props: TaskListProps){
+    super(props);
+    this.state = {
+      addTaskWindowState: 'hidden',
+    }
   }
-  
 
-const TaskList: React.FC = () => { // Subject to change with data
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Task 1', description: 'Description for Task 1', completed: false , deadline: '12-23-2024'},
-    { id: 2, title: 'Task 2', description: 'Description for Task 2', completed: false , deadline: '12-24-2024'},
-  ]);
+  toggleCompletion(taskId: number, rewardCredits: number) {
+      mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
+      mocks.specificCredits[this.props.eggId] += rewardCredits;
+      this.props.updateCredits(mocks.specificCredits[this.props.eggId]);
+      // this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
+      // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
+  }
 
-  const addTask = () => {
-    const newTask: Task = {
-      id: tasks.length + 1,
-      title: `Task ${tasks.length + 1}`,
-      description: `Description for Task ${tasks.length + 1}`,
-      deadline: 'deadline format month-day-year',
-      completed: false,
-    };
-    setTasks([...tasks, newTask]);
-  };
+  showAddTaskWindow() {
+      this.setState({
+          addTaskWindowState: 'shown'
+      });
+  }
 
-  const toggleTaskCompletion = (taskId: number) => { // TaskID subject to change
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-  };
+  hideAddTaskWindow() {
+      this.setState({
+          addTaskWindowState: 'hidden'
+      })
+  }
 
-  const sortTasksByTitle = () => {
-    const sortedTasks = [...tasks].sort((a, b) => a.title.localeCompare(b.title));
-    setTasks(sortedTasks);
-  };
+  addTask(task: TaskType) {
+      mocks.tasksList[this.props.eggId].push(task);
+  }
 
-  const sortTasksByCompletion = () => {
-    const sortedTasks = [...tasks].sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
-    setTasks(sortedTasks);
-  };
-
-  return ( // Also need add task page
-    <div>
-      <h2>Task List</h2>
-      <button onClick={addTask}>Add New Task</button> 
-      <button onClick={sortTasksByTitle}>Sort by Title</button>
-      <button onClick={sortTasksByCompletion}>Sort by Completion</button>
-      <ul>
-        {tasks.map(task => (
-          <li key={task.id} style={{ textDecoration: task.completed ? 'line-through' : 'none' }} onClick={() => toggleTaskCompletion(task.id)}>
-            {task.title} - {task.description}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default TaskList;
+  render() {
+    let tasks = [];
+    for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
+      let task: TaskType = mocks.tasksList[this.props.eggId][i];
+      tasks.push(
+        <Task
+          toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
+          task={task}
+        />
+      );
+    }
+    return (
+      <div>
+        <AddTaskWindow
+          addTask = {(task: TaskType) => {
+            this.addTask(task);
+          }}
+          closeBox = {() => {
+            this.hideAddTaskWindow();
+          }}
+          visible={this.state.addTaskWindowState}
+        />
+        <button onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        {tasks}
+      </div>
+    )
+  }
+}

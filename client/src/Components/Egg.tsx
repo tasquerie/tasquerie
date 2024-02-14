@@ -7,6 +7,8 @@ export interface EggType {
     imgUrls : string[];
     stage : number;
     activeAccessories : Accessory[];
+    exp: number;
+    expBounds: number[];
 }
 
 interface EggProps {

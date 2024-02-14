@@ -14,6 +14,7 @@ import UpcomingTasks from '../Components/UpcomingTasks';
 import '../Components/EggCollection';
 import TaskCollection from '../Components/EggCollection';
 import EggCollection from '../Components/EggCollection';
+import * as mocks from '../Mocks'
 
 
 interface HomeProps {
@@ -32,6 +33,7 @@ class Home extends Component<HomeProps> {
         return (
             <div className="content">
                 <h1>Welcome to Tasquerie</h1>
+                <p>You have <span>{mocks.universalCredits}</span> universal credits</p>
                 <p>A brief description of Tasquerie goes here...</p>
                 {/* <UpcomingTasks tasks={this.state.tasks} /> */}
                 {/* <TaskCollection tasks={this.state.tasks} /> */}

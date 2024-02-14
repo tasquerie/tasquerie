@@ -4,22 +4,60 @@ import logo from './logo.svg';
 import {AppState} from '../App';
 import { Task, TaskType } from '../Components/Task'
 import * as mocks from '../Mocks';
+import { TaskList } from '../Components/TaskList'
+import { Egg } from '../Components/Egg'
+import { InteractionList } from '../Components/InteractionList'
+import { Interaction } from '../Components/Interaction';
 
 interface TaskFolderProps {
     updateState(selected: string): void;
-    addTask(task: TaskType): void;
     eggId: number;
 }
 
-class TaskFolder extends Component<TaskFolderProps> {
+interface TaskFolderState {
+    addTaskWindowState: string // 'hidden' | 'shown'
+    eggFunctionTab: string // 'tasks' | 'interactions' | 'accessories'
+    eggCredits: number
+}
+
+class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
 
     constructor(props: any){
         super(props);
-        // no state
+        this.state = {
+            addTaskWindowState: 'hidden',
+            eggFunctionTab: 'tasks',
+            eggCredits: mocks.specificCredits[this.props.eggId]
+        }
     }
 
-    toggleCompletion(taskId: number) {
+    toggleCompletion(taskId: number, rewardCredits: number) {
         mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
+        mocks.specificCredits[this.props.eggId] += rewardCredits;
+        this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
+        // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
+    }
+
+    showAddTaskWindow() {
+        this.setState({
+            addTaskWindowState: 'shown'
+        });
+    }
+
+    hideAddTaskWindow() {
+        this.setState({
+            addTaskWindowState: 'hidden'
+        })
+    }
+
+    updateCredits(newAmount: number) {
+        this.setState({
+            eggCredits: newAmount
+        });
+    }
+
+    addTask(task: TaskType) {
+        mocks.tasksList[this.props.eggId].push(task);
     }
 
     render() {
@@ -28,17 +66,49 @@ class TaskFolder extends Component<TaskFolderProps> {
             let task: TaskType = mocks.tasksList[this.props.eggId][i];
             tasks.push(
                 <Task
-                    toggleCompletion={() => this.toggleCompletion(i)}
+                    toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
                     task={task}
                 />
             );
         }
+        let showingTab;
+        if(this.state.eggFunctionTab == 'tasks'){
+            showingTab = <TaskList
+            updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
+            eggId={this.props.eggId} />;
+        }
+        else if (this.state.eggFunctionTab == 'interactions') {
+            showingTab = <InteractionList
+            updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
+            eggId={this.props.eggId} />;
+        }
+        else if (this.state.eggFunctionTab == 'accessories') {
+            showingTab = <div>Come Back Later</div>;
+        }
         return (
             <div id="taskFolder">
                 <h1>Task Folder: EGG {this.props.eggId}</h1>
+                <p>You have: <span>{mocks.specificCredits[this.props.eggId]}</span> credits for this egg</p>
                 <p>Yooo task folder stuff here yay</p>
+                <Egg
+                    egg={mocks.eggCollection[this.props.eggId]}
+                />
+                <div>EXP: {mocks.eggCollection[this.props.eggId].exp}</div>
+                {/* TODO: EXP here needs to be engineered to show next threshold, or show
+                nothing at all if the egg is already at the last stage */}
                 <button onClick={() => this.props.updateState('home')}>Back to Home</button>
-                {tasks}
+                <div className="taskFolderTabs">
+                    <button
+                        onClick={() => this.setState({eggFunctionTab: 'tasks'})}
+                    >Tasks</button>
+                    <button
+                        onClick={() => this.setState({eggFunctionTab: 'interactions'})}
+                    >Interact</button>
+                    <button
+                        onClick={() => this.setState({eggFunctionTab: 'accessories'})}
+                    >Accessorise</button>
+                </div>
+                {showingTab}
             </div>
         );
     }
