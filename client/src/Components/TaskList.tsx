@@ -67,7 +67,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
           visible={this.state.addTaskWindowState}
         />
         <button onClick={() => this.showAddTaskWindow()}>Add New Task</button>
-        {tasks}
+        {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
       </div>
     )
   }

@@ -61,16 +61,6 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     }
 
     render() {
-        let tasks = [];
-        for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
-            let task: TaskType = mocks.tasksList[this.props.eggId][i];
-            tasks.push(
-                <Task
-                    toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
-                    task={task}
-                />
-            );
-        }
         let showingTab;
         if(this.state.eggFunctionTab == 'tasks'){
             showingTab = <TaskList

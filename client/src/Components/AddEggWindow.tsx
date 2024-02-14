@@ -32,6 +32,8 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
         mocks.folderNames.push(this.state.folderName);
         let newEgg: EggType = {...mocks.allEggs[eggType]};
         mocks.eggCollection.push(newEgg);
+        mocks.tasksList.push([]);
+        mocks.interactionsList.push([]);
     }
 
     render() {
