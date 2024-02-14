@@ -51,12 +51,19 @@ hideAddEggWindow() {
       </button>)
     }
 
+    let addEggWindow;
+    if (this.state.addEggState == 'shown') {
+      addEggWindow = <AddEggWindow
+      closeBox = {() => this.hideAddEggWindow()}
+      visible = {this.state.addEggState}
+    />
+    } else {
+      addEggWindow = '';
+    }
+
     return (
       <div id="egg-collection">
-        <AddEggWindow
-          closeBox = {() => this.hideAddEggWindow()}
-          visible = {this.state.addEggState}
-        />
+        {addEggWindow}
         {eggs}
         <button 
           onClick={() => this.showAddEggWindow()}

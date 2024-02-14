@@ -55,17 +55,26 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
         />
       );
     }
+
+    let addTaskWindow;
+    if (this.state.addTaskWindowState == 'shown') {
+      addTaskWindow = <AddTaskWindow
+      addTask = {(task: TaskType) => {
+        this.addTask(task);
+      }}
+      closeBox = {() => {
+        this.hideAddTaskWindow();
+      }}
+      visible={this.state.addTaskWindowState}
+    />;
+    } else {
+      addTaskWindow = '';
+    }
+
+
     return (
       <div>
-        <AddTaskWindow
-          addTask = {(task: TaskType) => {
-            this.addTask(task);
-          }}
-          closeBox = {() => {
-            this.hideAddTaskWindow();
-          }}
-          visible={this.state.addTaskWindowState}
-        />
+        {addTaskWindow}
         <button onClick={() => this.showAddTaskWindow()}>Add New Task</button>
         {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
       </div>
