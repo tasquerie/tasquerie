@@ -73,9 +73,9 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
 
 
     return (
-      <div>
+      <div id="taskList">
         {addTaskWindow}
-        <button onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
         {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
       </div>
     )

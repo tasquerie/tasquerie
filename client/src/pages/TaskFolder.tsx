@@ -79,22 +79,21 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
             <div id="taskFolder">
                 <h1>Task Folder: EGG {this.props.eggId}</h1>
                 <p>You have: <span>{mocks.specificCredits[this.props.eggId]}</span> credits for this egg</p>
-                <p>Yooo task folder stuff here yay</p>
                 <Egg
                     egg={mocks.eggCollection[this.props.eggId]}
                 />
-                <div>EXP: {mocks.eggCollection[this.props.eggId].exp}/{mocks.eggCollection[this.props.eggId].expBounds[mocks.eggCollection[this.props.eggId].stage]}</div>
+                <div id="eggExp">EXP: {mocks.eggCollection[this.props.eggId].exp}/{mocks.eggCollection[this.props.eggId].expBounds[mocks.eggCollection[this.props.eggId].stage]}</div>
                 {/* TODO: EXP here needs to be engineered to show next threshold, or show
                 nothing at all if the egg is already at the last stage */}
-                <button onClick={() => this.props.updateState('home')}>Back to Home</button>
-                <div className="taskFolderTabs">
-                    <button
+                <button className="invisibleButton" onClick={() => this.props.updateState('home')}>Back to Home</button>
+                <div id="taskFolderTabs">
+                    <button className="invisibleButton taskFolderTabButton"
                         onClick={() => this.setState({eggFunctionTab: 'tasks'})}
                     >Tasks</button>
-                    <button
+                    <button className="invisibleButton taskFolderTabButton"
                         onClick={() => this.setState({eggFunctionTab: 'interactions'})}
                     >Interact</button>
-                    <button
+                    <button className="invisibleButton taskFolderTabButton"
                         onClick={() => this.setState({eggFunctionTab: 'accessories'})}
                     >Accessorise</button>
                 </div>

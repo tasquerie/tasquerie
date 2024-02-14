@@ -136,6 +136,8 @@ html {
   font-size: 60px;
 }
 
+/* ----- ADD EGG WINDOW ----- */
+
 #addEggWindow {
   z-index: 4;
 
@@ -179,8 +181,26 @@ html {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 
-  width: 750px;
+  color: #9999a8;
+}
+
+#eggExp {
+  margin: 10px 0;
+}
+
+#taskList {
+  margin-top: 20px;
+}
+
+#newTaskButton {
+  border: 2px solid #9999a8;
+  border-radius: 0.5em;
+
+  padding: 5px;
+
+  float: right;
 }
 
 .taskHeader {
@@ -194,13 +214,38 @@ html {
   margin-bottom: 20px;
 }
 
+#taskFolderTabs {
+  padding: 10px;
+}
+
+.taskFolderTabButton {
+  padding: 5px 10px;
+  margin: 0 5px;
+  border: 2px solid #9999a8;
+  border-radius: 0.5em;
+  font-size: 15px;
+}
+
+/* ----- ADD TASK WINDOW ----- */
+
 #addTaskWindow {
   position: fixed;
-  top: 10%;
-  left: 10%;
+  top: 50%;
+  left: 50%;
 
-  border: black solid 2px;
-  background-color: white;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: #222222 solid 5px;
+  border-radius: 1em;
+  background-color: #38383b;
+
+  height: 250px;
+  width: 200px;
 }
 
 #alertBox {
