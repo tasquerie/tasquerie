@@ -186,3 +186,46 @@ html {
 .selectedEgg {
   border: black 2px solid;
 }
+
+.settings-button {
+  display: block;
+  font-size: 30px;
+  padding: 15px 20px;
+  margin-bottom: 10px; 
+}
+
+.home-button {
+  display: block;
+  font-size: 10px;
+  padding: 10px 10px;
+  margin-bottom: 10px; 
+}
+
+.step-box {
+  display: flex;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.step-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-right: 20px;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.step-content p {
+  font-size: 16px;
+  margin-top: 10px;
+}

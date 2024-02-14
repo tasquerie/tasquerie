@@ -10,6 +10,7 @@ import * as mocks from './Mocks'
 import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
+import Howto from './Components/Howto';
 
 export interface AppState {
   currentPage: string;
@@ -122,6 +123,23 @@ class App extends Component<{}, AppState> {
               this.setState({currentPage: selected});
             }
           }/>
+        </div>
+      );
+    }else if (this.state.currentPage === 'howto') {
+      return (  
+        <div>
+          <Howto updateState={(selected: string) => {
+            console.log(`switch page to ${selected}`);
+            this.setState({ currentPage: selected });
+          } } stepNumber={0} title={'Add Task'} description={'On the home page'} />
+          <Howto
+            stepNumber={1} title={'Complete Task'} description={'Click Box'} updateState={function (selected: string): void {
+              throw new Error('Function not implemented.');
+            } }          />
+          <Howto
+            stepNumber={2} title={'Earn Credits'} description={'Complete Tasks'} showButton updateState={function (selected: string): void {
+              throw new Error('Function not implemented.');
+            } }          />
         </div>
       );
     }

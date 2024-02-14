@@ -2,7 +2,7 @@
 // Settings
 // Archived Eggs
 // Top level settings should be accessible in the Settings section. Archived 
-// eggs should be viewable in the Archived Eggs section.
+// eggs should be viewable in the Archived Eggs section.c
 // There should be a component that when clicked shows the Egg Library.
 
 import React, {Component} from 'react';
@@ -25,8 +25,9 @@ class Settings extends Component<SettingsProps, AppState> {
             <div id="settings-general">
                 <h1>General Settings</h1>
                 <p>Yooo settings stuff here yay</p>
-                <button onClick={() => this.props.updateState('home')}>Back to Home</button>
-                <button onClick={() => this.props.updateState('about')}>About</button>
+                <button className='home-button' onClick={() => this.props.updateState('home')}>Back to Home</button>
+                <button className="settings-button" onClick={() => this.props.updateState('about')}>About</button>
+                <button className="settings-button" onClick={() => this.props.updateState('howto')}>How To</button>
             </div>
         );
     }
