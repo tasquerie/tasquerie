@@ -73,6 +73,9 @@ export class ModelController {
     this.writeManager.writeTask(task);
   }
   private deleteTaskFromDB(task: Task) {
+    if (!this.idManager.USE_DB) {
+      this.idManager.deleteTaskID(task.getID());
+    }
     this.writeManager.deleteTask(task);
   }
   public isLoggedIn(): boolean {
@@ -161,7 +164,7 @@ export class ModelController {
   // TODO: test me
   addTask(folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
-          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
+          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): TaskID {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -175,6 +178,7 @@ export class ModelController {
     folder.getTasks().set(task.getID(), task);  // add task to folder
     this.writeTaskToDB(task);
     this.writeUserToDB();
+    return task.getID();
   }
 
   // TODO: implement this
@@ -241,6 +245,7 @@ export class ModelController {
     if (task === undefined) {
       throw new Error('The taskID does not exist in this folder');
     }
+    folder.getTasks().delete(id);
     this.deleteTaskFromDB(task);
     this.writeUserToDB();
   }

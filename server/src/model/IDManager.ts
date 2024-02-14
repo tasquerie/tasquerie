@@ -6,7 +6,7 @@ import { UserID } from "../types/UserID";
 
 export class IDManager {
   // ALL FIELDS FOR TESTING ONLY!!
-  private USE_DB: boolean = false;
+  public USE_DB: boolean = false;
   readonly MAX_USER_ID = 1000000000;  // 10^9
   readonly MAX_TASK_ID = 1000000000 ; // 10^9
   private userIDToUser: Map<string, User | undefined>;
@@ -68,6 +68,13 @@ export class IDManager {
       throw new Error("not Implemented");
     } else {
       return this.taskIDToTask.get(taskID.id);
+    }
+  }
+
+  // for testing only
+  public deleteTaskID(taskID: TaskID) {
+    if (!this.USE_DB) {
+      this.taskIDToTask.delete(taskID.id);
     }
   }
 }

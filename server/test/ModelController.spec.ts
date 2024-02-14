@@ -9,6 +9,8 @@ import { WriteManager } from '../src/model/WriteManager';
 import { ModelView } from '../src/ModelView';
 import { TaskFolder } from '../src/model/TaskFolder';
 import { User } from '../src/model/User';
+import { Task } from '../src/model/Task';
+import { TaskID } from '../src/types/TaskID';
 
 const MAX_CASES = 1000;
 const MAX_PASS_LEN = 8;
@@ -290,6 +292,157 @@ describe('deleteFolder', function () {
         assert.throws(() => contr.deleteFolder(folderName + i), Error,
                       'The folder name does not exist');
       }
+    });
+  });
+});
+
+
+describe('addTask', function () {
+  describe('normal correct case → correct task data', function () {
+    it('should have correct task data', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "folderName";
+      contr.addFolder(folderName, "desc", "eggType");
+      for (let i = 0; i < MAX_CASES; i++) {
+        let taskID = contr.addTask(folderName, "task name " + i, "desc " + i, [], []);
+        let expectedTask = new Task(contr.getIDManager(), "task name " + i, "desc " + i, [], user.getID(), []);
+
+        // test here
+        let actualTask = JSON.parse(viewer.getTaskInfo(taskID));
+        assert.strictEqual(expectedTask.getName(), actualTask.name);
+        assert.strictEqual(expectedTask.getDescription(), actualTask.description);
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.addTask(folderName + i, "task name " + i, "desc " + i, [], []), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+});
+
+
+describe('setTask', function () {
+  describe('normal correct case → correct task data', function () {
+    it('should have correct task data', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "folderName";
+      contr.addFolder(folderName, "desc", "eggType");
+      for (let i = 0; i < MAX_CASES; i++) {
+        let taskID = contr.addTask(folderName,            "task name " + i,       "desc " + i, [], []);
+        contr.setTask(folderName, taskID, false,          "task name " + i + "k", "desc " + i + "k");
+        let expectedTask = new Task(contr.getIDManager(), "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
+
+        // test here
+        let actualTask = JSON.parse(viewer.getTaskInfo(taskID));
+        assert.strictEqual(expectedTask.getName(), actualTask.name);
+        assert.strictEqual(expectedTask.getDescription(), actualTask.description);
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "eggType");
+      let taskID = contr.addTask(folderName, "task name", "desc", [], []);
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.setTask(folderName + i, taskID, false, "task name", "desc", [], []), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('taskID DNE IN FOLDER (not in general) —> exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let folderAAA = "folder AAA";
+      contr.addFolder(folderAAA, "desc", "eggType");
+      let taskIDs: Set<TaskID> = new Set<TaskID>();
+      for (let i = 0; i < MAX_CASES; i++) {
+        taskIDs.add(contr.addTask(folderAAA, "task name " + i, "desc " + i, [], []));
+      }
+      let folderBBB = "folder BBB";
+      contr.addFolder(folderBBB, "desc", "eggType");
+      taskIDs.forEach(taskID => {
+        // test here
+        assert.throws(() => contr.setTask(folderBBB, taskID, false, "task name", "desc", [], []), Error,
+                      'The taskID does not exist in this folder');
+      });
+    });
+  });
+});
+
+
+
+describe('deleteTask', function () {
+  describe('normal correct case → task is gone from folder and view', function () {
+    it('should have task gone from folder and view', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "folderName";
+      contr.addFolder(folderName, "desc", "eggType");
+      for (let i = 0; i < MAX_CASES; i++) {
+        let taskID = contr.addTask(folderName, "task name " + i, "desc " + i, [], []);
+        contr.deleteTask(folderName, taskID);
+        let expected = "";
+
+        // test here -- deleted from view
+        let actual = viewer.getTaskInfo(taskID);
+        assert.strictEqual(expected, actual);
+
+        // deleted from folder
+        let folder = user.getTaskFolders().get(folderName);
+        assert(folder !== undefined);
+        assert(folder.getTasks().get(taskID) === undefined)
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "eggType");
+      let taskID = contr.addTask(folderName, "task name", "desc", [], []);
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.deleteTask(folderName + i, taskID), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('taskID DNE IN FOLDER (not in general) —> exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let folderAAA = "folder AAA";
+      contr.addFolder(folderAAA, "desc", "eggType");
+      let taskIDs: Set<TaskID> = new Set<TaskID>();
+      for (let i = 0; i < MAX_CASES; i++) {
+        taskIDs.add(contr.addTask(folderAAA, "task name " + i, "desc " + i, [], []));
+      }
+      let folderBBB = "folder BBB";
+      contr.addFolder(folderBBB, "desc", "eggType");
+      taskIDs.forEach(taskID => {
+        // test here
+        assert.throws(() => contr.deleteTask(folderBBB, taskID), Error,
+                      'The taskID does not exist in this folder');
+      });
     });
   });
 });
