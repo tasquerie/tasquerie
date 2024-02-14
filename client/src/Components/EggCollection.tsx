@@ -11,17 +11,32 @@ import { Egg, EggType } from './Egg';
 import { EggCard } from './EggCard';
 import { AddEggCard } from './AddEggCard';
 import { eggCollection, folderNames } from '../Mocks';
+import { AddEggWindow } from './AddEggWindow';
 
 interface EggCollectionProps {
   displayTaskFolder(eggId: number): void;
   eggs: EggType[];
 }
 
-class EggCollection extends Component<EggCollectionProps> {
+interface EggCollectionState {
+  addEggState: string; // 'hidden' | 'shown'
+}
+
+class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
 
   constructor(props: EggCollectionProps){
     super(props);
-    // no state for now
+    this.state ={
+      addEggState: 'hidden'
+    }
+  }
+
+  showAddEggWindow() {
+    this.setState({addEggState: 'shown'})
+  }
+
+hideAddEggWindow() {
+    this.setState({addEggState: 'hidden'})
   }
 
   render() {
@@ -38,8 +53,16 @@ class EggCollection extends Component<EggCollectionProps> {
 
     return (
       <div id="egg-collection">
+        <AddEggWindow
+          closeBox = {() => this.hideAddEggWindow()}
+          visible = {this.state.addEggState}
+        />
         {eggs}
-        <button className="invisibleButton" id={'yahaha'}><AddEggCard/></button>
+        <button 
+          onClick={() => this.showAddEggWindow()}
+          className="invisibleButton" 
+          id={'yahaha'}
+          ><AddEggCard/></button>
       </div>
     );
   }

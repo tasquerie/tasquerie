@@ -45,6 +45,7 @@ export class InteractionList extends Component<InteractionListProps, Interaction
     let button;
     for(let i = 0; i < mocks.interactionsList[this.props.eggId].length; i++){
         button = <button
+            className="invisibleButton interactionButton"
             onClick={() => this.applyInteraction(mocks.interactionsList[this.props.eggId][i])}
         >
             <Interaction interaction={mocks.interactionsList[this.props.eggId][i]}/>

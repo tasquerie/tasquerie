@@ -52,7 +52,7 @@ let tempEgg1: EggType = {
   
   export let allEggs: any[] = [tempEgg1, tempEgg2, tempEgg3, tempEgg4]
   export let folderNames: string[] = ['CSE403', 'Other Class']
-  export let eggCollection: any[] = [tempEgg1, tempEgg2]
+  export let eggCollection: any[] = [{...tempEgg1}, {...tempEgg2}]
 
 
 

@@ -15,6 +15,7 @@ import '../Components/EggCollection';
 import TaskCollection from '../Components/EggCollection';
 import EggCollection from '../Components/EggCollection';
 import * as mocks from '../Mocks'
+import { AddEggWindow } from '../Components/AddEggWindow';
 
 
 interface HomeProps {
@@ -26,7 +27,6 @@ class Home extends Component<HomeProps> {
     
     constructor(props: any) {
         super(props);
-        // no state for now
     }
 
     render() {
