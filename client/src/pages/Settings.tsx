@@ -26,6 +26,7 @@ class Settings extends Component<SettingsProps, AppState> {
                 <h1>General Settings</h1>
                 <p>Yooo settings stuff here yay</p>
                 <button onClick={() => this.props.updateState('home')}>Back to Home</button>
+                <button onClick={() => this.props.updateState('about')}>About</button>
             </div>
         );
     }
