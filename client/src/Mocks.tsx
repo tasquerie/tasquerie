@@ -19,7 +19,7 @@ let tempEgg1: EggType = {
     stage: 0,
     activeAccessories: [],
     exp: 0,
-    expBounds: [5, 15, 50]
+    expBounds: [10, 50, 100]
   }
   
   let tempEgg2: EggType = {

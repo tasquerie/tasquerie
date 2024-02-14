@@ -83,7 +83,7 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
                 <Egg
                     egg={mocks.eggCollection[this.props.eggId]}
                 />
-                <div>EXP: {mocks.eggCollection[this.props.eggId].exp}</div>
+                <div>EXP: {mocks.eggCollection[this.props.eggId].exp}/{mocks.eggCollection[this.props.eggId].expBounds[mocks.eggCollection[this.props.eggId].stage]}</div>
                 {/* TODO: EXP here needs to be engineered to show next threshold, or show
                 nothing at all if the egg is already at the last stage */}
                 <button onClick={() => this.props.updateState('home')}>Back to Home</button>

@@ -34,6 +34,7 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
         mocks.eggCollection.push(newEgg);
         mocks.tasksList.push([]);
         mocks.interactionsList.push([]);
+        mocks.specificCredits.push(0);
     }
 
     render() {

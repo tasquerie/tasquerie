@@ -27,7 +27,7 @@ export class InteractionList extends Component<InteractionListProps, Interaction
     else{
         mocks.specificCredits[this.props.eggId] -= interaction.cost;
         mocks.eggCollection[this.props.eggId].exp += interaction.rewardExp;
-        if (mocks.eggCollection[this.props.eggId].exp > mocks.eggCollection[this.props.eggId].expBounds[mocks.eggCollection[this.props.eggId].stage]) {
+        if (mocks.eggCollection[this.props.eggId].exp >= mocks.eggCollection[this.props.eggId].expBounds[mocks.eggCollection[this.props.eggId].stage]) {
             mocks.eggCollection[this.props.eggId].stage++;
         }
     }
