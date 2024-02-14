@@ -29,11 +29,11 @@ class Howto extends Component<HowToProps> {
                 <div className="step-content">
                     <h2>{this.props.title}</h2>
                     <p>{this.props.description}</p>
-                    {this.props.showButton && <button onClick={() => this.props.updateState('settings')}>Back to Settings</button>}
                 </div>
             </div>
         );
     }
+    
 }
 
 export default Howto;
