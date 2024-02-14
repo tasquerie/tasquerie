@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import * as mocks from './Mocks'
 import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
+import About from './Components/About';
 
 export interface AppState {
   currentPage: string;
@@ -112,6 +113,17 @@ class App extends Component<{}, AppState> {
           />
         </div>
       )
+    } else if (this.state.currentPage === 'about') {
+      return (
+        <div>
+          <About updateState={
+            (selected: string) => {
+              console.log(`switch page to ${selected}`);
+              this.setState({currentPage: selected});
+            }
+          }/>
+        </div>
+      );
     }
   }
 }
