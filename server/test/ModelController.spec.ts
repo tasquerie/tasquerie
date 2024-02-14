@@ -7,9 +7,12 @@ import { EggManager } from '../src/model/EggManager';
 import { ModelController } from '../src/ModelController';
 import { WriteManager } from '../src/model/WriteManager';
 import { ModelView } from '../src/ModelView';
+import { TaskFolder } from '../src/model/TaskFolder';
 
 const MAX_CASES = 1000;
 const MAX_PASS_LEN = 8;
+
+////       LOGIN METHODS         ////
 
 describe('login', function () {
   describe('correct login info → return true', function () {
@@ -110,7 +113,7 @@ describe('login', function () {
 
 describe('signup', function () {
   describe('normal correct case →', function () {
-    it('can login with username and password after signup and logging out', function () {
+    it('is logged in + can login with username and password after signup and logging out', function () {
       let idMan = new IDManager();
       let userMan = new UserManager(idMan);
       let eggMan = new EggManager();
@@ -120,6 +123,7 @@ describe('signup', function () {
         let username = "user " + i;
         let password = "password " + i;
         contr.signup(username, password);
+        assert(contr.isLoggedIn());
         contr.logout();
         assert(contr.login(username, password));
       }
@@ -157,9 +161,202 @@ describe('signup', function () {
       // NOW PASSWORD IS LENGTH 8 --> SHOULD WORK
       for (let i = 0; i < MAX_PASS_LEN; i++) {
         let username = "user " + i;
-        console.log("pass: " + password);
         assert.doesNotThrow(() => contr.signup(username, password));
         password += "a";
+      }
+    });
+  });
+});
+
+
+////       FUNCTIONAL METHODS         ////
+describe('addFolder', function () {
+  describe('normal correct case → correct folder data', function () {
+    it('should have correct folder data', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      let viewer = new ModelView(idMan, eggMan);
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      for (let i = 0; i < MAX_CASES; i++) {
+        let folderName = "name " + i;
+        let folder = new TaskFolder(folderName, "desc " + i, "eggType " + i)
+        contr.addFolder(folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
+
+        // test here
+        let expected = folder.getJSON();
+        let actual = viewer.getTaskFolderInfo(user.getID(), folderName);
+        // console.log(actual);  // to see what data looks like
+        assert.strictEqual(expected, actual);
+      }
+    });
+  });
+  describe('folder already exists → exception', function () {
+    it('should throw an error', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      let folderName = "name ";
+      let desc = "desc ";
+      let eggType = "eggType ";
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.doesNotThrow(() => contr.addFolder(folderName + i, desc + i, eggType + i));
+        assert.throws(() => contr.addFolder(folderName + i, desc + i, eggType + i), Error,
+                      'Duplicated value: the given folder name already exists');
+      }
+    });
+  });
+});
+
+
+describe('setFolder', function () {
+  describe('normal correct case → correct folder data', function () {
+    it('should have correct folder data && optional params undefined → same data', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      let viewer = new ModelView(idMan, eggMan);
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      let folderName = "name ";
+      let desc = "desc ";
+      let eggType = "eggType ";
+      assert(user !== undefined);
+      for (let i = 0; i < MAX_CASES; i++) {
+        contr.addFolder(folderName + i, desc, eggType);
+
+                
+        let before = viewer.getTaskFolderInfo(user.getID(), folderName + i);
+        contr.setFolder(folderName + i);
+        let after = viewer.getTaskFolderInfo(user.getID(), folderName + i);
+        assert.strictEqual(before, after);
+
+        contr.setFolder(folderName + i, folderName + i + "k", desc + i);
+
+        let folder = new TaskFolder(folderName + i + "k", desc + i, eggType);
+        // test here
+        let expected = folder.getJSON();
+        let actual = viewer.getTaskFolderInfo(user.getID(), folderName + i + "k");
+        // console.log(actual);  // to see what data looks like
+        assert.strictEqual(expected, actual);
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      let folderName = "name ";
+      let desc = "desc ";
+      let eggType = "eggType ";
+      contr.addFolder(folderName, desc, eggType);
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.setFolder(folderName + i, folderName + i + "k", desc), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('newName already exists —> exception', function () {
+    it('should throw an error', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      contr.addFolder("already exist", "desc", "eggType");
+      let folderName = "name ";
+      for (let i = 0; i < MAX_CASES; i++) {
+        // add folders so they can be set
+        contr.addFolder(folderName + i, "desc", "eggType");
+      }
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.setFolder(folderName + i, "already exist", "desc"), Error,
+                      'Duplicated value: the new folder name already exists');
+      }
+    });
+  });
+});
+
+
+describe('deleteFolder', function () {
+  describe('folder is correctly missing', function () {
+    it('should have correct folder data', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      let viewer = new ModelView(idMan, eggMan);
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      for (let i = 0; i < MAX_CASES; i++) {
+        let folderName = "name " + i;
+        let folder = new TaskFolder(folderName, "desc " + i, "eggType " + i)
+        contr.addFolder(folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
+        let actualBeforeDelete = viewer.getTaskFolderInfo(user.getID(), folderName);
+        contr.deleteFolder(folder.getName());
+
+        // test here
+        let actual = viewer.getTaskFolderInfo(user.getID(), folderName);
+        // console.log(actual);  // to see what data looks like
+        assert.strictEqual(folder.getJSON(), actualBeforeDelete);
+        assert.strictEqual("", actual);
+      }
+    });
+  });
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let idMan = new IDManager();
+      let userMan = new UserManager(idMan);
+      let eggMan = new EggManager();
+      let writeMan = new WriteManager();
+      let contr = new ModelController(userMan, idMan, eggMan, writeMan);
+      let username = "username";
+      let password = "password";
+      contr.signup(username, password);  // already logged in
+      let user = contr.getCurrentUser();
+      assert(user !== undefined);
+      let folderName = "name ";
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.deleteFolder(folderName + i), Error,
+                      'The folder name does not exist');
       }
     });
   });

@@ -79,6 +79,10 @@ export class ModelController {
     // for testing only.
     return this.currentUser !== undefined;
   }
+  public getCurrentUser(): User | undefined {
+    // for testing only.
+    return this.currentUser;
+  }
 
 
   // data manipulation methods
@@ -115,6 +119,8 @@ export class ModelController {
     }
     if (newName !== undefined) {
       folder.setName(newName);
+      this.currentUser.getTaskFolders().set(newName, folder);
+      this.currentUser.getTaskFolders().delete(name);
     }
     if (description !== undefined) {
       folder.setDescription(description);

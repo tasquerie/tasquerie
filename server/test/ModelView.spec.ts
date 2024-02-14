@@ -30,7 +30,7 @@ describe('getUserInfo', function () {
         // test here
         let actual = modelView.getUserInfo(user.getID());
         // console.log(actual)   // to verify data looks good
-        assert(user.getJSON() === actual);
+        assert.strictEqual(user.getJSON(), actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
@@ -44,7 +44,7 @@ describe('getUserInfo', function () {
             id: user.getID() + i.toString()
           };
           // test here
-          assert("" === modelView.getUserInfo(id));
+          assert.strictEqual("",  modelView.getUserInfo(id));
         }
       });
     });
@@ -68,7 +68,7 @@ describe('getTaskInfo', function () {
         // test here
         let actual = modelView.getTaskInfo(task.getID());
         // console.log(actual)   // to verify data looks good
-        assert(task.getJSON() === actual);
+        assert.strictEqual(task.getJSON() ,  actual);
       }
     });
     describe('non-existent TaskID → empty string', function () {
@@ -85,7 +85,7 @@ describe('getTaskInfo', function () {
             id: task.getID() + i.toString()
           };
           // test here
-          assert("" === modelView.getTaskInfo(id));
+          assert.strictEqual("",  modelView.getTaskInfo(id));
         }
       });
     });
@@ -106,7 +106,7 @@ describe('getTaskFolderInfo', function () {
         // test here
         let actual = modelView.getTaskFolderInfo(user.getID(), folder.getName());
         // console.log(actual)   // to verify data looks good
-        assert(folder.getJSON() === actual);
+        assert.strictEqual(folder.getJSON() ,  actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
@@ -122,7 +122,7 @@ describe('getTaskFolderInfo', function () {
             id: user.getID() + i.toString()
           };
           // test here
-          assert("" === modelView.getTaskFolderInfo(id, folder.getName()));
+          assert.strictEqual("",  modelView.getTaskFolderInfo(id, folder.getName()));
         }
       });
     });
@@ -137,7 +137,7 @@ describe('getTaskFolderInfo', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderName = folder.getName() + i;
           // test here
-          assert("" === modelView.getTaskFolderInfo(user.getID(), folderName));
+          assert.strictEqual("",  modelView.getTaskFolderInfo(user.getID(), folderName));
         }
       });
     });
@@ -165,7 +165,7 @@ describe('getEggInfo', function () {
         // test here
         let actual = modelView.getEggInfo(user.getID(), folder.getName());
         // console.log(actual)   // to verify data looks good
-        assert(egg.getJSON() === actual);
+        assert.strictEqual(egg.getJSON() ,  actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
@@ -181,7 +181,7 @@ describe('getEggInfo', function () {
             id: user.getID() + i.toString()
           };
           // test here
-          assert("" === modelView.getEggInfo(id, folder.getName()));
+          assert.strictEqual("",  modelView.getEggInfo(id, folder.getName()));
         }
       });
     });
@@ -196,7 +196,7 @@ describe('getEggInfo', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderName = folder.getName() + i;
           // test here
-          assert("" === modelView.getEggInfo(user.getID(), folderName));
+          assert.strictEqual("",  modelView.getEggInfo(user.getID(), folderName));
         }
       });
     });
@@ -226,12 +226,12 @@ describe('getEggType', function () {
         let expected = eggMan.getEggTypeJSON("egg1");
         let actual = modelView.getEggType("egg1");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected ,  actual);
 
         expected = eggMan.getEggTypeJSON("egg2");
         actual = modelView.getEggType("egg2");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected ,  actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
@@ -242,7 +242,7 @@ describe('getEggType', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let eggType = i.toString();
           // test here
-          assert("" === modelView.getEggType(eggType));
+          assert.strictEqual("",  modelView.getEggType(eggType));
         }
       });
     });
@@ -272,12 +272,12 @@ describe('getInteraction', function () {
         let expected = eggMan.getInteractionJSON("inter1");
         let actual = modelView.getInteraction("inter1");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected ,  actual);
 
         expected = eggMan.getInteractionJSON("inter2");
         actual = modelView.getInteraction("inter2");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected, actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
@@ -288,7 +288,7 @@ describe('getInteraction', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let interaction = i.toString();
           // test here
-          assert("" === modelView.getInteraction(interaction));
+          assert.strictEqual("", modelView.getInteraction(interaction));
         }
       });
     });
@@ -317,12 +317,12 @@ describe('getAccessory', function () {
         let expected = eggMan.getAccessoryJSON("acc1");
         let actual = modelView.getAccessory("acc1");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected, actual);
 
         expected = eggMan.getAccessoryJSON("acc2");
         actual = modelView.getAccessory("acc2");
         // console.log(actual)   // to verify data looks good
-        assert(expected === actual);
+        assert.strictEqual(expected, actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
@@ -333,7 +333,7 @@ describe('getAccessory', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let acc = i.toString();
           // test here
-          assert("" === modelView.getAccessory(acc));
+          assert.strictEqual("", modelView.getAccessory(acc));
         }
       });
     });
