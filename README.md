@@ -32,7 +32,7 @@ Unfortunately, due to difficulties with integration and finding time to implemen
 ## React Server (Frontend) Setup
 0. Open a terminal under the root directory. (You might need to `git checkout frontend` branch for most updated version).
 1. Run `cd client`
-1. Run `npm install react react-dom react-router-dom` to check whether setup works
+1. Run `npm install` to make sure all packages are ready for frontend
 3. Run `npm run start:windows` to start server for windows and `npm run start:nix` to start server for Linux & Mac
 
 ## Testing - How to add a new test to the code base.
