@@ -3,7 +3,7 @@ import { IDManager } from "./IDManager";
 
 export class UserManager {
   // ALL FIELDS FOR TESTING ONLY!!
-  private USE_DB: boolean = false;
+  public USE_DB: boolean = false;
   private nameToUser: Map<string, User>;
   private nameToPass: Map<string, string>;
 

@@ -55,6 +55,10 @@ export class ModelController {
       throw new Error('Password must be at least 8 characters long.');
     }
     this.currentUser = new User(this.idManager, username, password);
+    if (!this.userManager.USE_DB) {
+      // for testing only
+      this.userManager.addUser(username, password, this.currentUser);
+    }
     this.writeUserToDB();
   }
 
@@ -70,6 +74,10 @@ export class ModelController {
   }
   private deleteTaskFromDB(task: Task) {
     this.writeManager.deleteTask(task);
+  }
+  public isLoggedIn(): boolean {
+    // for testing only.
+    return this.currentUser !== undefined;
   }
 
 
