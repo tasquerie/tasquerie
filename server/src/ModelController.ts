@@ -384,7 +384,7 @@ export class ModelController {
     }
     const interaction = this.eggManager.getInteraction(interactionType);
     if (interaction === undefined) {
-      throw new Error('Impossible: undefined accessory');
+      throw new Error('Impossible: undefined interaction');
     }
     const eggCred = folder.getEggCredits();
     const univCred = this.currentUser.getUnivCredits();
