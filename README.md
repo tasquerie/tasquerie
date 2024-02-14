@@ -30,7 +30,7 @@ Unfortunately, due to difficulties with integration and finding time to implemen
 1. From the server directory run `ts-node src/server/index.ts` to start the server
 
 ## React Server (Frontend) Setup
-0. Open a terminal under the root directory.
+0. Open a terminal under the root directory. (You might need to `git checkout frontend` branch for most updated version).
 1. Run `cd client`
 1. Run `npm install react react-dom react-router-dom` to check whether setup works
 3. Run `npm run start:windows` to start server for windows and `npm run start:nix` to start server for Linux & Mac
