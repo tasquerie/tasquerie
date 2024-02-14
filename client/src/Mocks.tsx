@@ -23,7 +23,7 @@ let tempEgg1: EggType = {
   }
   
   let tempEgg2: EggType = {
-    imgUrls: ["https://media.discordapp.net/attachments/874365985002500126/1206835872402509844/temp.png?ex=65dd747d&is=65caff7d&hm=8f742fda557eab2a77f092a56ad68174e62b778b54d0b25fc32064c92019437f&=&format=webp&quality=lossless&width=192&height=192"],
+    imgUrls: ["https://media.discordapp.net/attachments/874365985002500126/1207412448462905344/temp.png?ex=65df8d78&is=65cd1878&hm=e800a360bd46326aa61584a5c1565c8c2e3bd5921c9ef729b780b028db44be67&=&format=webp&quality=lossless&width=192&height=192"],
     stage: 0,
     activeAccessories: [],
     exp: 0,
@@ -32,7 +32,7 @@ let tempEgg1: EggType = {
   
   let tempEgg3: EggType = {
     imgUrls: [
-      "https://media.discordapp.net/attachments/874365985002500126/1206835872666746910/temp2.png?ex=65dd747d&is=65caff7d&hm=f4332c795083058c0abe07ff3b8d20eec95c8c9da729d9c1c671132ef6fe225c&=&format=webp&quality=lossless&width=192&height=192"
+      "https://media.discordapp.net/attachments/874365985002500126/1207412448722686027/temp2.png?ex=65df8d78&is=65cd1878&hm=179b01d5467114682bb85faae94ab00d29c4223c2508965d962d26a7129cd339&=&format=webp&quality=lossless&width=192&height=192"
     ],
     stage: 0,
     activeAccessories: [],
@@ -42,7 +42,7 @@ let tempEgg1: EggType = {
   
   let tempEgg4: EggType = {
     imgUrls: [
-      "https://media.discordapp.net/attachments/874365985002500126/1206835872910155816/temp3.png?ex=65dd747e&is=65caff7e&hm=3de49c07a480cf53648718cea8fff1ceebc45c7f83c4575fdaebe7850be6c58b&=&format=webp&quality=lossless&width=192&height=192"
+      "https://media.discordapp.net/attachments/874365985002500126/1207412449129660508/temp3.png?ex=65df8d78&is=65cd1878&hm=ece449b6c3271e903afd78c15e38af5753a878bcae32c5dd99b3d1cf8ffb8352&=&format=webp&quality=lossless&width=192&height=192"
     ],
     stage: 0,
     activeAccessories: [],

@@ -1,7 +1,73 @@
-.content {
+html {
+  background-color: #2c2c2d;
+  color: #5a5a68;
+  font-family: Helvetica, sans-serif;
+}
+
+#root {
   position: relative;
 }
 
+/* HELPERS/FORMATTERS */
+
+.flex-h { /* arrange horizontally */
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-v { /* arrange vertically */
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-content-center {
+  align-items: center;
+}
+
+.invisibleButton {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
+
+  color: inherit;
+}
+
+
+/* ------------------------ ACTUAL STYLES ------------------------ */
+
+.content {
+  position: relative;
+
+  margin-top: 5vh;
+
+  padding: 5vh 10vh;
+
+  border: 2px solid black;
+}
+
+
+/* ----- HOME PAGE ----- */
+
+#tasquerieTitle {
+  font-size: 50px;
+  font-variant: small-caps;
+  font-weight: 600;
+
+  padding: 25px;
+
+  transform: scale(1, 1.1);
+}
+
+.homeSidebarButton {
+  padding: 5px 10px;
+  border: 2px solid black;
+}
 
 .egg {
   width: 128px;
@@ -49,14 +115,6 @@
 
 #addEgg {
   font-size: 70px;
-}
-
-.invisibleButton {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background-color: rgba(0,0,0,0);
-  cursor: pointer;
 }
 
 #taskFolder {
