@@ -263,6 +263,7 @@ html {
   display: block;
   font-size: 30px;
   padding: 15px 20px;
+  color: rgb(194, 194, 194);
   margin-bottom: 10px; 
 }
 
@@ -270,12 +271,13 @@ html {
   display: block;
   font-size: 10px;
   padding: 10px 10px;
+  color: rgb(194, 194, 194);
   margin-bottom: 10px; 
 }
 
 .step-box {
   display: flex;
-  border: 2px solid #333;
+  border: 2px solid rgb(152, 151, 151);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
@@ -284,7 +286,7 @@ html {
 .step-number {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: rgb(194, 194, 194);
   margin-right: 20px;
 }
 
@@ -294,10 +296,16 @@ html {
 
 .step-content h2 {
   font-size: 20px;
+  color: rgb(194, 194, 194);
   margin-top: 0;
 }
 
 .step-content p {
   font-size: 16px;
+  color: rgb(194, 194, 194);
   margin-top: 10px;
+}
+
+.color-settings {
+  color: rgb(194, 194, 194);
 }

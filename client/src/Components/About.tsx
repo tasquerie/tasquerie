@@ -20,8 +20,8 @@ class About extends Component<SettingsProps> {
     render() {
         return (
             <div>
-                <h1>About</h1>
-                <p>Tasquerie is a novel task management web app that provides to users all of the standard productivity 
+                <h1 className='color-settings'>About</h1>
+                <p className='color-settings'>Tasquerie is a novel task management web app that provides to users all of the standard productivity 
                     app functions at their fingertips, with additional game-like features that make staying motivated and 
                     incentivised to complete their tasks.</p>
                 <button onClick={() => this.props.updateState('settings')}>Back to Settings</button>

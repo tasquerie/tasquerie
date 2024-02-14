@@ -128,6 +128,7 @@ class App extends Component<{}, AppState> {
     }else if (this.state.currentPage === 'howto') {
       return (  
         <div>
+          <h1 className='color-settings'>How To</h1>
           <Howto updateState={(selected: string) => {
             console.log(`switch page to ${selected}`);
             this.setState({ currentPage: selected });
