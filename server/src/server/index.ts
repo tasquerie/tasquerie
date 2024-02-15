@@ -115,7 +115,7 @@ app.get("/controller", (req: Request, res: Response) => {
     let httpResp = okResp;
     switch(request.func) {
         case "signup":
-            // http://localhost:3000/controller?func=signup&username=khai&arg2=password
+            // http://localhost:3000/controller?func=signup&arg1=khai&arg2=password
             const username = request.arg1;
             if (typeof username !== "string") {
                 httpResp = badReq;
