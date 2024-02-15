@@ -35,9 +35,10 @@ export class EggManager {
     let allowedInt = new Set<string>();
     allowedInt.add("inter1");
     allowedInt.add("inter2");
+    let bounds = [100, 200, 300, 400, 500];
     const eggType: EggType = {
       name: name,
-      levelBoundaries: [],
+      levelBoundaries: bounds,
       graphicLinks: [],
       allowedAccessories: allowedAcc,
       allowedInteractions: allowedInt,

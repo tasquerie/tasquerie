@@ -653,11 +653,7 @@ describe('removeEggCredits', function () {
 });
 
 
-// BELOW NOT IMPLEMENTED YET!!
-// BELOW NOT IMPLEMENTED YET!!
-// BELOW NOT IMPLEMENTED YET!!        just copy and make same test cases for buyInteraction
-// BELOW NOT IMPLEMENTED YET!!
-// BELOW NOT IMPLEMENTED YET!!
+
 
 describe('buyAccessory', function () {
   /* for reference, types in EggManager are
@@ -950,3 +946,95 @@ describe('buyInteraction', function () {
 
 
 
+describe('gainExp', function () {
+  describe('folder DNE (does not exist) → exception', function () {
+    it('should throw an error', function () {
+      let contr = getContr();
+      getDefaultUser(contr);
+      let folderName = "name ";
+      contr.addFolder(folderName, "desc", "egg1");
+      for (let i = 0; i < MAX_CASES; i++) {
+        // test here
+        assert.throws(() => contr.gainExp(1000, folderName + i), Error,
+                      'The folder name does not exist');
+      }
+    });
+  });
+  describe('0 → adds 0 creds && 1 → adds 1 creds && 100 → adds 100 creds', function () {
+    // for reference, in EggManager; stages 1-5 are:
+    //    let bounds = [100, 200, 300, 400, 500];
+    it('should gain correct exp and correctly evolve (right stage)', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "egg1")
+      let folder = user.getTaskFolders().get(folderName);
+      assert(folder !== undefined);
+      let maxLevels = 5;
+      function checker(num: number, checkLevels: boolean, offByOne: boolean = false): void {
+        let exp = 0;
+        let firstTime = true;
+        if (offByOne) {
+          num -= 1;
+        }
+        for (let i = 0; i < maxLevels; i++) {
+          // exp check
+          contr.gainExp(num, folderName);
+          exp += num;
+          if (firstTime && offByOne) {
+            num += 1;
+            firstTime = false;  // want to add 99, then 100, then 100...exp
+          }
+          assert(folder !== undefined);
+          // console.log("expected exp: " + exp);
+          // console.log("actual exp: " + folder.getEgg().getExp());
+          assert.strictEqual(exp, folder.getEgg().getExp());
+
+          // stage check (can only be done if no DB is used)
+          if (checkLevels && !contr.getEggManager().USE_DB) {
+            let correctStage = i + 1;
+            if (offByOne) {
+              correctStage = i;
+            }
+            // console.log("expected stage: " + correctStage);
+            // console.log("actual stage: " + folder.getEgg().getEggStage());
+            assert.strictEqual(correctStage, folder.getEgg().getEggStage());
+            if (i === maxLevels - 1) {
+              checkLevels = false;
+            }
+          }
+        }
+        assert(folder !== undefined);
+        folder.getEgg().setExp(0);        // to reset data
+        folder.getEgg().setEggStage(0);   // to reset data
+      }
+      // cases 0, 1, 100
+      checker(0, false);
+      checker(1, false);
+      checker(100, true);
+      checker(100, true, true);  // off-by-one case
+    });
+  });
+  describe('-1 → exception && -10000 → exception', function () {
+    it('should throw an error && egg stays the same', function () {
+      let contr = getContr();
+      let user = getDefaultUser(contr);
+      let viewer = getViewer(contr);
+      let folderName = "name";
+      contr.addFolder(folderName, "desc", "eggType")
+      function checker(num: number): void {
+        for (let i = 0; i < MAX_CASES; i++) {
+          let eggBefore = viewer.getEggInfo(user.getID(), folderName);
+          assert.throws(() => contr.gainExp(num, folderName), Error, 'Illegal operation: negative credit value');
+          let eggAfter = viewer.getEggInfo(user.getID(), folderName);
+  
+          assert.strictEqual(eggBefore, eggAfter);
+        }
+      }
+      // -1, 10000 cases
+      checker(-1);
+      checker(-10000);
+    });
+  });
+});
