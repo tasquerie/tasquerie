@@ -66,13 +66,14 @@ app.get("/test", (req: Request, res: Response) => {
 
 // for view methods
 app.get("/view", (req: Request, res: Response) => {
-    // url: http://localhost:3000/login?func=NULL&arg1=NULL&arg2=NULL
+    // url: http://localhost:3000/view?func=NULL&arg1=NULL&arg2=NULL
     let request = req.query;
     let resultString = "";
     let body = "";
     let httpResp = okResp;
     switch(request.func) {
         case "getUserInfo":
+            // change UserID to actual user id string returned by signup
             // http://localhost:3000/view?func=getUserInfo&arg1=UserID
             const idStr = request.arg1;
             if (typeof idStr !== "string") {
