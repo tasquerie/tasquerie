@@ -47,7 +47,7 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  signup(username: string, password: string): void {
+  signup(username: string, password: string): string {
     if (this.userManager.usernameExists(username)) {
       throw new Error('Username already exists!');
     }
@@ -60,6 +60,7 @@ export class ModelController {
       this.userManager.addUser(username, password, this.currentUser);
     }
     this.writeUserToDB();
+    return this.currentUser.getID().id;
   }
 
   // PRIVATE HELPERS
