@@ -1,3 +1,5 @@
+import e from "express";
+
 export {}
 
 const PORT_NUMBER: number = 3232;
@@ -22,9 +24,34 @@ class BackendWrapper {
             if(!response.ok) {
                 alert(`Status is wrong, expected 200, was ${response.status}`);
             }
-            return await response.json();
-        }
-        catch (e) {
+            const responseBody = await response.json();
+            
+            if (typeof responseBody === 'string' ) {
+                if (responseBody === "") {
+                    throw new Error("View does not exist");
+                }
+                else if (responseBody === "true" || responseBody === "false") {
+                    return responseBody === "true";
+                }
+                else {
+                    return responseBody;
+                }
+            }
+            else if (typeof responseBody === 'object') {
+                if ('userID' in responseBody) {
+                    return responseBody.userID;
+                }
+                else if ('taskFolderInfo' in responseBody) {
+                    return responseBody.taskFolderInfo;
+                } 
+                else {
+                    return responseBody;
+                }
+            }
+            else {
+                throw new Error("Invalid format");
+            }
+        } catch (e) {
             alert("There was an error contacting the server.");
             console.log(e);
             throw new Error("Connection lost");
