@@ -71,12 +71,10 @@ class App extends Component<{}, AppState> {
     } else if (this.state.currentPage === 'profile') {
       return (
         <div>
-          <Profile updateState={
-            (selected: string) => {
-              console.log(`switch page to ${selected}`);
-              this.setState({currentPage: selected});
-            }
-          }/>
+          <Profile updateState={(selected: string) => {
+            console.log(`switch page to ${selected}`);
+            this.setState({ currentPage: selected });
+          } } name={''} id={0}/>
         </div>
       );
     } else if (this.state.currentPage === 'archive') {
@@ -149,7 +147,7 @@ class App extends Component<{}, AppState> {
             stepNumber={4} title={'Egg-Spcific Credits'} description={'Can be gained by completing tasks within a task folder, and as well as completing general achievements and streaks. Egg-Specific Credits are specific to each Egg, meaning each Egg can have a different amount of Egg-Specific Credits. Even two instances of the same Egg Type can have a different amount.'} updateState={function (selected: string): void {
               throw new Error('Function not implemented.');
             } } />
-            <button onClick={() => this.setState({currentPage: 'settings'})}>Back to Settings</button>
+            <button className='fa fa-angle-left' onClick={() => this.setState({currentPage: 'settings'})}> Back to Settings</button>
         </div>
       );
     }

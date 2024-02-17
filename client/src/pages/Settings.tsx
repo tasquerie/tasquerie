@@ -24,9 +24,9 @@ class Settings extends Component<SettingsProps, AppState> {
         return (
             <div id="settings-general">
                 <h1>General Settings</h1>
-                <button className='home-button invisibleButton' onClick={() => this.props.updateState('home')}>Back to Home</button>
-                <button className="settings-button invisibleButton" onClick={() => this.props.updateState('about')}>About</button>
-                <button className="settings-button invisibleButton" onClick={() => this.props.updateState('howto')}>How To</button>
+                <button className='home-button invisibleButton fa fa-angle-left' onClick={() => this.props.updateState('home')}> Back to Home</button>
+                <button className="settings-button invisibleButton "  onClick={() => this.props.updateState('about')}>About</button>
+                <button className="settings-button invisibleButton" onClick={() => this.props.updateState('howto')}> How To</button>
             </div>
         );
     }
