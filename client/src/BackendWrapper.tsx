@@ -11,7 +11,7 @@ class BackendWrapper {
     }
 
     controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch('http://localhost:4567/findroute', {
+        let response = await fetch('http://localhost:3232/findroute', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -21,7 +21,7 @@ class BackendWrapper {
     }
 
     login = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch('http://localhost:4567/findroute', {
+        let response = await fetch('http://localhost:3232/findroute', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
