@@ -11,11 +11,23 @@ class BackendWrapper {
     }
 
     controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        return await this.requestPath('controller', func, args);
+        let response = await fetch('http://localhost:4567/findroute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ start: func, destination: args })
+        });
     }
 
     login = async (func: string, args: Map<string, any>): Promise<any> => {
-        return await this.requestPath('login', func, args);
+        let response = await fetch('http://localhost:4567/findroute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ start: func, destination: args })
+        });
     }
 
     requestPath = async (area: string, start: string, dest: Map<string, any>) => {
@@ -25,31 +37,17 @@ class BackendWrapper {
                 alert(`Status is wrong, expected 200, was ${response.status}`);
             }
             const responseBody = await response.json();
-            
-            if (typeof responseBody === 'string' ) {
-                if (responseBody === "") {
-                    throw new Error("View does not exist");
-                }
-                else if (responseBody === "true" || responseBody === "false") {
-                    return responseBody === "true";
-                }
-                else {
-                    return responseBody;
-                }
+            // Error Case
+            if (responseBody === "") {
+                throw new Error("Invalid output");
             }
-            else if (typeof responseBody === 'object') {
-                if ('userID' in responseBody) {
-                    return responseBody.userID;
-                }
-                else if ('taskFolderInfo' in responseBody) {
-                    return responseBody.taskFolderInfo;
-                } 
-                else {
-                    return responseBody;
-                }
+            // boolean caser
+            else if (responseBody === "true" || responseBody === "false") {
+                return responseBody === "true";
             }
+            // JSON case 
             else {
-                throw new Error("Invalid format");
+                return responseBody;
             }
         } catch (e) {
             alert("There was an error contacting the server.");
