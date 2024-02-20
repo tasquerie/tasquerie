@@ -27,6 +27,14 @@ const writeMan  = new WriteManager();
 const contr     = new ModelController(userMan, idMan, eggMan, writeMan);
 const viewer    = new ModelView(idMan, eggMan);
 
+// Security Issue
+var RateLimit = require('express-rate-limit');
+var limiter = RateLimit({
+    windowMS: 15 * 60 * 1000, // 15 min
+    max:100,
+    message: "Too many requests from this IP, try after 15 min"
+});
+
 function println(appendStr: string) {
     return appendStr + newline;
 }
@@ -229,6 +237,9 @@ app.get("/view", (req: Request, res: Response) => {
     }
     res.send(result);
 });
+
+// Security issue
+app.use(limiter);
 
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
