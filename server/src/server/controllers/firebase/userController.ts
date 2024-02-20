@@ -28,13 +28,17 @@ const FirebaseUserController = {
     // Get user info on a given user UUID
     getUser: async (req: Request, res: Response) => {
         try {
-            const targetUser = req.query.user;
-            if (typeof targetUser !== 'string') {
-                res.status(400).json({ error: 'Invalid user ID' });
-                return;
-              }
+            const { userID } = req.body;
 
-            const documentRef = db.collection(collectionName).doc(targetUser);
+            if (!userID) {
+                res.status(400).json({ error: "Missing fields "})
+            }
+            // if (typeof targetUser !== 'string') {
+            //     res.status(400).json({ error: 'Invalid user ID' });
+            //     return;
+            //   }
+
+            const documentRef = db.collection(collectionName).doc(userID);
             const snapshot = await documentRef.get();
 
             if (!snapshot.exists) {
@@ -42,7 +46,7 @@ const FirebaseUserController = {
                 return;
               }
 
-            res.json({ targetUser: snapshot.id, userData: snapshot.data() });
+            res.json({ userID: snapshot.id, userData: snapshot.data() });
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
