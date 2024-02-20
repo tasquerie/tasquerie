@@ -8,6 +8,8 @@ import { WriteManager } from "../model/WriteManager";
 import { ModelController } from "../ModelController";
 import { ModelView } from "../ModelView";
 
+import userRoutes from './routes/firebase/userRoutes';
+import taskRoutes from './routes/firebase/taskRoutes';
 dotenv.config();
 
 const app : Express = express();
@@ -25,6 +27,9 @@ const writeMan  = new WriteManager();
 const contr     = new ModelController(userMan, idMan, eggMan, writeMan);
 const viewer    = new ModelView(idMan, eggMan);
 
+app.use(express.json());
+app.use('/api/firebase/user', userRoutes);
+app.use('/api/firebase/task', taskRoutes)
 function println(appendStr: string) {
     return appendStr + newline;
 }

@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
-
+import Navbar from './Components/Navbar';
 export interface AppState {
   currentPage: string;
   userID: number;
@@ -35,6 +35,7 @@ class App extends Component<{}, AppState> {
     if (this.state.currentPage === 'home') {
       return (
         <div>
+          <Navbar />
           <p>This is the home page</p>
           {/* Button to switch to home page */}
           <button onClick={() => this.switchState('/home')}>
