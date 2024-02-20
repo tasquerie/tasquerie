@@ -122,6 +122,7 @@ app.get("/test", (req: Request, res: Response) => {
 
 // for view methods
 app.get("/view", (req: Request, res: Response) => {
+    // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
     let request = req.query;
     let result = "";
     let error = "";
@@ -231,6 +232,7 @@ app.get("/view", (req: Request, res: Response) => {
 
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
+    // url: http://localhost:3000/login
     let result = "";
     let error = "";
     let func = req.body.func;
@@ -280,6 +282,7 @@ app.post("/login", (req: Request, res: Response) => {
 
 // for controller methods
 app.post("/controller", (req: Request, res: Response) => {
+    // url: http://localhost:3000/controller
     let func = req.body.func;
     let result = "";
     let error = ""
