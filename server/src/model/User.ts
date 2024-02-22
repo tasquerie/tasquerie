@@ -14,7 +14,6 @@ export class User {
   private password: string;
 
   private taskFolders: Map<string, TaskFolder>;
-  private taskIDToFolder: Map<TaskID, TaskFolder>;
   private univCredits: number;
   private streak: number;
  
@@ -25,7 +24,6 @@ export class User {
     this.password = password;
 
     this.taskFolders = new Map<string, TaskFolder>();
-    this.taskIDToFolder = new Map<TaskID, TaskFolder>();
     this.univCredits = 0;
     this.streak = 0;
   }
@@ -54,10 +52,6 @@ export class User {
     return this.taskFolders;
   }
 
-  getTaskIDToFolders(): Map<TaskID, TaskFolder> {
-    return this.taskIDToFolder;
-  }
-
   // TODO: implement this
   getJSON(): string {
     const jsonUser = {
@@ -65,7 +59,6 @@ export class User {
       uniqueID: this.uniqueID,
       username:this.username,
       taskFolders: this.taskFolders,
-      taskIDToFolder: this.taskIDToFolder,
       univCredits:this.univCredits,
       streak:this.streak
     };

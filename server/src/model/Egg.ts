@@ -6,7 +6,7 @@ export class Egg {
  
   constructor(eggType: string) {
     this.eggType = eggType;
-    this.eggStage = -1;
+    this.eggStage = 0;
     this.exp = 0;
     this.equippedAccessories = new Set<string>();
   }

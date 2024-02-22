@@ -67,6 +67,10 @@ export class Task {
     return this.tags;
   }
 
+  setTags(tags: string[]) {
+    this.tags = tags;
+  }
+
   getOwner(): UserID {
     return this.owner;
   }
@@ -79,16 +83,32 @@ export class Task {
     return this.whoSharedWith;
   }
 
+  setWhoSharedWith(sharedWith: UserID[]) {
+    this.whoSharedWith = sharedWith;
+  }
+
   getStartDate(): DateTime | undefined {
     return this.startDate;
+  }
+
+  setStartDate(startDate: DateTime) {
+    this.startDate = startDate;
   }
 
   getCycleDuration(): Duration | undefined {
     return this.cycleDuration;
   }
 
+  setCycleDuration(cycleDuration: Duration) {
+    this.cycleDuration = cycleDuration;
+  }
+
   getDeadline(): DateTime | undefined {
     return this.deadline;
+  }
+
+  setDeadline(deadline: DateTime) {
+    this.deadline = deadline;
   }
 
   // TODO: implement this
