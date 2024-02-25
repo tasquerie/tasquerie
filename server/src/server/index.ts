@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import Ajv from 'ajv';
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
 import { IDManager } from "../model/IDManager";
@@ -13,6 +14,7 @@ import { logEvent } from "firebase/analytics";
 dotenv.config();
 
 const app : Express = express();
+let ajv = new Ajv();
 const port = process.env.PORT || 3000;
 const newline = "<br>";
 const okResp = "HTTP/1.1 200 OK";
@@ -241,6 +243,9 @@ app.get("/view", (req: Request, res: Response) => {
 // Security issue
 app.use(limiter);
 
+
+ajv.addSchema({type:"object"})
+
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
     // url: http://localhost:3000/login
@@ -279,14 +284,15 @@ app.post("/login", (req: Request, res: Response) => {
             try {
                 result = "" + contr.signup(signupUserName, signupPassword);
             } catch (err:any){
-                error = err.message;
+                res.status(400).send(err.message);
+                //error = err.message;
             }
             break;
         default:
             error = "The function of the request is not defined";
     }
     if (error !== "") {
-        res.status(400).send(error);
+        res.status(400).json(error);
     }
     res.send(result);
 });
