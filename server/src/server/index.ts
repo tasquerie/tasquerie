@@ -284,7 +284,7 @@ app.post("/login", (req: Request, res: Response) => {
             try {
                 result = "" + contr.signup(signupUserName, signupPassword);
             } catch (err:any){
-                res.status(400).send(err.message);
+                res.status(400).json(err.message);
                 //error = err.message;
             }
             break;
