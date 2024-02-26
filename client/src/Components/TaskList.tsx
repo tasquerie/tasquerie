@@ -7,7 +7,7 @@ interface Task {
     completed: boolean;
     deadline: string; // Add the deadline property here
   }
-  
+
 
 const TaskList: React.FC = () => { // Subject to change with data
   const [tasks, setTasks] = useState<Task[]>([
@@ -46,7 +46,7 @@ const TaskList: React.FC = () => { // Subject to change with data
   return ( // Also need add task page
     <div>
       <h2>Task List</h2>
-      <button onClick={addTask}>Add New Task</button> 
+      <button onClick={addTask}>Add New Task</button>
       <button onClick={sortTasksByTitle}>Sort by Title</button>
       <button onClick={sortTasksByCompletion}>Sort by Completion</button>
       <ul>

@@ -1,7 +1,4 @@
 node_modules
 .vscode
 .firebase
-*/.env
-server/.env
-*.js
-!client/src/Context/AuthContext.js
+.env

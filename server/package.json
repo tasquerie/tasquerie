@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha ./build/test",
     "build": "tsc",
-    "start": "ts-node src/server/index.ts"
+    "start": "ts-node src/server/index.ts",
+    "clean": "rd /s /q build",
+    "clean:nix": "rm -r build"
   },
   "author": "",
   "license": "ISC",

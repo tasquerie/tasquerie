@@ -1,5 +1,3 @@
 *.js
 .env
-
-
-!client\src\Context\AuthContext.js
+build

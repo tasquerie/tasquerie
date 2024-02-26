@@ -13,7 +13,7 @@ const FirebaseUserController = {
 
             const usersMap: Record<string, any> = {};
             await Promise.all(
-            documents.map(async (document) => {
+            documents.map(async (document: { get: () => any; id: string | number; }) => {
                 const snapshot = await document.get();
                 usersMap[document.id] = snapshot.data();
             })

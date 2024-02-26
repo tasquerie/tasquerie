@@ -2,13 +2,16 @@ import React from 'react';
 import { useAuth } from "../Context/AuthContext"
 const Navbar: React.FC = () => {
 
-  const { currentUser, signIn, signOut } = useAuth();
+  const { currentUser, signIn, signUp, signOut } = useAuth();
 
   const handleSignIn = async () => {
     try {
-      await signIn();
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
+      const username = "apple@uw.edu";
+      const password = "aaaaa";
+      await signIn(username, password);
+
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -21,11 +24,23 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const handleSignUp = async () => {
+    try {
+      const username = "appl@uw.edu";
+      const password = "aaaaa";
+      await signUp(username, password);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-name">Tasquerie</div>
         <div className="navbar-menu">
+
           {currentUser ? (
                 <div style={{display: "flex", alignItems: "center"}}>
                     <p className="user--name"> {currentUser.displayName}</p>
@@ -38,6 +53,7 @@ const Navbar: React.FC = () => {
                 </div>
             ) : (
                 <div>
+                    <button onClick={handleSignUp}>Sign Up</button>
                     <button onClick={handleSignIn}>Login</button>
                 </div>
             )}
