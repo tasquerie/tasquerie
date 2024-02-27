@@ -11,6 +11,7 @@ import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
 import Howto from './Components/Howto';
+import Login from './pages/Login';
 
 export interface AppState {
   currentPage: string;
@@ -24,11 +25,10 @@ class App extends Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      currentPage: 'home',
+      currentPage: 'login',
       userID: 0, // You can set this to an initial value as needed
       displayingEggId: -1
     };
-    this.example = 'home';
     // Bind switchState method to the class instance
     this.switchState = this.switchState.bind(this);
   }
@@ -51,7 +51,17 @@ class App extends Component<{}, AppState> {
 
   render() {
     // Use this.state.currentPage to check the current page
-    if (this.state.currentPage === 'home') {
+    if (this.state.currentPage === 'login') {
+      return (
+        <div>
+          <Login updateState={
+            (selected: string) => {
+              this.switchState(selected);
+            }
+          }/>
+        </div>
+      )
+    } else if (this.state.currentPage === 'home') {
       return (
         <div>
           <Home 
