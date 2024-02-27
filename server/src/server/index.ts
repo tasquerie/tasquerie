@@ -41,6 +41,7 @@ function println(appendStr: string) {
     return appendStr + newline;
 }
 
+//DELETE: if not needed
 function checkString(input:any, strName:string, res:Response) {
     if (typeof(input) !== 'string') {
         res.status(400).send(strName + " is not defined or is not a string");
@@ -133,6 +134,7 @@ app.get("/test", (req: Request, res: Response) => {
 // for view methods
 app.get("/view", (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let request = req.query;
     let result = "";
     let error = "";
@@ -147,7 +149,7 @@ app.get("/view", (req: Request, res: Response) => {
                 id: userIdStr
             }
             // Testing without db
-            result = "getUserInfo";
+            result = "" + userID;
             //result = viewer.getUserInfo(userID);
             break;
         case "getTaskInfo":
@@ -236,8 +238,9 @@ app.get("/view", (req: Request, res: Response) => {
         res.status(400).send(error);
     } else if (result === "") {
         res.status(400).send("The requested view does not exist");
+    } else {
+        res.send(result);
     }
-    res.send(result);
 });
 
 // Security issue
@@ -249,6 +252,7 @@ ajv.addSchema({type:"object"})
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
     // url: http://localhost:3000/login
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let result = "";
     let error = "";
     let func = req.body.func;
@@ -293,13 +297,15 @@ app.post("/login", (req: Request, res: Response) => {
     }
     if (error !== "") {
         res.status(400).json(error);
+    } else {
+        res.send(result);
     }
-    res.send(result);
 });
 
 // for controller methods
 app.post("/controller", (req: Request, res: Response) => {
     // url: http://localhost:3000/controller
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let func = req.body.func;
     let result = "";
     let error = ""
@@ -610,3 +616,5 @@ app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
 
+// Only for testing purpose
+export default app;
