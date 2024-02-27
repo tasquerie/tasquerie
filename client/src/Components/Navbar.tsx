@@ -2,12 +2,13 @@ import React from 'react';
 import { useAuth } from "../Context/AuthContext"
 const Navbar: React.FC = () => {
 
-  const { currentUser, signIn, signUp, signOut } = useAuth();
+  const { getUser, signIn, signUp, signOut } = useAuth();
 
   const handleSignIn = async () => {
     try {
+      console.log("HER");
       const username = "apple@uw.edu";
-      const password = "aaaaa";
+      const password = "aaaaaa";
       await signIn(username, password);
 
     } catch (err) {
@@ -17,7 +18,7 @@ const Navbar: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      console.log(currentUser);
+      console.log(getUser());
       await signOut();
     } catch (err) {
       console.error(err);
@@ -26,8 +27,8 @@ const Navbar: React.FC = () => {
 
   const handleSignUp = async () => {
     try {
-      const username = "appl@uw.edu";
-      const password = "aaaaa";
+      const username = "apple@uw.edu";
+      const password = "aaaaaa";
       await signUp(username, password);
 
     } catch (err) {
@@ -41,11 +42,11 @@ const Navbar: React.FC = () => {
         <div className="navbar-name">Tasquerie</div>
         <div className="navbar-menu">
 
-          {currentUser ? (
+          {getUser() ? (
                 <div style={{display: "flex", alignItems: "center"}}>
-                    <p className="user--name"> {currentUser.displayName}</p>
+                    <p className="user--name"> {getUser().displayName}</p>
                     <span>
-                        <img className="user--photo" src={currentUser.photoURL} alt={"user id"}></img>
+                        <img className="user--photo" src={getUser().photoURL} alt={"user id"}></img>
                     </span>
                     <span>
                         <button onClick={handleSignOut}>Logout</button>

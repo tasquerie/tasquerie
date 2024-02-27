@@ -412,7 +412,7 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  gainExp(amount: number, folderName: string) {
+  gainExp(amount: number, folderName: string): void {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
