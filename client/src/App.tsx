@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
+import Navbar from './Components/Navbar';
 import * as mocks from './Mocks'
 import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
@@ -64,7 +65,7 @@ class App extends Component<{}, AppState> {
     } else if (this.state.currentPage === 'home') {
       return (
         <div>
-          <Home 
+          <Home
           displaytaskFolder={
             (eggId: number) => {
               this.displayTaskFolder(eggId);
@@ -134,7 +135,7 @@ class App extends Component<{}, AppState> {
         </div>
       );
     }else if (this.state.currentPage === 'howto') {
-      return (  
+      return (
         <div>
           <h1 className='color-settings'>How To</h1>
           <Howto updateState={(selected: string) => {

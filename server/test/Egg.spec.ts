@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Egg} from '../src/model/Egg';
+import { Egg } from '../src/model/Egg';
 
 describe('GetJson Function', function () {
 	describe('getJson', function () {

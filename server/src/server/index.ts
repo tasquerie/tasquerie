@@ -11,6 +11,8 @@ import { ModelController } from "../ModelController";
 import { ModelView } from "../ModelView";
 import { logEvent } from "firebase/analytics";
 
+import userRoutes from './routes/firebase/userRoutes';
+import taskRoutes from './routes/firebase/taskRoutes';
 dotenv.config();
 
 const app : Express = express();
@@ -37,6 +39,9 @@ var limiter = RateLimit({
     message: "Too many requests from this IP, try after 15 min"
 });
 
+app.use(express.json());
+app.use('/api/firebase/user', userRoutes);
+app.use('/api/firebase/task', taskRoutes)
 function println(appendStr: string) {
     return appendStr + newline;
 }

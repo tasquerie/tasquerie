@@ -3,6 +3,8 @@ import { Task } from "./Task";
 
 import { TaskID } from "../types/TaskID";
 import { UserID } from "../types/UserID";
+import { FirebaseUserAPI, FirebaseTaskAPI } from "../firebaseAPI";
+const currentTime = new Date();
 
 export class IDManager {
   // ALL FIELDS FOR TESTING ONLY!!
@@ -11,7 +13,6 @@ export class IDManager {
   readonly MAX_TASK_ID = 1000000000 ; // 10^9
   private userIDToUser: Map<string, User | undefined>;
   private taskIDToTask: Map<string, Task | undefined>;
- 
   // CONSTRUCTOR FOR TESTING ONLY!!
   constructor() {
     this.userIDToUser = new Map<string, User | undefined>;
@@ -36,10 +37,25 @@ export class IDManager {
     }
   }
 
-  // TODO: Integrate with database
   public nextTaskID(task: Task | undefined): TaskID {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const temp = task?.getStartDate();
+      const year: number = temp?.year as number;
+      const month: number = temp?.month as number;
+      const day = temp?.day;
+      const hour = temp?.hour;
+      const minute = temp?.minute;
+
+      const date = new Date(year, month - 1, day, hour, minute);
+      const time = date.getTime();
+      const UNIXtime = Math.floor(time / 1000);
+
+      const newTaskID: TaskID = {
+        id: UNIXtime.toString()
+      }
+      this.taskIDToTask.set(UNIXtime.toString(), task)
+      return newTaskID;
+
     } else {
       // temporary. will be replaced by call to DB later
       var next_id = Math.floor(Math.random() * this.MAX_TASK_ID);
@@ -55,7 +71,8 @@ export class IDManager {
     }
   }
 
-  public getUserByID(userID: UserID): User | undefined {
+  // TODO: Under fix --------------------------------------------------
+  public async getUserByID(userID: UserID): Promise<User | undefined> {
     if (this.USE_DB) {
       throw new Error("not Implemented");
     } else {
@@ -63,7 +80,8 @@ export class IDManager {
     }
   }
 
-  public getTaskByID(taskID: TaskID): Task | undefined {
+    // TODO: Under fix --------------------------------------------------
+  public async getTaskByID(userID: UserID, taskID: TaskID): Promise<Task | undefined> {
     if (this.USE_DB) {
       throw new Error("not Implemented");
     } else {

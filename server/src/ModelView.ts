@@ -15,8 +15,8 @@ export class ModelView {
 
   // TODO: implement this (please call exising getJSON func in the class!!)
   // TODO: test me
-  getUserInfo(id: UserID): string {
-    const user = this.idManager.getUserByID(id);
+  async getUserInfo(id: UserID): Promise<string> {
+    const user = await this.idManager.getUserByID(id);
     if (user === undefined) {
       return "";
     }
@@ -25,8 +25,8 @@ export class ModelView {
 
   // TODO: implement this (please call exising getJSON func in the class!!)
   // TODO: test me
-  getTaskInfo(id: TaskID): string {
-    const task = this.idManager.getTaskByID(id);
+  async getTaskInfo(uid: UserID, tid: TaskID): Promise<string> {
+    const task = await this.idManager.getTaskByID(uid, tid);
     if (task === undefined) {
       return "";
     }
@@ -35,8 +35,8 @@ export class ModelView {
 
   // TODO: implement this (please call exising getJSON func in the class!!)
   // TODO: test me
-  getTaskFolderInfo(id: UserID, folderName: string): string {
-    const user = this.idManager.getUserByID(id);
+  async getTaskFolderInfo(id: UserID, folderName: string): Promise<string> {
+    const user = await this.idManager.getUserByID(id);
     if (user === undefined) {
       return "";
     }
@@ -49,12 +49,12 @@ export class ModelView {
 
   // TODO: implement this (please call exising getJSON func in the class!!)
   // TODO: test me
-  getEggInfo(id: UserID, folderName: string): string {
-    const user = this.idManager.getUserByID(id);
+  async getEggInfo(id: UserID, folderName: string): Promise<string> {
+    const user = await this.idManager.getUserByID(id);
     if (user === undefined) {
       return "";
     }
-    const taskFolder = user.getTaskFolders().get(folderName);
+    const taskFolder =  user.getTaskFolders().get(folderName);
     if (taskFolder === undefined) {
       return "";
     }
