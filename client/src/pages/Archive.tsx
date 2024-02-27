@@ -1,17 +1,29 @@
 
 import React, {Component} from 'react';
 import logo from './logo.svg';
-import './App.css';
 import {AppState} from '../App';
 import '../Components/EggCollection';
 
-class Archive extends Component<{}, AppState > {
-    render() {
+interface ArchiveProps {
+    updateState(selected: string): void;
+}
 
+class Archive extends Component<ArchiveProps, AppState> {
+
+    constructor(props: any){
+        super(props);
+        // no state
+    }
+
+    render() {
         return (
-            <p> Archive </p>
+            <div id="profile">
+                <h1>Archive</h1>
+                <p>Yooo archive stuff here yay</p>
+                <button onClick={() => this.props.updateState('home')}>Back to Home</button>
+            </div>
         );
     }
 }
 
-export default Archive
+export default Archive;

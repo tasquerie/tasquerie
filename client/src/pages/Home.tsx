@@ -13,23 +13,47 @@ import React, { Component } from 'react';
 import UpcomingTasks from '../Components/UpcomingTasks';
 import '../Components/EggCollection';
 import TaskCollection from '../Components/EggCollection';
+import EggCollection from '../Components/EggCollection';
+import * as mocks from '../Mocks'
+import { AddEggWindow } from '../Components/AddEggWindow';
 
-class Home extends Component {
-    state = { // change state once connected to backend
-        tasks: [
-            { id: 1, title: 'Task 1', deadline: '2024-02-15', dueDate: '2024-02-15' },
-            { id: 2, title: 'Task 2', deadline: '2024-02-18', dueDate: '2024-02-18' },
-        ]
-    };
+
+interface HomeProps {
+    displaytaskFolder(eggId: number): void;
+    updateState(selected: string): void;
+}
+
+class Home extends Component<HomeProps> {
+    
+    constructor(props: any) {
+        super(props);
+    }
 
     render() {
         return (
-                <div className="content">
-                    <h1>Welcome to Tasquerie</h1>
-                    <p>A brief description of Tasquerie goes here...</p>
-                    <UpcomingTasks tasks={this.state.tasks} />
-                    {/* <TaskCollection tasks={this.state.tasks} /> */}
+            <div className="content flex-v align-content-center">
+                <div id='tasquerieTitle'>Tasquerie</div>
+                <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div>
+                {/* <p>A brief description of Tasquerie goes here...</p> */}
+                {/* <UpcomingTasks tasks={this.state.tasks} /> */}
+                {/* <TaskCollection tasks={this.state.tasks} /> */}
+                {/* <p>This is the home page</p> */}
+                {/* Button to switch to profile page */}
+                <div id='homeSidebar'>
+                    <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('profile')}>
+                        <i className="fa fa-user" aria-hidden="true"></i>
+                    </button>
+                    {/* Button to switch to archive page */}
+                    <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('archive')}>
+                        <i className="fa fa-archive" aria-hidden="true"></i>
+                    </button>
+                    {/* Button to switch to settings page */}
+                    <button  className="invisibleButton homeSidebarButton"onClick={() => this.props.updateState('settings')}>
+                        <i className="fa fa-cog" aria-hidden="true"></i>
+                    </button>
                 </div>
+                <EggCollection displayTaskFolder={this.props.displaytaskFolder} eggs={[]}/>
+            </div>
         );
     }
 }

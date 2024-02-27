@@ -2,21 +2,27 @@
 
 import React from 'react';
 
-interface AccessoryProps {
-  accessory: {
-    id: number;
-    name: string;
-    imageUrl: string;
-  };
+export interface Accessory {
+  name: string;
+  imgUrl: string;
+  location: [number, number];
+  scale: number;
 }
 
-const Accessory: React.FC<AccessoryProps> = ({ accessory }) => {
+export function dressEgg(accessory: Accessory) {
+  // console.log('dressEgg called');
   return (
-    <div className="accessory">
-      <img src={accessory.imageUrl} alt={accessory.name} />
-      <p>{accessory.name}</p>
-    </div>
-  );
-};
-
-export default Accessory;
+      <img
+      key={accessory.name}
+      className="accessory"
+      src={accessory.imgUrl}
+      style={{
+          position: 'absolute', 
+          top: `${accessory.location[0]}%`, 
+          left: `${accessory.location[1]}%`,
+          transform: `scale(${accessory.scale}, ${accessory.scale})`
+      }}
+      >
+      </img>
+  )
+}

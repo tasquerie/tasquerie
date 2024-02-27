@@ -1,5 +1,9 @@
 {
   "devDependencies": {
-    "@types/mocha": "^10.0.6"
+    "@types/mocha": "^10.0.6",
+    "tailwindcss": "^3.4.1"
+  },
+  "dependencies": {
+    "font-awesome": "^4.7.0"
   }
 }
