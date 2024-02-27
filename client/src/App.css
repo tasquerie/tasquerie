@@ -57,6 +57,46 @@ html {
   padding: 5vh 10vh;
 }
 
+/* ----- LOGIN PAGE ----- */
+
+#loginBox {
+  height: 500px;
+  width: 500px;
+  background-color: #5a5a68;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 2em;
+}
+
+#loginTitle {
+  color: #222222;
+  font-size: 20px;
+  font-variant: small-caps;
+  font-weight: 600;
+
+  padding-bottom: 25px;
+}
+
+.loginInput {
+  margin: 5px;
+}
+
+.loginButton {
+  margin: 2px;
+}
+
+#loginButton {
+  margin-top: 15px;
+}
+
+#signupButton {
+  margin-bottom: 15px;
+}
+
 
 /* ----- HOME PAGE ----- */
 

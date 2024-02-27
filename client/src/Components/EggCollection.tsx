@@ -35,7 +35,7 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     this.setState({addEggState: 'shown'})
   }
 
-hideAddEggWindow() {
+  hideAddEggWindow() {
     this.setState({addEggState: 'hidden'})
   }
 
