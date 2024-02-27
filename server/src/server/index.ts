@@ -253,11 +253,10 @@ ajv.addSchema({type:"object"})
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
     // url: http://localhost:3000/login
-    //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let result = "";
     let error = "";
     let func = req.body.func;
-    console.log(func);
     switch(func) {
         case "login":
             const loginUserName = req.body.username;
