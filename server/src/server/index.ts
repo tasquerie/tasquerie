@@ -237,7 +237,7 @@ app.get("/view", (req: Request, res: Response) => {
             //result = viewer.getAccessory(accesName);
             break;
         default:
-            error = "The function of the request is not defined";
+            error = 'The function of the request is not defined';
     }
     if (error !== "") {
         res.status(400).send(error);
@@ -250,6 +250,7 @@ app.get("/view", (req: Request, res: Response) => {
 
 // Security issue
 app.use(limiter);
+app.use(express.json());
 
 
 ajv.addSchema({type:"object"})
@@ -293,8 +294,8 @@ app.post("/login", (req: Request, res: Response) => {
             try {
                 result = "" + contr.signup(signupUserName, signupPassword);
             } catch (err:any){
-                res.status(400).json(err.message);
-                //error = err.message;
+                //res.status(400).json(err.message);
+                error = err.message;
             }
             break;
         default:
