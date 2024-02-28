@@ -1,6 +1,5 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import Ajv from 'ajv';
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
 import { IDManager } from "../model/IDManager";
@@ -14,7 +13,6 @@ import { logEvent } from "firebase/analytics";
 dotenv.config();
 
 const app : Express = express();
-let ajv = new Ajv();
 const port = process.env.PORT || 3000;
 const newline = "<br>";
 const okResp = "HTTP/1.1 200 OK";
@@ -36,6 +34,18 @@ var limiter = RateLimit({
     max:100,
     message: "Too many requests from this IP, try after 15 min"
 });
+
+export function getIDMan(): IDManager {
+    return idMan;
+}
+
+export function getContr(): ModelController {
+    return contr;
+}
+
+export function getViewer(): ModelView {
+    return viewer;
+}
 
 function println(appendStr: string) {
     return appendStr + newline;
@@ -246,9 +256,6 @@ app.get("/view", (req: Request, res: Response) => {
 // Security issue
 app.use(limiter);
 app.use(express.json());
-
-
-ajv.addSchema({type:"object"})
 
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
