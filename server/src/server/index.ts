@@ -279,8 +279,9 @@ app.post("/login", (req: Request, res: Response) => {
             result = "" + contr.login(loginUserName, loginPassword);
             break;
         case "logout":
+            //CHECK: are we giving an error when there is no one logged in?
             contr.logout();
-            result = "logout successful";
+            //result = "logout successful";
             break;
         case "signup":
             const signupUserName = req.body.username;
@@ -617,7 +618,11 @@ app.post("/controller", (req: Request, res: Response) => {
     }
     // There is some functions that doesn't return anything
     // making result = "". CHECK: what to return for those function.
-    res.send(result);
+    if (error != "") {
+        res.status(400).send(error);
+    } else {
+        res.send(result);
+    } 
 });
 
 app.listen(port, () => {

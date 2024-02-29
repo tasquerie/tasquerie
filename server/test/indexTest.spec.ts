@@ -43,22 +43,44 @@ describe('Route /login', () => {
 
         // existing username case
         const res5:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME', password: 'DIFFERENT'});
-        
-        //Test when the password is less then 8
+        assert.strictEqual(res5.statusCode, 400);
+        assert.strictEqual(res5.body, 'Username already exists!');
+
+        // password length < 8 case
+        const res6:Response = await request(app).post('/login').send({func:'signup', username:'USER1', password: 'SMALL'});
+        assert.strictEqual(res6.statusCode, 400);
+        assert.strictEqual(res6.body, 'Password must be at least 8 characters long.');
     });
 
     it('login', async() => {
-        // const res2:Response = await request(app).post('/login').send({func:'login'});
-        // assert.strictEqual(res2.statusCode, 400);
-        // assert.strictEqual(res2.body, 'username is not defined or is not a string');
+        // no username case
+        const res2:Response = await request(app).post('/login').send({func:'login'});
+        assert.strictEqual(res2.statusCode, 400);
+        assert.strictEqual(res2.body, 'username is not defined or is not a string');
 
-        // const res3:Response = await request(app).post('/login').send({func:'login', username:'USERNAME'});
-        // assert.strictEqual(res3.statusCode, 400);
-        // assert.strictEqual(res3.body, 'password is not defined or is not a string');
+        // no password case
+        const res3:Response = await request(app).post('/login').send({func:'login', username:'USERNAME'});
+        assert.strictEqual(res3.statusCode, 400);
+        assert.strictEqual(res3.body, 'password is not defined or is not a string');
 
+        // wrong password
+        contr.signup("USER1", "CORRECTPW");
+        const res4:Response = await request(app).post('/login').send({func:'login', username:'USER1', password:'WRONGPW'});
+        assert.strictEqual(res4.statusCode, 200);
+        assert.strictEqual(res4.text, 'false');
 
+        // correct login
+        const res5:Response = await request(app).post('/login').send({func:'login', username:'USER1', password:'CORRECTPW'});
+        assert.strictEqual(res5.statusCode, 200);
+        assert.strictEqual(res5.text, 'true');
     });
 
+    it('logout', async() => {
+        contr.login("USER1", "CORRECTPW");
+        const res2:Response = await request(app).post('/login').send({func:'logout'});
+        assert.strictEqual(res2.statusCode, 200);
+        assert(!contr.isLoggedIn());
+    });
 });
 
 describe('Route /view', () => {
@@ -72,21 +94,34 @@ describe('Route /view', () => {
         assert.strictEqual(res2.statusCode, 400);
         assert.strictEqual(res2.text, 'id is not defined or is not a string');
 
-        // let contr = getContr();
+        const id = contr.signup("username", "password");
+        const userID:UserID = {id:id}
+        const res3:Response = await request(app).get('/view?func=getUserInfo&id=' + id);
+        assert.strictEqual(res3.statusCode, 200);
+        assert.strictEqual(res3.text, "" + userID);
+
+        //Need test if the user is undefined when db is ready
+    });
+    it('getTaskInfo', async() => {
+        const res2:Response = await request(app).get('/view?func=getTaskInfo');
+        assert.strictEqual(res2.statusCode, 400);
+        assert.strictEqual(res2.text, 'id is not defined or is not a string');
+
         // const id = contr.signup("username", "password");
         // const userID:UserID = {id:id}
-        // const viewer = getViewer(contr);
-        // TODO: use modelview instead of modelcontroller
-        // CHECK: So the model = database? and it's database job to update the model view
-        //          when the model controller is updated?
-        // const idMan = contr.getIDManager();
-        // const user = idMan.getUserByID(userID);
-        // const url = "/view?func=getUserInfo&id="+ id;
-        // const res3:Response = await request(app).get(url);
-        // assert.equal(1, res3.header);
+        // const res3:Response = await request(app).get('/view?func=getTaskInfo&id=' + id);
         // assert.strictEqual(res3.statusCode, 200);
-        // assert.strictEqual(res3.type, viewer.getUserInfo(userID));
-    })
+        // assert.strictEqual(res3.text, "" + userID);
+
+        //Need test if the user is undefined when db is ready
+    });
+});
+describe('Route /controller', () => {
+    it('no function case', async() => {
+        const res1:Response = await request(app).post('/controller');
+        assert.strictEqual(res1.statusCode, 400);
+        assert.strictEqual(res1.text, 'The function of the request is not defined');
+    });
 });
 
 // const MAX_CASES = 1000;
