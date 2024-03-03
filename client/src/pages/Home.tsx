@@ -39,13 +39,17 @@ class Home extends Component<HomeProps, HomeState> {
         }
     }
 
+    async componentDidMount() {
+        let funcArgs: Map<string, any> = new Map();
+        funcArgs.set("UserID", this.context.getUser());
+        let res = await BackendWrapper.view("getUserInfo", funcArgs);
+        console.log(res);
+        funcArgs.set("folderName", "test");
+        res = await BackendWrapper.view("getTaskFolderInfo", funcArgs);
+        console.log(res);
+    }
+
     render() {
-        // backend fetch testing will have to come later - backend is inexplicably broken
-        // let funcArgs: Map<string, any> = new Map();
-        // funcArgs.set("UserID", this.context.getUser());
-        // console.log(BackendWrapper.view("getUserInfo", funcArgs));
-        // funcArgs.set("folderName", "test");
-        // console.log(BackendWrapper.view("getTaskFolderInfo", funcArgs));
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>

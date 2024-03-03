@@ -9,10 +9,12 @@ export class BackendWrapper {
         args.forEach((value: any, key: string) => {
             requestString += `&${key}=${value}`;
         });
+        // console.log('attempting view backend call');
         // console.log(requestString);
         try{
             let response = await fetch(requestString);
             // console.log("after fetch");
+            // console.log(response.status);
             return await BackendWrapper.getJson(response);
         } catch (e) {
             console.log(e);
@@ -46,14 +48,21 @@ export class BackendWrapper {
     }
 
     static getJson = async (response: Response) => {
-        console.log('requestPath called');
+        // console.log('getJson called');
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
             if(!response.ok) {
                 // alert(`Status is wrong, expected 200, was ${response.status}`);
-                console.log("not 200 status");
+                // console.log("not 200 status");
+                // console.log(response.status);
             }
-            const responseBody = await response.json();
+            // console.log('attempting to extract json');
+            // console.log(response);
+            // let responseBody = await response.json();
+            const responseBody = await response.text(); // temp cuz responses are strings
+            // const responseBody = await response.body;
+            // responseBody = responseBody.data;
+            // console.log('json extracted');
             // Error Case
             if (responseBody === "") {
                 throw new Error("Invalid output");
@@ -68,9 +77,10 @@ export class BackendWrapper {
             }
         } catch (e) {
             // alert("There was an error contacting the server.");
-            // console.log(e);
+            // console.log("AAAAAAAAAA");
+            console.log(e);
             // throw new Error("Connection lost");
-            console.log("error contacting server");
+            // console.log("error contacting server");
         }
     }
 }

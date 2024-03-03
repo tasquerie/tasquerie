@@ -9,7 +9,6 @@ import About from './Components/About';
 import Howto from './Components/Howto';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import Auth from './Context/Auth';
 
 export interface AppState {
   currentPage: string;
