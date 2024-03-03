@@ -38,6 +38,11 @@ export class IDManager {
     }
   }
 
+  /**
+   * Generates a user unique taskID from the start time of the task
+   * @param task The Task object you want the id for
+   * @returns TaskID that correspond to the exact start time of the task
+   */
   public nextTaskID(task: Task | undefined): TaskID {
     if (this.USE_DB) {
       const temp = task?.getStartDate();
@@ -81,7 +86,6 @@ export class IDManager {
     }
   }
 
-    // TODO: Under fix --------------------------------------------------
   public async getTaskByID(userID: UserID, taskID: TaskID): Promise<Result> {
     if (this.USE_DB) {
       const result = await FirebaseTaskAPI.getTask(userID, taskID);

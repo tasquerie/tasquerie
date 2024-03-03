@@ -1,7 +1,7 @@
 import { Accessory } from "../types/Accessory";
 import { EggType } from "../types/EggType";
 import { Interaction } from "../types/Interaction";
-import { FirebaseEggAPI } from "../firebaseAPI";
+import { FirebaseDataAPI } from "../firebaseAPI";
 import { Result } from "../types/FirebaseResult";
 export class EggManager {
   // ALL FIELDS FOR TESTING ONLY!!
@@ -65,9 +65,15 @@ export class EggManager {
     return acc;
   }
 
+
+  /**
+   * Grabs the egg object from db
+   * @param name The specific egg you want to query
+   * @returns The egg object
+   */
   public async getEggType(name: string): Promise<EggType | undefined> {
     if (this.USE_DB) {
-      const output = await FirebaseEggAPI.getType("eggType", name);
+      const output = await FirebaseDataAPI.getType("eggType", name);
       const egg = output.content as EggType;
       return egg;
     } else {
@@ -75,9 +81,15 @@ export class EggManager {
     }
   }
 
+
+  /**
+   *  Grabs the interaction object from db
+   * @param name The specific interaction you want to query
+   * @returns The interaction object
+   */
   public async getInteraction(name: string): Promise<Interaction | undefined> {
     if (this.USE_DB) {
-      const output = await FirebaseEggAPI.getType("interaction", name);
+      const output = await FirebaseDataAPI.getType("interaction", name);
       const interaction = output.content as Interaction;
       return interaction;
     } else {
@@ -85,9 +97,15 @@ export class EggManager {
     }
   }
 
+
+  /**
+   * Grabs the accessory object from db
+   * @param name The specific accessory you want to query
+   * @returns The accessory object
+   */
   public async getAccessory(name: string): Promise<Accessory | undefined> {
     if (this.USE_DB) {
-      const output = await FirebaseEggAPI.getType("accessory", name);
+      const output = await FirebaseDataAPI.getType("accessory", name);
       const accessory = output.content as Accessory;
       return accessory;
     } else {

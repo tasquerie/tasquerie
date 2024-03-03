@@ -1,6 +1,6 @@
 import { User } from "./model/User";
 import { db } from "../firebase/firebase"
-import { DocumentData, deleteField } from "firebase/firestore";
+import { deleteField } from "firebase/firestore";
 import { UserID } from "./types/UserID";
 import { TaskID } from "./types/TaskID";
 import { Result } from "./types/FirebaseResult"
@@ -38,6 +38,7 @@ export const FirebaseUserAPI = {
         }
     },
 
+
     /**
      * Returns the user in db given UID.
      * If something is read from the db after this function call, status is true.
@@ -64,9 +65,9 @@ export const FirebaseUserAPI = {
             return { status: false, content: err.code }
         }
     },
-
-
 }
+
+
 
 export const FirebaseTaskAPI =  {
     /**
@@ -101,6 +102,7 @@ export const FirebaseTaskAPI =  {
         }
     },
 
+
     /**
      * Given a Task, we delete that task from the db.
      *
@@ -131,6 +133,7 @@ export const FirebaseTaskAPI =  {
             return { status: false, content: err.code };
         }
     },
+
 
     /**
      * Given a userID and taskID, queries the task.
@@ -168,7 +171,9 @@ export const FirebaseTaskAPI =  {
     },
 }
 
-export const FirebaseEggAPI = {
+
+
+export const FirebaseDataAPI = {
     /**
      * Given a document to query and name to fetch, return the read-only data associated with
      * the given parameters.
