@@ -25,20 +25,27 @@ interface HomeProps {
     updateState(selected: string): void;
 }
 
-class Home extends Component<HomeProps> {
+interface HomeState {
+    // who knows
+}
+
+class Home extends Component<HomeProps, HomeState> {
     static contextType = AuthContext;
     context!: React.ContextType<typeof AuthContext>;
     
     constructor(props: any) {
         super(props);
+        this.state = {
+        }
     }
 
     render() {
-        let funcArgs: Map<string, any> = new Map();
-        funcArgs.set("UserID", this.context.getUser());
-        console.log(BackendWrapper.view("getUserInfo", funcArgs));
-        funcArgs.set("folderName", "test");
-        console.log(BackendWrapper.view("getTaskFolderInfo", funcArgs));
+        // backend fetch testing will have to come later - backend is inexplicably broken
+        // let funcArgs: Map<string, any> = new Map();
+        // funcArgs.set("UserID", this.context.getUser());
+        // console.log(BackendWrapper.view("getUserInfo", funcArgs));
+        // funcArgs.set("folderName", "test");
+        // console.log(BackendWrapper.view("getTaskFolderInfo", funcArgs));
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
@@ -61,7 +68,7 @@ class Home extends Component<HomeProps> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
-                <EggCollection displayTaskFolder={this.props.displaytaskFolder} eggs={[]}/>
+                <EggCollection displayTaskFolder={this.props.displaytaskFolder}/>
             </div>
         );
     }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task'
 import { AddTaskWindow } from '../Components/AddTaskWindow';
 import * as mocks from '../Mocks'
+import AuthContext from '../Context/AuthContext';
 
 interface TaskListProps {
   updateCredits(newAmount: number): void;
@@ -10,14 +11,24 @@ interface TaskListProps {
 
 interface TaskListState {
   addTaskWindowState: string // 'hidden' or 'shown'
+  tasks: TaskType[];
+  // tasks: string[]; // list of taskIDs that can be gotten from backend
 }
 
 export class TaskList extends Component<TaskListProps, TaskListState> {
+  static contextType = AuthContext;
+  context!: React.ContextType<typeof AuthContext>;
+
   constructor(props: TaskListProps){
     super(props);
     this.state = {
       addTaskWindowState: 'hidden',
+      tasks: []
     }
+  }
+
+  async componentDidMount() {
+      this.getTasks();
   }
 
   toggleCompletion(taskId: number, rewardCredits: number) {
@@ -44,7 +55,19 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
       mocks.tasksList[this.props.eggId].push(task);
   }
 
+  /**
+   * Gets all of user's tasks from backend API
+   */
+  async getTasks() {
+    // do some calls ig
+    let taskList: TaskType[] = [];
+    this.setState({
+      tasks: taskList
+    })
+  }
+
   render() {
+    // refactor to use this.state.tasks
     let tasks = [];
     for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
       let task: TaskType = mocks.tasksList[this.props.eggId][i];
@@ -74,8 +97,13 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
 
     return (
       <div id="taskList">
-        {addTaskWindow}
-        <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        <div id="taskListHeader">
+          <div id="taskListTitle">
+            TASKS
+          </div>
+          {addTaskWindow}
+          <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        </div>
         {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
       </div>
     )

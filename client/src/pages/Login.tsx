@@ -114,7 +114,11 @@ class Login extends Component<LoginProps, LoginState> {
                             this.props.updateState('signup');
                         }}
                     >Sign Up</button>
-                    <button>
+                    <button
+                        onClick = {() => {
+                            this.context.googleSignIn();
+                        }}
+                    >
                         Placeholder for Google Auth or whatever 3rd party thing we're using
                     </button>
                 </div>

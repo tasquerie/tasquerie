@@ -12,23 +12,33 @@ import { EggCard } from './EggCard';
 import { AddEggCard } from './AddEggCard';
 import { eggCollection, folderNames } from '../Mocks';
 import { AddEggWindow } from './AddEggWindow';
+import { BackendWrapper } from '../BackendWrapper';
+import AuthContext from '../Context/AuthContext';
 
 interface EggCollectionProps {
   displayTaskFolder(eggId: number): void;
-  eggs: EggType[];
 }
 
 interface EggCollectionState {
   addEggState: string; // 'hidden' | 'shown'
+  eggs: EggType[];
 }
 
 class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
+  static contextType = AuthContext;
+  context!: React.ContextType<typeof AuthContext>;
 
   constructor(props: EggCollectionProps){
     super(props);
     this.state ={
-      addEggState: 'hidden'
+      addEggState: 'hidden',
+      eggs: []
     }
+  }
+
+  async componentDidMount() {
+      console.log('EggCollection componentdidmount');
+      // await this.getEggs();
   }
 
   showAddEggWindow() {
@@ -39,7 +49,22 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     this.setState({addEggState: 'hidden'})
   }
 
+  /**
+   * Gets all eggs from backend API
+   */
+  async getEggs() {
+    let args: Map<string, any> = new Map();
+    args.set("UserID", this.context.getUser());
+    let user = await BackendWrapper.view("getUserInfo", args);
+    // user should not be empty string
+    let eggList: EggType[] = [];
+    this.setState({
+      eggs: eggList
+    })
+  }
+
   render() {
+    // refactor to use this.state.eggs later
     let eggs = [];
     for(let i = 0; i < eggCollection.length; i++){
       eggs.push(<button className="invisibleButton" id={folderNames[i]}

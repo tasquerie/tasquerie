@@ -58,6 +58,7 @@ let tempEgg1: EggType = {
 
 ///// TASK MOCKS /////
 let task1: TaskType = {
+    uid: 'ahahaha',
     name: "Task 1",
     isComplete: false,
     description: "Yes this is indeed a task, could you believe that",
@@ -65,6 +66,7 @@ let task1: TaskType = {
 }
 
 let task2: TaskType = {
+    uid: 'nahhh',
     name: "Task 2",
     isComplete: false,
     description: "Yep another task",
@@ -72,6 +74,7 @@ let task2: TaskType = {
 }
 
 let task3: TaskType = {
+    uid: 'help',
     name: "Task 3",
     isComplete: false,
     description: "Whoa would you believe it, another task",

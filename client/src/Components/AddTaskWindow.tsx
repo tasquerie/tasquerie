@@ -47,6 +47,7 @@ export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowSt
                 ></textarea>
                 <button onClick={() => {
                     let task: TaskType = {
+                        uid: "AAAAAAAAAAAAA",
                         name: this.state.taskName,
                         isComplete: false,
                         description: this.state.taskDescription,

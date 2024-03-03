@@ -6,6 +6,10 @@ html {
 
 #root {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 /* HELPERS/FORMATTERS */
@@ -260,14 +264,32 @@ html {
   align-items: center;
 
   color: #9999a8;
+
+  width: 500px;
 }
 
 #eggExp {
   margin: 10px 0;
 }
 
+/* ----- TASK LIST ----- */
+
 #taskList {
-  margin-top: 20px;
+  margin: 20px;
+  width: 80%;
+}
+
+#taskListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 10px;
+}
+
+#taskListTitle {
+  font-size: 30px;
+  padding-bottom: 10px;
 }
 
 #newTaskButton {
@@ -275,19 +297,6 @@ html {
   border-radius: 0.5em;
 
   padding: 5px;
-
-  float: right;
-}
-
-.taskHeader {
-  display: flex;
-  justify-content: start;
-
-  font-size: 25px;
-}
-
-.task {
-  margin-bottom: 20px;
 }
 
 #taskFolderTabs {
@@ -300,6 +309,28 @@ html {
   border: 2px solid #9999a8;
   border-radius: 0.5em;
   font-size: 15px;
+}
+
+/* ----- TASK ----- */
+
+.taskHeader {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  font-size: 20px;
+}
+
+.taskHeader > button {
+  margin-left: 15px;
+}
+
+.task {
+  margin-bottom: 20px;
+}
+
+.taskBody {
+  padding-left: 20px;
 }
 
 /* ----- ADD TASK WINDOW ----- */

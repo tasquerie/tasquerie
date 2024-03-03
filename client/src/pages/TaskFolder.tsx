@@ -1,8 +1,6 @@
 
 import React, {Component} from 'react';
-import logo from './logo.svg';
-import {AppState} from '../App';
-import { Task, TaskType } from '../Components/Task'
+import { TaskType } from '../Components/Task'
 import * as mocks from '../Mocks';
 import { TaskList } from '../Components/TaskList'
 import { Egg } from '../Components/Egg'
@@ -62,20 +60,22 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
 
     render() {
         let showingTab;
-        if(this.state.eggFunctionTab == 'tasks'){
+        if(this.state.eggFunctionTab === 'tasks'){
             showingTab = <TaskList
             updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
             eggId={this.props.eggId} />;
         }
-        else if (this.state.eggFunctionTab == 'interactions') {
+        else if (this.state.eggFunctionTab === 'interactions') {
             showingTab = <InteractionList
             updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
             eggId={this.props.eggId} />;
         }
-        else if (this.state.eggFunctionTab == 'accessories') {
+        else if (this.state.eggFunctionTab === 'accessories') {
             showingTab = <div>Come Back Later</div>;
         }
         return (
+            // TODO: somehow get taskfolder & taskfolder name - as of now there is no way for
+            // a taskfolder to be uniquely identified, which is concerning
             <div id="taskFolder">
                 <h1>Task Folder: EGG {this.props.eggId}</h1>
                 <p>You have: <span>{mocks.specificCredits[this.props.eggId]}</span> credits for this egg</p>
