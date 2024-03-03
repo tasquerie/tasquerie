@@ -62,17 +62,17 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
 
     render() {
         let showingTab;
-        if(this.state.eggFunctionTab == 'tasks'){
+        if(this.state.eggFunctionTab === 'tasks'){
             showingTab = <TaskList
             updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
             eggId={this.props.eggId} />;
         }
-        else if (this.state.eggFunctionTab == 'interactions') {
+        else if (this.state.eggFunctionTab === 'interactions') {
             showingTab = <InteractionList
             updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
             eggId={this.props.eggId} />;
         }
-        else if (this.state.eggFunctionTab == 'accessories') {
+        else if (this.state.eggFunctionTab === 'accessories') {
             showingTab = <div>Come Back Later</div>;
         }
         return (

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withAuth } from './../Context/AuthContext';
 
 // hard code (kind of) disallowed input characters
 // could move this up a layer if we want to share with signup
@@ -17,8 +18,21 @@ interface LoginProps {
     updateState(selected: string): void;
 }
 
-class Login extends Component<LoginProps, LoginState> {
-    
+
+interface AuthProps {
+    getUser: any,
+    googleSignIn: any,
+    signIn: any,
+    signUp: any,
+    signOut: any
+  }
+
+interface MyComponentProps {
+    auth: AuthProps;
+  }
+
+// class Login extends Component<LoginProps, LoginState> {
+    class Login extends React.Component<MyComponentProps, LoginState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -49,6 +63,7 @@ class Login extends Component<LoginProps, LoginState> {
     }
 
     render() {
+        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
         return (
             <div className="content flex-v align-content-center">
                 <div id="loginBox">
@@ -73,7 +88,9 @@ class Login extends Component<LoginProps, LoginState> {
                         }}></input>
                     <button id="loginButton" className="loginButton"
                         onClick={(e) => {
-                            this.props.updateState('home');
+                            // googleSignIn();
+                            signIn(this.state.username, this.state.password);
+                            // this.props.updateState('home');
                         }}>Log In</button>
                     <button id="signupButton" className="loginButton"
                     >Sign Up</button>
@@ -86,4 +103,4 @@ class Login extends Component<LoginProps, LoginState> {
     }
 }
 
-export default Login;
+export default withAuth(Login);
