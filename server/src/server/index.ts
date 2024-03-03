@@ -431,6 +431,7 @@ app.post("/controller", (req: Request, res: Response) => {
                 result = "" + contr.addTask(addTaskFoldName, addTaskName, addTaskDesc,
                                             addTaskTags, addTaskShared, addTaskStart,
                                             addTaskCycle, addTaskDeadline);
+                
             } catch (err:any){
                 error = err.message;
             }
@@ -487,6 +488,7 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
+                //result = "setTask";
                 result = "" + contr.setTask(setTaskFoldName, setTaskId, setTaskCompl,
                                             setTaskName, setTaskDesc, setTaskTags,
                                             setTaskShared, setTaskStart, setTaskCycle,
@@ -645,7 +647,7 @@ app.post("/controller", (req: Request, res: Response) => {
     if (error != "") {
         res.status(400).json(error);
     } else {
-        res.send(result);
+        res.json(result);
     }
 });
 

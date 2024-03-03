@@ -162,7 +162,7 @@ describe('signup', function () {
 ////       FUNCTIONAL METHODS         ////
 describe('addFolder', function () {
   describe('normal correct case → correct folder data', function () {
-    it('should have correct folder data', function () {
+    it('should have correct folder data', async function () {
       let contr = getContr();
       let user = getDefaultUser(contr);
       let viewer = getViewer(contr);
@@ -173,7 +173,7 @@ describe('addFolder', function () {
 
         // test here
         let expected = folder.getJSON();
-        let actual = viewer.getTaskFolderInfo(user.getID(), folderName);
+        let actual = await viewer.getTaskFolderInfo(user.getID(), folderName);
         // console.log(actual);  // to see what data looks like
         assert.strictEqual(expected, actual);
       }
@@ -199,7 +199,7 @@ describe('addFolder', function () {
 
 describe('setFolder', function () {
   describe('normal correct case → correct folder data', function () {
-    it('should have correct folder data && optional params undefined → same data', function () {
+    it('should have correct folder data && optional params undefined → same data', async function () {
       let contr = getContr();
       let user = getDefaultUser(contr);
       let viewer = getViewer(contr);
@@ -210,9 +210,9 @@ describe('setFolder', function () {
         contr.addFolder(folderName + i, desc, eggType);
 
                 
-        let before = viewer.getTaskFolderInfo(user.getID(), folderName + i);
+        let before = await viewer.getTaskFolderInfo(user.getID(), folderName + i);
         contr.setFolder(folderName + i);
-        let after = viewer.getTaskFolderInfo(user.getID(), folderName + i);
+        let after = await viewer.getTaskFolderInfo(user.getID(), folderName + i);
         assert.strictEqual(before, after);
 
         contr.setFolder(folderName + i, folderName + i + "k", desc + i);
@@ -220,7 +220,7 @@ describe('setFolder', function () {
         let folder = new TaskFolder(folderName + i + "k", desc + i, eggType);
         // test here
         let expected = folder.getJSON();
-        let actual = viewer.getTaskFolderInfo(user.getID(), folderName + i + "k");
+        let actual = await viewer.getTaskFolderInfo(user.getID(), folderName + i + "k");
         // console.log(actual);  // to see what data looks like
         assert.strictEqual(expected, actual);
       }
@@ -263,7 +263,7 @@ describe('setFolder', function () {
 
 describe('deleteFolder', function () {
   describe('folder is correctly missing', function () {
-    it('should have correct folder data', function () {
+    it('should have correct folder data', async function () {
       let contr = getContr();
       let user = getDefaultUser(contr);
       let viewer = getViewer(contr);
@@ -271,11 +271,11 @@ describe('deleteFolder', function () {
         let folderName = "name " + i;
         let folder = new TaskFolder(folderName, "desc " + i, "eggType " + i)
         contr.addFolder(folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
-        let actualBeforeDelete = viewer.getTaskFolderInfo(user.getID(), folderName);
+        let actualBeforeDelete = await viewer.getTaskFolderInfo(user.getID(), folderName);
         contr.deleteFolder(folder.getName());
 
         // test here
-        let actual = viewer.getTaskFolderInfo(user.getID(), folderName);
+        let actual = await viewer.getTaskFolderInfo(user.getID(), folderName);
         // console.log(actual);  // to see what data looks like
         assert.strictEqual(folder.getJSON(), actualBeforeDelete);
         assert.strictEqual("", actual);
@@ -1069,11 +1069,12 @@ describe('gainExp', function () {
       let viewer = getViewer(contr);
       let folderName = "name";
       contr.addFolder(folderName, "desc", "eggType")
-      function checker(num: number): void {
+      // CHECK: Returning Promise<void>
+      async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
-          let eggBefore = viewer.getEggInfo(user.getID(), folderName);
+          let eggBefore = await viewer.getEggInfo(user.getID(), folderName);
           assert.throws(() => contr.gainExp(num, folderName), Error, 'Illegal operation: negative credit value');
-          let eggAfter = viewer.getEggInfo(user.getID(), folderName);
+          let eggAfter = await viewer.getEggInfo(user.getID(), folderName);
   
           assert.strictEqual(eggBefore, eggAfter);
         }

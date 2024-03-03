@@ -39,24 +39,26 @@ describe('Next TaskID Function', function () {
 
 describe('getUserByID Function', function () {
   describe('get normal', function () {
-    it('should get users that exist', function () {
+    it('should get users that exist', async function () {
       let man = new IDManager();
       for (let i = 0; i < MAX_CASES; i++) {
         let user = new User(man, "", "");
         let id = user.getID();
-        assert.strictEqual(man.getUserByID(id), user);
+        const acutalUser = await man.getUserByID(id);
+        assert.strictEqual(acutalUser, user);
       }
     });
   });
   describe('get bad', function () {
-    it('should not get users that do not exist', function () {
+    it('should not get users that do not exist', async function () {
       let man = new IDManager();
       let id_num = 0;
       let userID: UserID = {
         id: id_num.toString()
       }
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.strictEqual(man.getUserByID(userID), undefined);
+        const actualUser = await man.getUserByID(userID);
+        assert.strictEqual(actualUser, undefined);
         id_num += 1;
         userID.id = id_num.toString();
       }
@@ -66,7 +68,7 @@ describe('getUserByID Function', function () {
 
 describe('getTaskByID Function', function () {
   describe('get normal', function () {
-    it('should get tasks that exist', function () {
+    it('should get tasks that exist', async function () {
       let man = new IDManager();
       const userID: UserID = {
         id: "0"
@@ -74,12 +76,13 @@ describe('getTaskByID Function', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         let task = new Task(man, "", "", [], userID, []);
         let id = task.getID();
-        assert.strictEqual(man.getTaskByID(userID, id), task);
+        const actualTask = await man.getTaskByID(userID, id);
+        assert.strictEqual(actualTask, task);
       }
     });
   });
   describe('get bad', function () {
-    it('should not get tasks that do not exist', function () {
+    it('should not get tasks that do not exist', async function () {
       let man = new IDManager();
       let id_num = 0;
       const userID1: UserID = {
@@ -89,7 +92,8 @@ describe('getTaskByID Function', function () {
         id: id_num.toString()
       }
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.strictEqual(man.getTaskByID(userID1, taskID), undefined);
+        const actualTask = await man.getTaskByID(userID1, taskID);
+        assert.strictEqual(actualTask, undefined);
         id_num += 1;
         taskID.id = id_num.toString();
       }
