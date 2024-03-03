@@ -1,12 +1,22 @@
 import e from "express";
 
-const PORT_NUMBER: number = 3232;
+const PORT_NUMBER: number = 3000;
 
 export class BackendWrapper {
 
     static view = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/view?start=${func}&destination=${args}`);
-        return await BackendWrapper.requestPath(response);
+        let requestString: string = `http://localhost:${PORT_NUMBER}/view?func=${func}`;
+        args.forEach((value: any, key: string) => {
+            requestString += `&${key}=${value}`;
+        });
+        // console.log(requestString);
+        try{
+            let response = await fetch(requestString);
+            // console.log("after fetch");
+            return await BackendWrapper.requestPath(response);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     static controller = async (func: string, args: Map<string, any>): Promise<any> => {
@@ -32,10 +42,12 @@ export class BackendWrapper {
     }
 
     static requestPath = async (response: Response) => {
+        console.log('requestPath called');
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
             if(!response.ok) {
-                alert(`Status is wrong, expected 200, was ${response.status}`);
+                // alert(`Status is wrong, expected 200, was ${response.status}`);
+                console.log("not 200 status");
             }
             const responseBody = await response.json();
             // Error Case
@@ -51,9 +63,10 @@ export class BackendWrapper {
                 return responseBody;
             }
         } catch (e) {
-            alert("There was an error contacting the server.");
-            console.log(e);
-            throw new Error("Connection lost");
+            // alert("There was an error contacting the server.");
+            // console.log(e);
+            // throw new Error("Connection lost");
+            console.log("error contacting server");
         }
     }
 }

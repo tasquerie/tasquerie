@@ -37,6 +37,8 @@ class Home extends Component<HomeProps> {
         let funcArgs: Map<string, any> = new Map();
         funcArgs.set("UserID", this.context.getUser());
         console.log(BackendWrapper.view("getUserInfo", funcArgs));
+        funcArgs.set("folderName", "test");
+        console.log(BackendWrapper.view("getTaskFolderInfo", funcArgs));
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
