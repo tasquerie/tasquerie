@@ -9,6 +9,7 @@ import { ModelController } from '../src/ModelController';
 import { ModelView } from '../src/ModelView';
 import { WriteManager } from '../src/model/WriteManager';
 import { UserID } from "../src/types/UserID";
+import { TaskFolder } from '../src/model/TaskFolder';
 import {getIDMan, getContr, getViewer} from '../src/server/index';
 
 const idMan = getIDMan();
@@ -21,109 +22,286 @@ describe('Route /login', () => {
         assert.strictEqual(res1.statusCode, 400);
         assert.strictEqual(res1.body, 'The function of the request is not defined');
     });
-    it('signup', async() => {
-        // no username case
-        const res2:Response = await request(app).post('/login').send({func:'signup'});
-        assert.strictEqual(res2.statusCode, 400);
-        assert.strictEqual(res2.body, 'username is not defined or is not a string');
+    describe('signup', () => {
+        it ('no username case', async() => {
+            const res2:Response = await request(app).post('/login').send({func:'signup'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'username is not defined or is not a string');
+        });
 
-        // no password case
-        const res3:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME'});
-        assert.strictEqual(res3.statusCode, 400);
-        assert.strictEqual(res3.body, 'password is not defined or is not a string');
+        it ('no password case', async() => {
+            const res3:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME'});
+            assert.strictEqual(res3.statusCode, 400);
+            assert.strictEqual(res3.body, 'password is not defined or is not a string');
+        });
 
-        // success case
-        const res4:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME', password: 'PASSWORD'});
-        const userID: UserID = {
-            id: res4.text
-        }
-        const user = idMan.getUserByID(userID);
-        assert.strictEqual(res4.statusCode, 200);
-        assert.strictEqual(res4.text, user?.getID().id);
+        it ('success case', async() => {
+            const res4:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME', password: 'PASSWORD'});
+            const userID: UserID = {
+                id: res4.text
+            }
+            const user = idMan.getUserByID(userID);
+            assert.strictEqual(res4.statusCode, 200);
+            assert.strictEqual(res4.text, user?.getID().id);
+        });
 
-        // existing username case
-        const res5:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME', password: 'DIFFERENT'});
-        assert.strictEqual(res5.statusCode, 400);
-        assert.strictEqual(res5.body, 'Username already exists!');
+        it ('existing username case', async() => {
+            const res5:Response = await request(app).post('/login').send({func:'signup', username:'USERNAME', password: 'DIFFERENT'});
+            assert.strictEqual(res5.statusCode, 400);
+            assert.strictEqual(res5.body, 'Username already exists!');
+        });
 
-        // password length < 8 case
-        const res6:Response = await request(app).post('/login').send({func:'signup', username:'USER1', password: 'SMALL'});
-        assert.strictEqual(res6.statusCode, 400);
-        assert.strictEqual(res6.body, 'Password must be at least 8 characters long.');
+        it ('password length < 8 case', async() => {
+            const res6:Response = await request(app).post('/login').send({func:'signup', username:'USER1', password: 'SMALL'});
+            assert.strictEqual(res6.statusCode, 400);
+            assert.strictEqual(res6.body, 'Password must be at least 8 characters long.');
+        });
     });
+    // Current Contr State:
+    // User signup: USERNAME | PASSWORD
 
-    it('login', async() => {
-        // no username case
-        const res2:Response = await request(app).post('/login').send({func:'login'});
-        assert.strictEqual(res2.statusCode, 400);
-        assert.strictEqual(res2.body, 'username is not defined or is not a string');
+    describe('login', () => {
+        it('no username case', async() => {
+            const res2:Response = await request(app).post('/login').send({func:'login'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'username is not defined or is not a string');
+        });
 
-        // no password case
-        const res3:Response = await request(app).post('/login').send({func:'login', username:'USERNAME'});
-        assert.strictEqual(res3.statusCode, 400);
-        assert.strictEqual(res3.body, 'password is not defined or is not a string');
+        it('no password case', async() => {
+            const res3:Response = await request(app).post('/login').send({func:'login', username:'USERNAME'});
+            assert.strictEqual(res3.statusCode, 400);
+            assert.strictEqual(res3.body, 'password is not defined or is not a string');
+        });
 
-        // wrong password
-        contr.signup("USER1", "CORRECTPW");
-        const res4:Response = await request(app).post('/login').send({func:'login', username:'USER1', password:'WRONGPW'});
-        assert.strictEqual(res4.statusCode, 200);
-        assert.strictEqual(res4.text, 'false');
+        it('wrong password', async() => {
+            contr.signup("USER1", "CORRECTPW");
+            const res4:Response = await request(app).post('/login').send({func:'login', username:'USERNAME', password:'WRONGPW'});
+            assert.strictEqual(res4.statusCode, 200);
+            assert.strictEqual(res4.text, 'false');
+        });
 
-        // correct login
-        const res5:Response = await request(app).post('/login').send({func:'login', username:'USER1', password:'CORRECTPW'});
-        assert.strictEqual(res5.statusCode, 200);
-        assert.strictEqual(res5.text, 'true');
+        it('correct login', async() => {
+            const res5:Response = await request(app).post('/login').send({func:'login', username:'USER1', password:'CORRECTPW'});
+            assert.strictEqual(res5.statusCode, 200);
+            assert.strictEqual(res5.text, 'true');
+        });
     });
+    // Current Contr State:
+    // User signup: 1. USERNAME | PASSWORD
+    //              2. USER1 | CORRECTPW
+    // User login: USER1
 
-    it('logout', async() => {
-        contr.login("USER1", "CORRECTPW");
-        const res2:Response = await request(app).post('/login').send({func:'logout'});
-        assert.strictEqual(res2.statusCode, 200);
-        assert(!contr.isLoggedIn());
+    describe('logout', () => {
+        it('logout', async() => {
+            contr.login("USER1", "CORRECTPW");
+            const res2:Response = await request(app).post('/login').send({func:'logout'});
+            assert.strictEqual(res2.statusCode, 200);
+            assert(!contr.isLoggedIn());
+        });
     });
+    // Current Contr State:
+    // User signup: 1. USERNAME | PASSWORD
+    //              2. USER1 | CORRECTPW
 });
 
-describe('Route /view', () => {
-    it('no function case', async() => {
-        const res1:Response = await request(app).get('/view');
-        assert.strictEqual(res1.statusCode, 400);
-        assert.strictEqual(res1.text, 'The function of the request is not defined');
-    });
-    it('getUserInfo', async() => {
-        const res2:Response = await request(app).get('/view?func=getUserInfo');
-        assert.strictEqual(res2.statusCode, 400);
-        assert.strictEqual(res2.text, 'id is not defined or is not a string');
-
-        const id = contr.signup("username", "password");
-        const userID:UserID = {id:id}
-        const res3:Response = await request(app).get('/view?func=getUserInfo&id=' + id);
-        assert.strictEqual(res3.statusCode, 200);
-        assert.strictEqual(res3.text, "" + userID);
-
-        //Need test if the user is undefined when db is ready
-    });
-    it('getTaskInfo', async() => {
-        const res2:Response = await request(app).get('/view?func=getTaskInfo');
-        assert.strictEqual(res2.statusCode, 400);
-        assert.strictEqual(res2.text, 'id is not defined or is not a string');
-
-        // const id = contr.signup("username", "password");
-        // const userID:UserID = {id:id}
-        // const res3:Response = await request(app).get('/view?func=getTaskInfo&id=' + id);
-        // assert.strictEqual(res3.statusCode, 200);
-        // assert.strictEqual(res3.text, "" + userID);
-
-        //Need test if the user is undefined when db is ready
-    });
-});
 describe('Route /controller', () => {
     it('no function case', async() => {
         const res1:Response = await request(app).post('/controller');
         assert.strictEqual(res1.statusCode, 400);
-        assert.strictEqual(res1.text, 'The function of the request is not defined');
+        assert.strictEqual(res1.body, 'The function of the request is not defined');
+    });
+    describe('addFolder', () => {
+        it('no folder name case', async() => {
+            const res2:Response = await request(app).post('/controller').send({func:'addFolder'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'The name of the folder is undefined or is not a string');
+        });
+
+        it('no description case', async() => {
+            const res3:Response = await request(app).post('/controller').send({func:'addFolder', name:'FolderName'});
+            assert.strictEqual(res3.statusCode, 400);
+            assert.strictEqual(res3.body, 'The description of the folder is undefined or is not a string');
+        });
+
+        it('no eggType case', async() => {
+            const res4:Response = await request(app).post('/controller').send({func:'addFolder', name:'FolderName', description:'Description'});
+            assert.strictEqual(res4.statusCode, 400);
+            assert.strictEqual(res4.body, 'The egg type of the folder is undefined or is not a string');
+        });
+
+        it('user not signed in case', async() => {
+            const res5:Response = await request(app).post('/controller').send({func:'addFolder', name:'FolderName', description:'Description', eggType:'EggType'});
+            assert.strictEqual(res5.statusCode, 400);
+            assert.strictEqual(res5.body, 'Illegal operation: user is not signed-in!');
+        });
+
+        it('correct case', async() => {
+            contr.login("USER1", "CORRECTPW");
+            const res6:Response = await request(app).post('/controller').send({func:'addFolder', name:'folderName1', description:'desc', eggType:'eggType'});
+            assert.strictEqual(res6.statusCode, 200);
+            assert.strictEqual(res6.text, 'addFolder');
+        });
+
+        it('existing folders', async() => {
+            const res7:Response = await request(app).post('/controller').send({func:'addFolder', name:'folderName1', description:'desc2', eggType:'eggType2'});
+            assert.strictEqual(res7.statusCode, 400);
+            assert.strictEqual(res7.body, 'Duplicated value: the given folder name already exists');
+            contr.logout();
+        });
+    });
+    // Current Contr State:
+    // User signup: 1. USERNAME | PASSWORD
+    //              2. USER1 | CORRECTPW
+    // USER1-TaskFolder: folderName1
+
+    describe('setFolder', () => {
+        it('no folder name case', async() => {
+            const res2:Response = await request(app).post('/controller').send({func:'setFolder'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'The name of the folder is undefined or is not a string');
+        });
+
+        it('new name != (undefined && string) case', async() => {
+            const res3:Response = await request(app).post('/controller').send({func:'setFolder', name:'FolderName', newName:5});
+            assert.strictEqual(res3.statusCode, 400);
+            assert.strictEqual(res3.body, 'The type of the new name is not a string but is defined');
+        });
+
+        it('description != (undefined && string) case', async() => {
+            const res4:Response = await request(app).post('/controller').send({func:'setFolder', name:'FolderName', description:5});
+            assert.strictEqual(res4.statusCode, 400);
+            assert.strictEqual(res4.body, 'The type of the description is not a string but is defined');
+        });
+
+        it('user not signed in case', async() => {
+            const res5:Response = await request(app).post('/controller').send({func:'setFolder', name:'FolderName', description:'new Desc'});
+            assert.strictEqual(res5.statusCode, 400);
+            assert.strictEqual(res5.body, 'Illegal operation: user is not signed-in!');
+        });
+
+        it('folder name doesn\'t exist case', async() => {
+            contr.login("USER1", "CORRECTPW");
+            const res6:Response = await request(app).post('/controller').send({func:'setFolder', name:'CheckFolderName', description:'new Desc'});
+            assert.strictEqual(res6.statusCode, 400);
+            assert.strictEqual(res6.body, 'The folder name does not exist');
+        });
+
+        it('existing folder with newName case', async() => {
+            contr.addFolder("ExistingName", "desc", "eggType");
+            const res7:Response = await request(app).post('/controller').send({func:'setFolder', name:'folderName1', newName:'ExistingName'});
+            assert.strictEqual(res7.statusCode, 400);
+            assert.strictEqual(res7.body, 'Duplicated value: the new folder name already exists');
+        });
+
+        it('correct case', async() => {
+            // No newName && newDesc
+            const res8:Response = await request(app).post('/controller').send({func:'setFolder', name:'folderName1'});
+            assert.strictEqual(res8.statusCode, 200);
+            assert.strictEqual(res8.text, 'setFolder');
+
+            // Only newName
+            const res9:Response = await request(app).post('/controller').send({func:'setFolder', name:'folderName1', newName:'newName'});
+            assert.strictEqual(res9.statusCode, 200);
+            assert.strictEqual(res9.text, 'setFolder');
+
+            // Only newDesc
+            const res10:Response = await request(app).post('/controller').send({func:'setFolder', name:'newName', description:'newDesc'});
+            assert.strictEqual(res10.statusCode, 200);
+            assert.strictEqual(res10.text, 'setFolder');
+
+            // Both newName && newDesc
+            const res11:Response = await request(app).post('/controller').send({func:'setFolder', name:'newName', newName:'folderName1', description:'desc1'});
+            assert.strictEqual(res11.statusCode, 200);
+            assert.strictEqual(res11.text, 'setFolder');
+            contr.logout();
+        });
+    });
+    // Current Contr State:
+    // User signup: 1. USERNAME | PASSWORD
+    //              2. USER1 | CORRECTPW
+    // USER1-TaskFolder: folderName1
+    describe('deleteFolder', () => {
+        it('no folder name case', async() => {
+            const res2:Response = await request(app).post('/controller').send({func:'deleteFolder'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'The name of the folder is undefined or is not a string');
+        });
+
+        it('user not signed in case', async() => {
+            const res3:Response = await request(app).post('/controller').send({func:'deleteFolder', name:'folderName1'});
+            assert.strictEqual(res3.statusCode, 400);
+            assert.strictEqual(res3.body, 'Illegal operation: user is not signed-in!');
+        });
+
+        it('folder name doesn\'t exist case', async() => {
+            contr.login("USER1", "CORRECTPW");
+            const res4:Response = await request(app).post('/controller').send({func:'deleteFolder', name:'CheckFolderName'});
+            assert.strictEqual(res4.statusCode, 400);
+            assert.strictEqual(res4.body, 'The folder name does not exist');
+        });
+
+        it('correct case', async() => {
+            contr.addFolder("deleteThisFolder", "deleteDesc", "deleteEgg");
+            const res5:Response = await request(app).post('/controller').send({func:'deleteFolder', name:'deleteThisFolder'});
+            assert.strictEqual(res5.statusCode, 200);
+            assert.strictEqual(res5.text, 'deleteFolder');
+            contr.logout();
+        });
+    });
+    // Current Contr State:
+    // User signup: 1. USERNAME | PASSWORD
+    //              2. USER1 | CORRECTPW
+    // USER1-TaskFolder: folderName1
+    describe('addTask', () => {
+        it('no folder name case', async() => {
+            const res2:Response = await request(app).post('/controller').send({func:'addTask'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'The name of the folder is undefined or is not a string');
+        });
+
+        it('no task name case', async() => {
+            const res2:Response = await request(app).post('/controller').send({func:'addTask', folderName:'folderName1'});
+            assert.strictEqual(res2.statusCode, 400);
+            assert.strictEqual(res2.body, 'The name of the task is undefined or is not a string');
+        });
+
+        
     });
 });
 
+// describe('Route /view', () => {
+//     it('no function case', async() => {
+//         const res1:Response = await request(app).get('/view');
+//         assert.strictEqual(res1.statusCode, 400);
+//         assert.strictEqual(res1.text, 'The function of the request is not defined');
+//     });
+//     it('getUserInfo', async() => {
+//         const res2:Response = await request(app).get('/view?func=getUserInfo');
+//         assert.strictEqual(res2.statusCode, 400);
+//         assert.strictEqual(res2.text, 'id is not defined or is not a string');
+
+//         const id = contr.signup("username", "password");
+//         const userID:UserID = {id:id}
+//         const res3:Response = await request(app).get('/view?func=getUserInfo&id=' + id);
+//         assert.strictEqual(res3.statusCode, 200);
+//         assert.strictEqual(res3.text, "" + userID);
+
+//         //Need test if the user is undefined when db is ready
+//     });
+//     it('getTaskInfo', async() => {
+//         const res2:Response = await request(app).get('/view?func=getTaskInfo');
+//         assert.strictEqual(res2.statusCode, 400);
+//         assert.strictEqual(res2.text, 'id is not defined or is not a string');
+
+//         // const id = contr.signup("username", "password");
+//         // const userID:UserID = {id:id}
+//         // const res3:Response = await request(app).get('/view?func=getTaskInfo&id=' + id);
+//         // assert.strictEqual(res3.statusCode, 200);
+//         // assert.strictEqual(res3.text, "" + userID);
+
+//         //Need test if the user is undefined when db is ready
+//     });
+// });
 // const MAX_CASES = 1000;
 // const MAX_PASS_LEN = 8;
 
