@@ -10,13 +10,12 @@ import { Duration } from "../types/Duration";
 
 export class User {
   private readonly uniqueID: UserID;
-  private username: string;
-  private password: string;
-
+  private username: string; // NOTE: User type should not remember username
+  private password: string; // NOTE: User type should not rememebr password
   private taskFolders: Map<string, TaskFolder>;
   private univCredits: number;
   private streak: number;
- 
+
   constructor(idMan: IDManager,
               username: string, password: string) {
     this.uniqueID = idMan.nextUserID(this);

@@ -7,39 +7,72 @@
 // notification icons) for certain eggs in this component.
 
 import React, { Component } from 'react';
+import { Egg, EggType } from './Egg';
+import { EggCard } from './EggCard';
+import { AddEggCard } from './AddEggCard';
+import { eggCollection, folderNames } from '../Mocks';
+import { AddEggWindow } from './AddEggWindow';
 
-interface Task {
-  id: number;
-  title: string;
-  photoUrl: string;
+interface EggCollectionProps {
+  displayTaskFolder(eggId: number): void;
+  eggs: EggType[];
 }
 
-interface TaskCollectionProps {
-  tasks: Task[];
+interface EggCollectionState {
+  addEggState: string; // 'hidden' | 'shown'
 }
 
-class TaskCollection extends Component<TaskCollectionProps> {
+class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
+
+  constructor(props: EggCollectionProps){
+    super(props);
+    this.state ={
+      addEggState: 'hidden'
+    }
+  }
+
+  showAddEggWindow() {
+    this.setState({addEggState: 'shown'})
+  }
+
+  hideAddEggWindow() {
+    this.setState({addEggState: 'hidden'})
+  }
+
   render() {
-    const { tasks } = this.props;
+    let eggs = [];
+    for(let i = 0; i < eggCollection.length; i++){
+      eggs.push(<button className="invisibleButton" id={folderNames[i]}
+      onClick={() => this.props.displayTaskFolder(i)}>
+        <EggCard
+        cardName={folderNames[i]}
+        egg={eggCollection[i]}
+        />
+      </button>)
+    }
+
+    let addEggWindow;
+    if (this.state.addEggState == 'shown') {
+      addEggWindow = <AddEggWindow
+      closeBox = {() => this.hideAddEggWindow()}
+      visible = {this.state.addEggState}
+    />
+    } else {
+      addEggWindow = '';
+    }
 
     return (
-      <div>
-        <h2>Task Collection</h2>
-        {tasks.length === 0 ? (
-          <p>No tasks available</p>
-        ) : (
-          <div className="task-grid">
-            {tasks.map(task => (
-              <div key={task.id} className="task-item">
-                <img src={task.photoUrl} alt={task.title} />
-                <p>{task.title}</p>
-              </div>
-            ))}
-          </div>
-        )}
+      <div id="egg-collection">
+        {addEggWindow}
+        {eggs}
+        <button 
+          onClick={() => this.showAddEggWindow()}
+          className="invisibleButton" 
+          id={'yahaha'}
+          ><AddEggCard/></button>
       </div>
     );
   }
 }
 
-export default TaskCollection;
+export default EggCollection;

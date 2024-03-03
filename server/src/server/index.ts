@@ -10,6 +10,8 @@ import { ModelController } from "../ModelController";
 import { ModelView } from "../ModelView";
 import { logEvent } from "firebase/analytics";
 
+import userRoutes from './routes/firebase/userRoutes';
+import taskRoutes from './routes/firebase/taskRoutes';
 dotenv.config();
 
 const app : Express = express();
@@ -47,6 +49,9 @@ export function getViewer(): ModelView {
     return viewer;
 }
 
+app.use(express.json());
+app.use('/api/firebase/user', userRoutes);
+app.use('/api/firebase/task', taskRoutes)
 function println(appendStr: string) {
     return appendStr + newline;
 }
