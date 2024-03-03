@@ -1,7 +1,8 @@
 import { Accessory } from "../types/Accessory";
 import { EggType } from "../types/EggType";
 import { Interaction } from "../types/Interaction";
-
+import { FirebaseEggAPI } from "../firebaseAPI";
+import { Result } from "../types/FirebaseResult";
 export class EggManager {
   // ALL FIELDS FOR TESTING ONLY!!
   public USE_DB: boolean = false;
@@ -64,34 +65,36 @@ export class EggManager {
     return acc;
   }
 
-  // TODO: Integrate with database
-  public getEggType(name: string): EggType | undefined {
+  public async getEggType(name: string): Promise<EggType | undefined> {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const output = await FirebaseEggAPI.getType("eggType", name);
+      const egg = output.content as EggType;
+      return egg;
     } else {
       return this.eggTypes.get(name);
     }
   }
 
-  // TODO: Integrate with database
-  public getInteraction(name: string): Interaction | undefined {
+  public async getInteraction(name: string): Promise<Interaction | undefined> {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const output = await FirebaseEggAPI.getType("interaction", name);
+      const interaction = output.content as Interaction;
+      return interaction;
     } else {
       return this.interactions.get(name);
     }
   }
 
-  // TODO: Integrate with database
-  public getAccessory(name: string): Accessory | undefined {
+  public async getAccessory(name: string): Promise<Accessory | undefined> {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const output = await FirebaseEggAPI.getType("accessory", name);
+      const accessory = output.content as Accessory;
+      return accessory;
     } else {
       return this.accessories.get(name);
     }
   }
 
-  // TODO: Integrate with database
   public getEggTypeJSON(name: string): string {
     let eggType = this.getEggType(name);
     if (eggType === undefined) {
@@ -100,7 +103,6 @@ export class EggManager {
     return JSON.stringify(eggType);
   }
 
-  // TODO: Integrate with database
   public getInteractionJSON(name: string): string {
     let interaction = this.getInteraction(name);
     if (interaction === undefined) {
@@ -109,7 +111,6 @@ export class EggManager {
     return JSON.stringify(interaction);
   }
 
-  // TODO: Integrate with database
   public getAccessoryJSON(name: string): string {
     let accessory = this.getAccessory(name);
     if (accessory === undefined) {

@@ -7,11 +7,11 @@ export class WriteManager {
   private USE_DB: boolean = false;
 
   // TODO: integrate with database
-  public async writeUser(user: User): Promise<Result> {
+  public async writeUser(user: User): Promise<string | undefined> {
     if (this.USE_DB) {
       // throw new Error("not Implemented");
       const output = await FirebaseUserAPI.addUser(user);
-      return output;
+      return output.content?.toString();
     }
     throw new Error("If writing to db causes error and needs testing");
     // nothing to write if no DB exists....
