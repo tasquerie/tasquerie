@@ -31,9 +31,6 @@ export class ModelController {
     this.currentUser = undefined;
   }
 
-  // login methods
-  // TODO: implement this
-  // TODO: test me
   login(username: string, password: string): boolean {
     this.currentUser = this.userManager.getUserFromLogin(username, password);
     return this.currentUser !== undefined;
@@ -47,8 +44,8 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  signup(username: string, password: string): string {
-    if (this.userManager.usernameExists(username)) {
+  async signup(username: string, password: string): Promise<string> {
+    if (await this.userManager.usernameExists(username)) {
       throw new Error('Username already exists!');
     }
     if (password.length < 8) {
@@ -67,30 +64,36 @@ export class ModelController {
   // If user is not signed-in, throws an Error.
   private writeUserToDB() {
     if (this.currentUser !== undefined) {
-      this.writeManager.writeUser(this.currentUser);
+       this.writeManager.writeUser(this.currentUser);
     }
   }
-  private writeTaskToDB(task: Task) {
+
+  private async writeTaskToDB(task: Task) {
     this.writeManager.writeTask(task);
   }
+
   private deleteTaskFromDB(task: Task) {
     if (!this.idManager.USE_DB) {
       this.idManager.deleteTaskID(task.getID());
     }
     this.writeManager.deleteTask(task);
   }
+
   public isLoggedIn(): boolean {
     // for testing only.
     return this.currentUser !== undefined;
   }
+
   public getCurrentUser(): User | undefined {
     // for testing only.
     return this.currentUser;
   }
+
   public getIDManager(): IDManager {
     // for testing only.
     return this.idManager;
   }
+
   public getEggManager(): EggManager {
     // for testing only.
     return this.eggManager;
@@ -321,7 +324,7 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  buyAccessory(folderName: string, accesssoryType: string): boolean {
+  async buyAccessory(folderName: string, accesssoryType: string): Promise<boolean> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -332,7 +335,7 @@ export class ModelController {
       throw new Error('The folder name does not exist');
     }
     const eggTypeName = folder.getEgg().getEggType();
-    const eggType = this.eggManager.getEggType(eggTypeName);
+    const eggType = await this.eggManager.getEggType(eggTypeName);
     if (eggType === undefined) {
       throw new Error('Impossible: undefined eggType');
     }
@@ -342,7 +345,7 @@ export class ModelController {
     if (folder.getEgg().getEquippedAccessories().has(accesssoryType)) {
       throw new Error('you already purchased this accessory');
     }
-    const accessory = this.eggManager.getAccessory(accesssoryType);
+    const accessory = await this.eggManager.getAccessory(accesssoryType);
     if (accessory === undefined) {
       throw new Error('Impossible: undefined accessory');
     }
@@ -368,7 +371,7 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  buyInteraction(folderName: string, interactionType: string): boolean {
+  async buyInteraction(folderName: string, interactionType: string): Promise<boolean> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -379,14 +382,14 @@ export class ModelController {
       throw new Error('The folder name does not exist');
     }
     const eggTypeName = folder.getEgg().getEggType();
-    const eggType = this.eggManager.getEggType(eggTypeName);
+    const eggType = await this.eggManager.getEggType(eggTypeName);
     if (eggType === undefined) {
       throw new Error('Impossible: undefined eggType');
     }
     if (!eggType.allowedInteractions.has(interactionType)) {
       throw new Error('not allowed to buy this interaction')
     }
-    const interaction = this.eggManager.getInteraction(interactionType);
+    const interaction = await this.eggManager.getInteraction(interactionType);
     if (interaction === undefined) {
       throw new Error('Impossible: undefined interaction');
     }
@@ -412,7 +415,7 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  gainExp(amount: number, folderName: string): void {
+  async gainExp(amount: number, folderName: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -432,7 +435,7 @@ export class ModelController {
 
     // raise evolution level
     const eggTypeName = folder.getEgg().getEggType();
-    const eggType = this.eggManager.getEggType(eggTypeName);
+    const eggType = await this.eggManager.getEggType(eggTypeName);
     if (eggType === undefined) {
       throw new Error('Impossible: undefined eggType');
     }
