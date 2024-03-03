@@ -149,7 +149,7 @@ app.get("/test", (req: Request, res: Response) => {
 
 // for view methods
 app.get("/view", (req: Request, res: Response) => {
-    // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
+    // url: http://localhost:3000/view?func=getUserInfo&UserID="temporaryId"
     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let request = req.query;
     let result = "";
@@ -165,7 +165,7 @@ app.get("/view", (req: Request, res: Response) => {
                 id: userIdStr
             }
             // Testing without db
-            result = "" + userID;
+            result = "getUserInfo";
             //result = viewer.getUserInfo(userID);
             break;
         case "getTaskInfo":
@@ -508,6 +508,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.deleteTask(delTaskFoldName, delTaskID);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "deleteTask";
             } catch (err:any) {
                 error = err.message;
             }
@@ -520,6 +522,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.addUnivCredits(addUCred);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "addUnivCredits";
             } catch (err:any) {
                 error = err.message;
             }
@@ -532,6 +536,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.removeUnivCredits(remUCred);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "removeUnivCredits";
             } catch (err:any) {
                 error = err.message;
             }
@@ -549,6 +555,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.addEggCredits(addAmount, addEggCredFoldName);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "addEggCredits";
             } catch (err:any) {
                 error = err.message;
             }
@@ -566,6 +574,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.removeEggCredits(remAmount, remEggCredFoldName);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "removeEggCredits";
             } catch (err:any) {
                 error = err.message;
             }
@@ -583,6 +593,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 result = "" + contr.buyAccessory(AccessFoldName, AccessType);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "buyAccessory";
             } catch (err:any) {
                 error = err.message;
             }
@@ -600,6 +612,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 result = "" + contr.buyInteraction(InterFoldName, InterType);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "buyInteraction";
             } catch (err:any) {
                 error = err.message;
             }
@@ -617,6 +631,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.gainExp(expAmount, expFoldName);
+                // For testing only. Make sure to put it as a comment after testing
+                result = "gainExp";
             } catch (err:any) {
                 error = err.message;
             }
