@@ -13,21 +13,25 @@ export class BackendWrapper {
         try{
             let response = await fetch(requestString);
             // console.log("after fetch");
-            return await BackendWrapper.requestPath(response);
+            return await BackendWrapper.getJson(response);
         } catch (e) {
             console.log(e);
+            return null;
         }
     }
 
     static controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ func: func, arg: args })
+        let requestString: string = `http://localhost:${PORT_NUMBER}/controller?func=${func}`;
+        args.forEach((value: any, key: string) => {
+            requestString += `&${key}=${value}`;
         });
-        return BackendWrapper.requestPath(response);
+        try {
+            let response = await fetch(requestString);
+            return BackendWrapper.getJson(response);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
     static login = async (func: string, args: Map<string, any>): Promise<any> => {
@@ -38,10 +42,10 @@ export class BackendWrapper {
             },
             body: JSON.stringify({func: func, arg: args })
         });
-        return BackendWrapper.requestPath(response);
+        return BackendWrapper.getJson(response);
     }
 
-    static requestPath = async (response: Response) => {
+    static getJson = async (response: Response) => {
         console.log('requestPath called');
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
