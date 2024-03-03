@@ -74,7 +74,7 @@ describe('getTaskByID Function', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         let task = new Task(man, "", "", [], userID, []);
         let id = task.getID();
-        assert.strictEqual(man.getTaskByID(id), task);
+        assert.strictEqual(man.getTaskByID(userID, id), task);
       }
     });
   });
@@ -82,11 +82,14 @@ describe('getTaskByID Function', function () {
     it('should not get tasks that do not exist', function () {
       let man = new IDManager();
       let id_num = 0;
+      const userID1: UserID = {
+        id:"1"
+      }
       let taskID: TaskID = {
         id: id_num.toString()
       }
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.strictEqual(man.getTaskByID(taskID), undefined);
+        assert.strictEqual(man.getTaskByID(userID1, taskID), undefined);
         id_num += 1;
         taskID.id = id_num.toString();
       }

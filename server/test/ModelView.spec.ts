@@ -58,6 +58,7 @@ describe('getTaskInfo', function () {
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
       let user = new User(man, "username", "password");
+      const userID = user.getID();
       let folder = new TaskFolder("name", "desc", "eggType");
       user.getTaskFolders().set(folder.getName(), folder);
       for (let i = 0; i < MAX_CASES; i++) {
@@ -66,7 +67,7 @@ describe('getTaskInfo', function () {
         folder.getTasks().set(task.getID(), task);
 
         // test here
-        let actual = modelView.getTaskInfo(task.getID());
+        let actual = modelView.getTaskInfo(userID, task.getID());
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(task.getJSON() ,  actual);
       }
@@ -77,6 +78,7 @@ describe('getTaskInfo', function () {
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
         let user = new User(man, "username", "password");
+        const userID = user.getID();
         let folder = new TaskFolder("name", "desc", "eggType");
         let task = new Task(man, "taskname", "desc", [], user.getID(),[]);
         folder.getTasks().set(task.getID(), task);
@@ -85,7 +87,7 @@ describe('getTaskInfo', function () {
             id: task.getID() + i.toString()
           };
           // test here
-          assert.strictEqual("",  modelView.getTaskInfo(id));
+          assert.strictEqual("",  modelView.getTaskInfo(userID, id));
         }
       });
     });
