@@ -13,8 +13,8 @@ export let specificCredits: number[] = [
 ///// EGG MOCKS /////
 let tempEgg1: EggType = {
     imgUrls: [
-      "https://media.discordapp.net/attachments/874365985002500126/1206833440511492096/egg1.png?ex=65dd723a&is=65cafd3a&hm=5a186ab84f24c59d4dba3dc11fd0543426aec4aada210b014874175902ef2172&=&format=webp&quality=lossless&width=192&height=192",
-      "https://media.discordapp.net/attachments/874365985002500126/1206833440800903168/egg1-1.png?ex=65dd723a&is=65cafd3a&hm=76c091b3fa80ab77edf9b66c7304c30481d8dffbb44ef96edef237a62e9d9e54&=&format=webp&quality=lossless&width=192&height=192"
+      "https://media.discordapp.net/attachments/874365985002500126/1206833440511492096/egg1.png?ex=65efe73a&is=65dd723a&hm=31075d395483aa7f0ba5eecb10d2a6c0ba5204e0e66925110a9abeaaefd33c2f&=&format=webp&quality=lossless&width=160&height=160",
+      "https://media.discordapp.net/attachments/874365985002500126/1206833440800903168/egg1-1.png?ex=65efe73a&is=65dd723a&hm=c83182ad1325e23ee0cdffac2d7223bda5898ae706e0365edca77950bd6d8c7d&=&format=webp&quality=lossless&width=160&height=160"
     ],
     stage: 0,
     activeAccessories: [],
@@ -23,7 +23,7 @@ let tempEgg1: EggType = {
   }
   
   let tempEgg2: EggType = {
-    imgUrls: ["https://media.discordapp.net/attachments/874365985002500126/1207412448462905344/temp.png?ex=65df8d78&is=65cd1878&hm=e800a360bd46326aa61584a5c1565c8c2e3bd5921c9ef729b780b028db44be67&=&format=webp&quality=lossless&width=192&height=192"],
+    imgUrls: ["https://cdn.discordapp.com/attachments/874365985002500126/1207412448462905344/temp.png?ex=65f20278&is=65df8d78&hm=8df5b4e6601a13e79c0651e9d22051c2128255409bcc7270cea4c7c572b360d1&"],
     stage: 0,
     activeAccessories: [],
     exp: 0,

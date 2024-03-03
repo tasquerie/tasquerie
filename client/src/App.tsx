@@ -1,22 +1,19 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { stringify } from 'querystring';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
-import Navbar from './Components/Navbar';
-import * as mocks from './Mocks'
-import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
 import Howto from './Components/Howto';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import Auth from './Context/Auth';
 
 export interface AppState {
   currentPage: string;
-  userID: number;
+  userID: string;
   displayingEggId: number;
 }
 
@@ -27,7 +24,7 @@ class App extends Component<{}, AppState> {
     super(props);
     this.state = {
       currentPage: 'login',
-      userID: 0, // You can set this to an initial value as needed
+      userID: '', // You can set this to an initial value as needed
       displayingEggId: -1
     };
     // Bind switchState method to the class instance
@@ -36,7 +33,7 @@ class App extends Component<{}, AppState> {
 
   switchState(page: string) {
     this.setState({ currentPage: page });
-    if(page != "taskFolder") {
+    if(page !== "taskFolder") {
       this.setState({displayingEggId : -1});
     }
   }
@@ -50,6 +47,12 @@ class App extends Component<{}, AppState> {
     });
   }
 
+  setUserID(id: string) {
+    this.setState({
+      userID: id
+    });
+  }
+
   render() {
     // Use this.state.currentPage to check the current page
     if (this.state.currentPage === 'login') {
@@ -58,11 +61,34 @@ class App extends Component<{}, AppState> {
           <Login updateState={
             (selected: string) => {
               this.switchState(selected);
+            }}
+            setUserID={
+              (id: string) => {
+                this.setUserID(id);
+              }
             }
-          }/>
+            />
+        </div>
+      )
+    } else if (this.state.currentPage === 'signup') {
+      return (
+        <div>
+          <SignUp updateState={
+            (selected: string) => {
+              this.switchState(selected);
+            }}
+            setUserID={
+              (id: string) => {
+                this.setUserID(id);
+              }
+            }
+            />
         </div>
       )
     } else if (this.state.currentPage === 'home') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <Home
@@ -80,6 +106,9 @@ class App extends Component<{}, AppState> {
         </div>
       );
     } else if (this.state.currentPage === 'profile') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <Profile updateState={(selected: string) => {
@@ -89,6 +118,9 @@ class App extends Component<{}, AppState> {
         </div>
       );
     } else if (this.state.currentPage === 'archive') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <Archive updateState={
@@ -100,6 +132,9 @@ class App extends Component<{}, AppState> {
         </div>
       );
     } else if (this.state.currentPage === 'settings') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <Settings updateState={
@@ -111,6 +146,9 @@ class App extends Component<{}, AppState> {
         </div>
       );
     } else if (this.state.currentPage === 'taskFolder') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <TaskFolder
@@ -124,6 +162,9 @@ class App extends Component<{}, AppState> {
         </div>
       )
     } else if (this.state.currentPage === 'about') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <About updateState={
@@ -135,6 +176,9 @@ class App extends Component<{}, AppState> {
         </div>
       );
     }else if (this.state.currentPage === 'howto') {
+      if (this.state.userID === '') {
+        this.switchState('home');
+      }
       return (
         <div>
           <h1 className='color-settings'>How To</h1>
