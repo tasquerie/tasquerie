@@ -1,17 +1,15 @@
 import e from "express";
 
-export {}
-
 const PORT_NUMBER: number = 3232;
 
-class BackendWrapper {
+export class BackendWrapper {
 
-    view = async (func: string, args: Map<string, any>): Promise<any> => {
+    static view = async (func: string, args: Map<string, any>): Promise<any> => {
         let response = await fetch(`http://localhost:${PORT_NUMBER}/view?start=${func}&destination=${args}`);
-        return await this.requestPath(response);
+        return await BackendWrapper.requestPath(response);
     }
 
-    controller = async (func: string, args: Map<string, any>): Promise<any> => {
+    static controller = async (func: string, args: Map<string, any>): Promise<any> => {
         let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
             method: 'POST',
             headers: {
@@ -19,10 +17,10 @@ class BackendWrapper {
             },
             body: JSON.stringify({ func: func, arg: args })
         });
-        return this.requestPath(response);
+        return BackendWrapper.requestPath(response);
     }
 
-    login = async (func: string, args: Map<string, any>): Promise<any> => {
+    static login = async (func: string, args: Map<string, any>): Promise<any> => {
         let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
             method: 'POST',
             headers: {
@@ -30,10 +28,10 @@ class BackendWrapper {
             },
             body: JSON.stringify({func: func, arg: args })
         });
-        return this.requestPath(response);
+        return BackendWrapper.requestPath(response);
     }
 
-    requestPath = async (response: Response) => {
+    static requestPath = async (response: Response) => {
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
             if(!response.ok) {

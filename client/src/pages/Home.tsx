@@ -16,6 +16,8 @@ import TaskCollection from '../Components/EggCollection';
 import EggCollection from '../Components/EggCollection';
 import * as mocks from '../Mocks'
 import { AddEggWindow } from '../Components/AddEggWindow';
+import { BackendWrapper } from '../BackendWrapper';
+import AuthContext from '../Context/AuthContext';
 
 
 interface HomeProps {
@@ -24,12 +26,17 @@ interface HomeProps {
 }
 
 class Home extends Component<HomeProps> {
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
     
     constructor(props: any) {
         super(props);
     }
 
     render() {
+        let funcArgs: Map<string, any> = new Map();
+        funcArgs.set("UserID", this.context.getUser());
+        console.log(BackendWrapper.view("getUserInfo", funcArgs));
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>

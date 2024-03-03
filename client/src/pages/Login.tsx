@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Auth from "../Context/Auth"
 // import { useAuth, AuthContext } from "../Context/AuthContext";
-import TestAuthContext from '../Context/AuthContext';
+import AuthContext from '../Context/AuthContext';
 
 // hard code (kind of) disallowed input characters
 // could move this up a layer if we want to share with signup
@@ -22,8 +22,8 @@ interface LoginProps {
 }
 
 class Login extends Component<LoginProps, LoginState> {
-    static contextType = TestAuthContext;
-    context!: React.ContextType<typeof TestAuthContext>;
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
     // OK SO this is supposed to be "delcare context: [blablabla]" but something something @babel/plugin-transform-typscript
     // so. idk. this is the old way of doing it (TS v. < 3.7) but whatever
     
