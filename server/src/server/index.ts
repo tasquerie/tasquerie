@@ -1,6 +1,5 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import Ajv from 'ajv';
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
 import { IDManager } from "../model/IDManager";
@@ -16,7 +15,6 @@ import taskRoutes from './routes/firebase/taskRoutes';
 dotenv.config();
 
 const app : Express = express();
-let ajv = new Ajv();
 const port = process.env.PORT || 3000;
 const newline = "<br>";
 const okResp = "HTTP/1.1 200 OK";
@@ -41,7 +39,20 @@ var limiter = RateLimit({
 
 app.use(express.json());
 app.use('/api/firebase/user', userRoutes);
-app.use('/api/firebase/task', taskRoutes)
+app.use('/api/firebase/task', taskRoutes);
+
+export function getIDMan(): IDManager {
+    return idMan;
+}
+
+export function getContr(): ModelController {
+    return contr;
+}
+
+export function getViewer(): ModelView {
+    return viewer;
+}
+
 function println(appendStr: string) {
     return appendStr + newline;
 }
@@ -145,7 +156,7 @@ app.get("/view", (req: Request, res: Response) => {
     let error = "";
     switch(request.func) {
         case "getUserInfo":
-            const userIdStr = request.id;
+            const userIdStr = request.UserID;
             if (typeof userIdStr !== "string") {
                 error = "id is not defined or is not a string";
                 break;
@@ -158,7 +169,7 @@ app.get("/view", (req: Request, res: Response) => {
             //result = viewer.getUserInfo(userID);
             break;
         case "getTaskInfo":
-            const taskIdStr = request.id;
+            const taskIdStr = request.TaskID;
             if (typeof(taskIdStr) !== "string") {
                 error = "id is not defined or is not a string";
                 break;
@@ -171,7 +182,7 @@ app.get("/view", (req: Request, res: Response) => {
             //result = viewer.getTaskInfo(taskID);
             break;
         case "getTaskFolderInfo":
-            const tfUserIdStr = request.id;
+            const tfUserIdStr = request.UserID;
             if (typeof(tfUserIdStr) !== "string") {
                 error = "id is not defined or is not a string";
                 break;
@@ -189,7 +200,7 @@ app.get("/view", (req: Request, res: Response) => {
             //result = viewer.getTaskFolderInfo(tfUserID, tfFolderNameStr);
             break;
         case "getEggInfo":
-            const eggUserIdStr = request.id;
+            const eggUserIdStr = request.UserID;
             if (typeof(eggUserIdStr) !== "string") {
                 error = "id is not defined or is not a string";
                 break;
@@ -252,9 +263,6 @@ app.get("/view", (req: Request, res: Response) => {
 app.use(limiter);
 app.use(express.json());
 
-
-ajv.addSchema({type:"object"})
-
 // // for login methods
 app.post("/login", (req: Request, res: Response) => {
     // url: http://localhost:3000/login
@@ -278,7 +286,7 @@ app.post("/login", (req: Request, res: Response) => {
             break;
         case "logout":
             contr.logout();
-            result = "logout successful";
+            //result = "logout successful";
             break;
         case "signup":
             const signupUserName = req.body.username;
@@ -333,10 +341,11 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                // CHECK: what are we returning back to the user after adding the folder
                 contr.addFolder(addFolderName, addFolderDesc, addFolderEggType);
-            } catch (e:any) {
-                error = e.messgae;
+                // For testing only. Make sure to put it as a comment after testing
+                result = "addFolder";
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "setFolder":
@@ -356,10 +365,11 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                // CHECK: what are we returning back to the user after setting the folder
                 contr.setFolder(setFolderName, setFolderNewName, setFolderDesc);
-            } catch (e:any) {
-                error = e.message;
+                // For testing only. Make sure to put it as a comment after testing
+                result = "setFolder";
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "deleteFolder":
@@ -369,10 +379,11 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                // CHECK: what are we returning back to the user after setting the folder
                 contr.deleteFolder(delFolderName);
-            } catch (e:any){
-                error = e.message;
+                // For testing only. Make sure to put it as a comment after testing
+                result = "deleteFolder";
+            } catch (err:any){
+                error = err.message;
             }
             break;
         case "addTask":
@@ -420,8 +431,8 @@ app.post("/controller", (req: Request, res: Response) => {
                 result = "" + contr.addTask(addTaskFoldName, addTaskName, addTaskDesc,
                                             addTaskTags, addTaskShared, addTaskStart,
                                             addTaskCycle, addTaskDeadline);
-            } catch (e:any){
-                error = e.message;
+            } catch (err:any){
+                error = err.message;
             }
             break;
         case "setTask":
@@ -430,7 +441,7 @@ app.post("/controller", (req: Request, res: Response) => {
                 error = "The name of the folder is undefined or is not a string";
                 break;
             }
-            const setTaskId = req.body.id;
+            const setTaskId = req.body.TaskID;
             if (!checkTaskID(setTaskId)) {
                 error = "The id is undefined or is not a string";
                 break;
@@ -480,8 +491,8 @@ app.post("/controller", (req: Request, res: Response) => {
                                             setTaskName, setTaskDesc, setTaskTags,
                                             setTaskShared, setTaskStart, setTaskCycle,
                                             setTaskDeadline);
-            } catch (e:any){
-                error = e.message;
+            } catch (err:any){
+                error = err.message;
             }
             break;
         case "deleteTask":
@@ -497,8 +508,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.deleteTask(delTaskFoldName, delTaskID);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "addUnivCredits":
@@ -509,8 +520,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.addUnivCredits(addUCred);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "removeUnivCredits":
@@ -521,8 +532,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.removeUnivCredits(remUCred);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "addEggCredits":
@@ -538,8 +549,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.addEggCredits(addAmount, addEggCredFoldName);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "removeEggCredits":
@@ -555,8 +566,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.removeEggCredits(remAmount, remEggCredFoldName);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "buyAccessory":
@@ -572,8 +583,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 result = "" + contr.buyAccessory(AccessFoldName, AccessType);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "buyInteraction":
@@ -589,8 +600,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 result = "" + contr.buyInteraction(InterFoldName, InterType);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         case "gainExp":
@@ -606,8 +617,8 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             try {
                 contr.gainExp(expAmount, expFoldName);
-            } catch (e:any) {
-                error = e.message;
+            } catch (err:any) {
+                error = err.message;
             }
             break;
         default:
@@ -615,7 +626,11 @@ app.post("/controller", (req: Request, res: Response) => {
     }
     // There is some functions that doesn't return anything
     // making result = "". CHECK: what to return for those function.
-    res.send(result);
+    if (error != "") {
+        res.status(400).json(error);
+    } else {
+        res.send(result);
+    }
 });
 
 app.listen(port, () => {
