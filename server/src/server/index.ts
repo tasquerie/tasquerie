@@ -150,7 +150,7 @@ app.get("/test", (req: Request, res: Response) => {
 // for view methods
 app.get("/view", (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&UserID="temporaryId"
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let request = req.query;
     let result = "";
     let error = "";
@@ -319,7 +319,7 @@ app.post("/login", (req: Request, res: Response) => {
 // for controller methods
 app.post("/controller", (req: Request, res: Response) => {
     // url: http://localhost:3000/controller
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let func = req.body.func;
     let result = "";
     let error = ""
