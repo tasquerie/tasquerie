@@ -113,24 +113,24 @@ export class EggManager {
     }
   }
 
-  public getEggTypeJSON(name: string): string {
-    let eggType = this.getEggType(name);
+  public async getEggTypeJSON(name: string): Promise<string> {
+    let eggType = await this.getEggType(name);
     if (eggType === undefined) {
       return "";
     }
     return JSON.stringify(eggType);
   }
 
-  public getInteractionJSON(name: string): string {
-    let interaction = this.getInteraction(name);
+  public async getInteractionJSON(name: string): Promise<string> {
+    let interaction = await this.getInteraction(name);
     if (interaction === undefined) {
       return "";
     }
     return JSON.stringify(interaction);
   }
 
-  public getAccessoryJSON(name: string): string {
-    let accessory = this.getAccessory(name);
+  public async getAccessoryJSON(name: string): Promise<string> {
+    let accessory = await this.getAccessory(name);
     if (accessory === undefined) {
       return "";
     }
