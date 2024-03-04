@@ -6,8 +6,6 @@ import { TaskFolder } from "./model/TaskFolder";
 import { User } from "./model/User";
 import { UserManager } from "./model/UserManager";
 import { WriteManager } from "./model/WriteManager";
-import { DateTime } from "./types/DateTime";
-import { Duration } from "./types/Duration";
 import { TaskID } from "./types/TaskID";
 import { UserID } from "./types/UserID";
 
@@ -180,7 +178,7 @@ export class ModelController {
   // TODO: test me
   async addTask(userID: UserID, folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
-          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<TaskID> {
+          startDate?: string, cycleDuration?: string, deadline?: string): Promise<TaskID> {
     const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
     if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
@@ -204,7 +202,7 @@ export class ModelController {
   // TODO: test me
   async setTask(userID: UserID, id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
-          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<void> {
+          startDate?: string, cycleDuration?: string, deadline?: string): Promise<void> {
     const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
     if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);

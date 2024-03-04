@@ -1,5 +1,3 @@
-import { DateTime } from "../types/DateTime";
-import { Duration } from "../types/Duration";
 import { TaskID } from "../types/TaskID";
 import { UserID } from "../types/UserID";
 import { IDManager } from "./IDManager";
@@ -13,14 +11,14 @@ export class Task {
   private owner: UserID;
   private whoSharedWith: UserID[];
 
-  private startDate?: DateTime;
-  private cycleDuration?: Duration;
-  private deadline?: DateTime;
+  private startDate?: string;
+  private cycleDuration?: string;
+  private deadline?: string;
 
   constructor(taskID: TaskID,
               name: string, description: string, tags: string[],
               owner: UserID, whoSharedWith: UserID[],
-              startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime,
+              startDate?: string, cycleDuration?: string, deadline?: string,
               ) {
     this.uniqueID = taskID;
     this.name = name;
@@ -91,27 +89,27 @@ export class Task {
     this.whoSharedWith = sharedWith;
   }
 
-  getStartDate(): DateTime | undefined {
+  getStartDate(): string | undefined {
     return this.startDate;
   }
 
-  setStartDate(startDate: DateTime) {
+  setStartDate(startDate: string) {
     this.startDate = startDate;
   }
 
-  getCycleDuration(): Duration | undefined {
+  getCycleDuration(): string | undefined {
     return this.cycleDuration;
   }
 
-  setCycleDuration(cycleDuration: Duration) {
+  setCycleDuration(cycleDuration: string) {
     this.cycleDuration = cycleDuration;
   }
 
-  getDeadline(): DateTime | undefined {
+  getDeadline(): string | undefined {
     return this.deadline;
   }
 
-  setDeadline(deadline: DateTime) {
+  setDeadline(deadline: string) {
     this.deadline = deadline;
   }
 

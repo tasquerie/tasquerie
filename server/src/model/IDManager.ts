@@ -40,14 +40,8 @@ export class IDManager {
 
   public nextTaskID(task: Task | undefined): TaskID {
     if (this.USE_DB) {
-      const temp = task?.getStartDate();
-      const year: number = temp?.year as number;
-      const month: number = temp?.month as number;
-      const day = temp?.day;
-      const hour = temp?.hour;
-      const minute = temp?.minute;
-
-      const date = new Date(year, month - 1, day, hour, minute);
+      const temp = task?.getStartDate() as string;
+      const date = new Date(temp)
       const time = date.getTime();
       const UNIXtime = Math.floor(time / 1000);
 

@@ -5,8 +5,6 @@ import { IDManager } from "./IDManager";
 
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
-import { DateTime } from "../types/DateTime";
-import { Duration } from "../types/Duration";
 
 export class User {
   private uniqueID: UserID;
