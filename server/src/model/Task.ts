@@ -5,7 +5,7 @@ import { UserID } from "../types/UserID";
 import { IDManager } from "./IDManager";
 
 export class Task {
-  private readonly uniqueID: TaskID;
+  private uniqueID: TaskID;
   private name: string;
   private isComplete: boolean;
   private description: string;
@@ -17,12 +17,12 @@ export class Task {
   private cycleDuration?: Duration;
   private deadline?: DateTime;
 
-  constructor(idMan: IDManager,
+  constructor(taskID: TaskID,
               name: string, description: string, tags: string[],
               owner: UserID, whoSharedWith: UserID[],
               startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime,
               ) {
-    this.uniqueID = idMan.nextTaskID(this);
+    this.uniqueID = taskID;
     this.name = name;
     this.isComplete = false;
     this.description = description;
@@ -37,6 +37,10 @@ export class Task {
 
   getID(): TaskID {
     return this.uniqueID;
+  }
+
+  setID(id: TaskID) {
+    this.uniqueID = id;
   }
 
   getName(): string {

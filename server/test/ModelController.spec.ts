@@ -15,6 +15,11 @@ import { TaskID } from '../src/types/TaskID';
 const MAX_CASES = 1000;
 const MAX_PASS_LEN = 8;
 
+// for testing
+const TEMP_ID_TASK: TaskID = {
+  id: "NULL"
+};
+
 ////       LOGIN METHODS         ////
 
 function getContr(): ModelController {
@@ -308,7 +313,8 @@ describe('addTask', function () {
       await contr.addFolder(folderName, "desc", "eggType");
       for (let i = 0; i < MAX_CASES; i++) {
         let taskID = await contr.addTask(folderName, "task name " + i, "desc " + i, [], []);
-        let expectedTask = new Task(contr.getIDManager(), "task name " + i, "desc " + i, [], user.getID(), []);
+        let expectedTask = new Task(TEMP_ID_TASK, "task name " + i, "desc " + i, [], user.getID(), []);
+        expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
         // test here
         let actualTask = JSON.parse(await viewer.getTaskInfo(user.getID(), taskID));
@@ -343,7 +349,8 @@ describe('setTask', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         let taskID = await contr.addTask(folderName,      "task name " + i,       "desc " + i, [], []);
         await contr.setTask(folderName, taskID, false,          "task name " + i + "k", "desc " + i + "k");
-        let expectedTask = new Task(contr.getIDManager(), "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
+        let expectedTask = new Task(TEMP_ID_TASK, "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
+        expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
         // test here
         let actualTask = JSON.parse(await viewer.getTaskInfo(user.getID(), taskID));

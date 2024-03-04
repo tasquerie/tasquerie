@@ -11,7 +11,16 @@ import { EggManager } from '../src/model/EggManager';
 import { UserManager } from '../src/model/UserManager';
 import { WriteManager } from '../src/model/WriteManager';
 
-const MAX_CASES = 100000
+const MAX_CASES = 100000;
+
+// for testing
+const TEMP_ID: UserID = {
+  id: "NULL"
+};
+
+const TEMP_ID_TASK: TaskID = {
+  id: "NULL"
+};
 
 describe('Next UserID Function', function () {
   describe('unique', function () {
@@ -46,7 +55,8 @@ describe('getUserByID Function', function () {
     it('should get users that exist', async function () {
       let man = new IDManager();
       for (let i = 0; i < MAX_CASES; i++) {
-        let user = new User(man, "", "");
+        let user = new User(TEMP_ID, "", "");
+        user.setID(man.nextUserID(user));
         let id = user.getID();
         assert.strictEqual( (await man.getUserByID(id)).content, user);
       }
@@ -76,7 +86,8 @@ describe('getTaskByID Function', function () {
         id: "0"
       }
       for (let i = 0; i < MAX_CASES; i++) {
-        let task = new Task(man, "", "", [], userID, []);
+        let task = new Task(TEMP_ID_TASK, "", "", [], userID, []);
+        task.setID(man.nextTaskID(task));
         let id = task.getID();
         assert.strictEqual( (await man.getTaskByID(userID, id)).content, task);
       }

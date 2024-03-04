@@ -11,6 +11,15 @@ import { Duration } from "./types/Duration";
 import { TaskID } from "./types/TaskID";
 import { UserID } from "./types/UserID";
 
+// for testing
+const TEMP_ID: UserID = {
+  id: "NULL"
+};
+
+const TEMP_ID_TASK: TaskID = {
+  id: "NULL"
+};
+
 export class ModelController {
   public readonly USER_NOT_SIGNED_IN: string;
   public readonly NEGATIVE_VALUE: string;
@@ -56,7 +65,8 @@ export class ModelController {
     if (password.length < 8) {
       throw new Error('Password must be at least 8 characters long.');
     }
-    this.currentUser = new User(this.idManager, username, password);
+    this.currentUser = new User(TEMP_ID, username, password);
+    this.currentUser.setID(this.idManager.nextUserID(this.currentUser));
     if (!this.userManager.USE_DB) {
       // for testing only
       this.userManager.addUser(username, password, this.currentUser);
@@ -177,9 +187,11 @@ export class ModelController {
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
-    let task = new Task(this.idManager,
+    let task = new Task(TEMP_ID_TASK,
                         taskName, description, tags, this.currentUser.getID(),
                         whoSharedWith, startDate, cycleDuration, deadline);
+    task.setID(this.idManager.nextTaskID(task));
+    
     folder.getTasks().set(task.getID(), task);  // add task to folder
     await this.writeTaskToDB(task);
     await this.writeUserToDB();

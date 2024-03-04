@@ -12,6 +12,15 @@ import { TaskID } from '../src/types/TaskID';
 
 const MAX_CASES = 100
 
+// for testing
+const TEMP_ID: UserID = {
+  id: "NULL"
+};
+
+const TEMP_ID_TASK: TaskID = {
+  id: "NULL"
+};
+
 describe('getUserInfo', function () {
   describe('normal use case with full JSON', function () {
     it('should return correct user data', async function () {
@@ -19,12 +28,14 @@ describe('getUserInfo', function () {
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
       for (let i = 0; i < MAX_CASES; i++) {
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         user.setStreak(i);
         user.setUnivCredits(1000 * i);
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
-        let task = new Task(man, "taskname", "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, "taskname", "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
 
         // test here
@@ -38,7 +49,8 @@ describe('getUserInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         for (let i = 0; i < MAX_CASES; i++) {
           let id: UserID = {
             id: user.getID() + i.toString()
@@ -57,12 +69,14 @@ describe('getTaskInfo', function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-      let user = new User(man, "username", "password");
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
       let folder = new TaskFolder("name", "desc", "eggType");
       user.getTaskFolders().set(folder.getName(), folder);
       for (let i = 0; i < MAX_CASES; i++) {
         let taskName = "task " + i.toString();
-        let task = new Task(man, taskName, "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, taskName, "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
 
         // test here
@@ -76,9 +90,11 @@ describe('getTaskInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name", "desc", "eggType");
-        let task = new Task(man, "taskname", "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, "taskname", "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
         for (let i = 0; i < MAX_CASES; i++) {
           let id: TaskID = {
@@ -98,7 +114,8 @@ describe('getTaskFolderInfo', function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-      let user = new User(man, "username", "password");
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
       for (let i = 0; i < MAX_CASES; i++) {
         let folder = new TaskFolder("name " + i, "desc " + i, "eggType " + i);
         user.getTaskFolders().set(folder.getName(), folder);
@@ -114,7 +131,8 @@ describe('getTaskFolderInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
@@ -131,7 +149,8 @@ describe('getTaskFolderInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name ", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
@@ -153,7 +172,8 @@ describe('getEggInfo', function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-      let user = new User(man, "username", "password");
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
       for (let i = 0; i < MAX_CASES; i++) {
         let folder = new TaskFolder("name " + i, "desc " + i, "eggType " + i);
         user.getTaskFolders().set(folder.getName(), folder);
@@ -173,7 +193,8 @@ describe('getEggInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
@@ -190,7 +211,8 @@ describe('getEggInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name ", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
