@@ -133,4 +133,33 @@ export class ModelView {
     user = user as User;
     return user.getUsername();
   }
+
+  async getAllEggInfo(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    let folderMap = user.getTaskFolders();
+    let eggInfos:string[] = [];
+    folderMap.forEach((value: TaskFolder, key: string) => {
+      eggInfos.push(value.getEgg().getJSON());
+    });
+    return JSON.stringify(eggInfos);
+  }
+
+  
+  async getAllTaskFolderInfo(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    let folderMap = user.getTaskFolders();
+    let folderInfos:string[] = [];
+    folderMap.forEach((value: TaskFolder, key: string) => {
+      folderInfos.push(value.getJSON());
+    });
+    return JSON.stringify(folderInfos);
+  }
 }
