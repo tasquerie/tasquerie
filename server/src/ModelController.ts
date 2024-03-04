@@ -47,8 +47,10 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  signup(username: string, password: string): string {
-    if (this.userManager.usernameExists(username)) {
+  async signup(username: string, password: string): Promise<string> {
+    let exists: boolean = await this.userManager.usernameExists(username);
+    if (exists) {
+      console.log("DEBUG: user already there.");
       throw new Error('Username already exists!');
     }
     if (password.length < 8) {
@@ -59,25 +61,27 @@ export class ModelController {
       // for testing only
       this.userManager.addUser(username, password, this.currentUser);
     }
-    this.writeUserToDB();
+    await this.writeUserToDB();
     return this.currentUser.getID().id;
   }
 
   // PRIVATE HELPERS
   // If user is not signed-in, throws an Error.
-  private writeUserToDB() {
+  private async writeUserToDB() {
     if (this.currentUser !== undefined) {
-      this.writeManager.writeUser(this.currentUser);
+       await this.writeManager.writeUser(this.currentUser);
     }
   }
-  private writeTaskToDB(task: Task) {
-    this.writeManager.writeTask(task);
+
+  private async writeTaskToDB(task: Task) {
+    await this.writeManager.writeTask(task);
   }
-  private deleteTaskFromDB(task: Task) {
+
+  private async deleteTaskFromDB(task: Task) {
     if (!this.idManager.USE_DB) {
       this.idManager.deleteTaskID(task.getID());
     }
-    this.writeManager.deleteTask(task);
+    await this.writeManager.deleteTask(task);
   }
   public isLoggedIn(): boolean {
     // for testing only.
@@ -101,7 +105,7 @@ export class ModelController {
   // data manipulation methods
   // TODO: implement this
   // TODO: test me
-  addFolder(name: string, description: string, eggType: string): void {
+  async addFolder(name: string, description: string, eggType: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -112,12 +116,12 @@ export class ModelController {
     }
     const newFolder = new TaskFolder(name, description, eggType);
     taskFolderMap.set(name, newFolder);
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  setFolder(name: string, newName?: string, description?: string): void {
+  async setFolder(name: string, newName?: string, description?: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -138,12 +142,12 @@ export class ModelController {
     if (description !== undefined) {
       folder.setDescription(description);
     }
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  deleteFolder(name: string): void {
+  async deleteFolder(name: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -154,18 +158,18 @@ export class ModelController {
       throw new Error('The folder name does not exist');
     }
     let taskIDtoTask = folder.getTasks();
-    taskIDtoTask.forEach((value: Task, key: TaskID) => {
-      this.deleteTaskFromDB(value);
+    taskIDtoTask.forEach(async (value: Task, key: TaskID) => {
+      await this.deleteTaskFromDB(value);
     })
     taskFolderMap.delete(name);  // remove task folder
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  addTask(folderName: string, taskName: string, description: string, tags: string[],
+  async addTask(folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
-          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): TaskID {
+          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<TaskID> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -177,16 +181,16 @@ export class ModelController {
                         taskName, description, tags, this.currentUser.getID(),
                         whoSharedWith, startDate, cycleDuration, deadline);
     folder.getTasks().set(task.getID(), task);  // add task to folder
-    this.writeTaskToDB(task);
-    this.writeUserToDB();
+    await this.writeTaskToDB(task);
+    await this.writeUserToDB();
     return task.getID();
   }
 
   // TODO: implement this
   // TODO: test me
-  setTask(folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
+  async setTask(folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
-          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): void {
+          startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -225,13 +229,13 @@ export class ModelController {
     if (deadline !== undefined) {
       task.setDeadline(deadline);
     }
-    this.writeTaskToDB(task);
-    this.writeUserToDB();
+    await this.writeTaskToDB(task);
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  deleteTask(folderName: string, id: TaskID): void {
+  async deleteTask(folderName: string, id: TaskID): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -247,13 +251,13 @@ export class ModelController {
       throw new Error('The taskID does not exist in this folder');
     }
     folder.getTasks().delete(id);
-    this.deleteTaskFromDB(task);
-    this.writeUserToDB();
+    await this.deleteTaskFromDB(task);
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  addUnivCredits(amount: number): void {
+  async addUnivCredits(amount: number): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -262,12 +266,12 @@ export class ModelController {
     }
     const sum = this.currentUser.getUnivCredits() + amount;
     this.currentUser.setUnivCredits(sum);
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  removeUnivCredits(amount: number): void {
+  async removeUnivCredits(amount: number): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -276,12 +280,12 @@ export class ModelController {
     }
     const diff = this.currentUser.getUnivCredits() - amount;
     this.currentUser.setUnivCredits(diff);
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  addEggCredits(amount: number, folderName: string): void {
+  async addEggCredits(amount: number, folderName: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -296,12 +300,12 @@ export class ModelController {
     }
     const sum = folder.getEggCredits() + amount;
     folder.setEggCredits(sum);
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  removeEggCredits(amount: number, folderName: string): void {
+  async removeEggCredits(amount: number, folderName: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -316,12 +320,12 @@ export class ModelController {
     }
     const diff = folder.getEggCredits() - amount;
     folder.setEggCredits(diff);
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 
   // TODO: implement this
   // TODO: test me
-  buyAccessory(folderName: string, accesssoryType: string): boolean {
+  async buyAccessory(folderName: string, accesssoryType: string): Promise<boolean> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -354,21 +358,21 @@ export class ModelController {
 
     // actual purchase
     if (eggCred >= accessory.cost) {
-      this.removeEggCredits(accessory.cost, folderName);
+      await this.removeEggCredits(accessory.cost, folderName);
     } else {
-      this.removeEggCredits(eggCred, folderName);
-      this.removeUnivCredits(accessory.cost - eggCred);
+      await this.removeEggCredits(eggCred, folderName);
+      await this.removeUnivCredits(accessory.cost - eggCred);
     }
     // adding the actual accessory
     folder.getEgg().getEquippedAccessories().add(accesssoryType);
 
-    this.writeUserToDB();
+    await this.writeUserToDB();
     return true;
   }
 
   // TODO: implement this
   // TODO: test me
-  buyInteraction(folderName: string, interactionType: string): boolean {
+  async buyInteraction(folderName: string, interactionType: string): Promise<boolean> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -398,21 +402,21 @@ export class ModelController {
 
     // actual purchase
     if (eggCred >= interaction.cost) {
-      this.removeEggCredits(interaction.cost, folderName);
+      await this.removeEggCredits(interaction.cost, folderName);
     } else {
-      this.removeEggCredits(eggCred, folderName);
-      this.removeUnivCredits(interaction.cost - eggCred);
+      await this.removeEggCredits(eggCred, folderName);
+      await this.removeUnivCredits(interaction.cost - eggCred);
     }
     // applying the actual interaction -> gain exp
-    this.gainExp(interaction.expGained, folderName);
+    await this.gainExp(interaction.expGained, folderName);
 
-    this.writeUserToDB();
+    await this.writeUserToDB();
     return true;
   }
 
   // TODO: implement this
   // TODO: test me
-  gainExp(amount: number, folderName: string): void {
+  async gainExp(amount: number, folderName: string): Promise<void> {
     if (this.currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
@@ -444,6 +448,6 @@ export class ModelController {
     }
 
 
-    this.writeUserToDB();
+    await this.writeUserToDB();
   }
 }

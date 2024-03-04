@@ -15,6 +15,7 @@ export class UserManager {
 
   // FOR UNIT TESTING ONLY!! (should comment out when done)
   public addUser(username: string, password: string, user: User) {
+    // console.log("DEBUG: adding user " + username);
     this.nameToPass.set(username, password);
     this.nameToUser.set(username, user);
   }
@@ -25,6 +26,8 @@ export class UserManager {
     if (this.USE_DB) {
       throw new Error("not Implemented");
     } else {
+      // console.log("DEBUG: checking user " + username);
+      // console.log("DEBUG: user exists? " + this.nameToUser.has(username));
       return this.nameToUser.has(username);
     }
   }

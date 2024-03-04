@@ -16,9 +16,12 @@ export class User {
   private univCredits: number;
   private streak: number;
 
-  constructor(idMan: IDManager,
-              username: string, password: string) {
-    this.uniqueID = idMan.nextUserID(this);
+  // constructor(idMan: IDManager,
+  //             username: string, password: string, uid: string = "a") {
+  constructor(idMan: IDManager, username: string, password: string) {
+    this.uniqueID = idMan.nextUserID(this); // NOTE: We should not have to set it since we are given unique
+    // const UID = {id: uid}
+    // this.uniqueID = UID;
     this.username = username;
     this.password = password;
 
