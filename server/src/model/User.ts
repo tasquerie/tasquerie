@@ -5,20 +5,17 @@ import { IDManager } from "./IDManager";
 
 import { UserID } from "../types/UserID";
 import { TaskID } from "../types/TaskID";
-import { DateTime } from "../types/DateTime";
-import { Duration } from "../types/Duration";
 
 export class User {
-  private readonly uniqueID: UserID;
+  private uniqueID: UserID;
   private username: string; // NOTE: User type should not remember username
   private password: string; // NOTE: User type should not rememebr password
   private taskFolders: Map<string, TaskFolder>;
   private univCredits: number;
   private streak: number;
 
-  constructor(idMan: IDManager,
-              username: string, password: string) {
-    this.uniqueID = idMan.nextUserID(this);
+  constructor(userID: UserID, username: string, password: string) {
+    this.uniqueID = userID;
     this.username = username;
     this.password = password;
 
@@ -27,8 +24,16 @@ export class User {
     this.streak = 0;
   }
 
+  getUsername(): string {
+    return this.username;
+  }
+
   getID(): UserID {
     return this.uniqueID;
+  }
+
+  setID(id: UserID) {
+    this.uniqueID = id; 
   }
 
   getUnivCredits(): number {

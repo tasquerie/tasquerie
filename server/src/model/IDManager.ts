@@ -4,6 +4,7 @@ import { Task } from "./Task";
 import { TaskID } from "../types/TaskID";
 import { UserID } from "../types/UserID";
 import { FirebaseUserAPI, FirebaseTaskAPI } from "../firebaseAPI";
+import { Result } from "../types/FirebaseResult";
 const currentTime = new Date();
 
 export class IDManager {
@@ -37,16 +38,15 @@ export class IDManager {
     }
   }
 
+  /**
+   * Generates a user unique taskID from the start time of the task
+   * @param task The Task object you want the id for
+   * @returns TaskID that correspond to the exact start time of the task
+   */
   public nextTaskID(task: Task | undefined): TaskID {
     if (this.USE_DB) {
-      const temp = task?.getStartDate();
-      const year: number = temp?.year as number;
-      const month: number = temp?.month as number;
-      const day = temp?.day;
-      const hour = temp?.hour;
-      const minute = temp?.minute;
-
-      const date = new Date(year, month - 1, day, hour, minute);
+      const temp = task?.getStartDate() as string;
+      const date = new Date(temp)
       const time = date.getTime();
       const UNIXtime = Math.floor(time / 1000);
 
@@ -72,20 +72,26 @@ export class IDManager {
   }
 
   // TODO: Under fix --------------------------------------------------
-  public async getUserByID(userID: UserID): Promise<User | undefined> {
+  public async getUserByID(userID: UserID): Promise<Result> {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const result = await FirebaseUserAPI.getUser(userID);
+      return result;
+      // return result.content;
     } else {
-      return this.userIDToUser.get(userID.id);
+      return {status: true, content: this.userIDToUser.get(userID.id)}
+      // this.userIDToUser.get(userID.id);
     }
   }
 
     // TODO: Under fix --------------------------------------------------
-  public async getTaskByID(userID: UserID, taskID: TaskID): Promise<Task | undefined> {
+  public async getTaskByID(userID: UserID, taskID: TaskID): Promise<Result> {
     if (this.USE_DB) {
-      throw new Error("not Implemented");
+      const result = await FirebaseTaskAPI.getTask(userID, taskID);
+      return result;
+      // return result.content;
     } else {
-      return this.taskIDToTask.get(taskID.id);
+      return { status: true, content: this.taskIDToTask.get(taskID.id)}
+      // return this.taskIDToTask.get(taskID.id);
     }
   }
 

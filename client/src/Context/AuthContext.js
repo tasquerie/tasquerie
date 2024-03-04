@@ -1,14 +1,23 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword   } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, getAdditionalUserInfo, getAuth, Unsubscribe   } from 'firebase/auth';
 import { auth } from '../firebase/firebase'
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+export const withAuth = (Component) => {
+  return function AuthComponent(props) {
+    const auth = useAuth();
+    return <Component {...props} auth={auth} />;
+  };
+};
+
 export const AuthContextProvider = ({ children }) => {
-
-  // const provider = new GoogleAuthProvider();
-  // provider.setCustomParameters({ prompt: 'select_account' });
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
 
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,9 +31,11 @@ export const AuthContextProvider = ({ children }) => {
    */
   const signIn = async (email, password) => {
     try {
+      console.log(email);
+      console.log(password);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+      console.log(user);
       return user;
     } catch (err) {
       // If incorrect password is given for an existing email
@@ -33,6 +44,22 @@ export const AuthContextProvider = ({ children }) => {
         return null;
       }
       console.error(err);
+    }
+  }
+
+  /**
+   * Since google is taking care of everything, use this if you want to
+   * use google sign in / sign up process.
+   */
+  const googleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const test = getAdditionalUserInfo(result);
+      console.log(user);
+      console.log(test);
+    } catch (err) {
+
     }
   }
 
@@ -90,11 +117,16 @@ export const AuthContextProvider = ({ children }) => {
 
   const value = {
     getUser,
+    googleSignIn,
     signIn,
     signUp,
     signOut
   }
 
+
+  // NOTE:
+  // Example usage of AuthContext.js on login page
+  // const { getUser, googleSignIn, signIn, signUp, signOut } = useAuth();
   return (
     <AuthContext.Provider value={value}>
       {loading ? null : children}
