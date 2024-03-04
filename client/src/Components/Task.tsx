@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
+import { EditTaskWindow } from './EditTaskWindow';
 
 // NOTE: egg image sizes are strictly 256x256. Otherwise things break
 
@@ -29,14 +30,15 @@ interface TaskProps {
 
 interface TaskState {
     showingDetails: boolean;
-    // uid: string;
-    // name: string;
-    // isComplete: boolean;
-    // description: string;
-    // tags?: string[];
-    // owner?: string;
-    // sharedwith?: string[];
+    uid: string;
+    name: string;
+    isComplete: boolean;
+    description: string;
+    tags?: string[];
+    owner?: string;
+    sharedwith?: string[];
     creditReward: number;
+    showingEditWindow: boolean;
 }
 
 export class Task extends Component<TaskProps, TaskState> {
@@ -47,7 +49,15 @@ export class Task extends Component<TaskProps, TaskState> {
         super(props);
         this.state = {
             showingDetails: false,
-            creditReward: this.props.task.creditReward
+            creditReward: this.props.task.creditReward,
+            uid: this.props.task.uid,
+            name: this.props.task.name,
+            isComplete: this.props.task.isComplete,
+            description: this.props.task.description,
+            tags: this.props.task.tags,
+            owner: this.props.task.owner,
+            sharedwith: this.props.task.sharedwith,
+            showingEditWindow: false
         };
     }
 
@@ -93,9 +103,37 @@ export class Task extends Component<TaskProps, TaskState> {
         }))
     }
 
+    showEditWindow() {
+        this.setState({
+            showingEditWindow: true
+        });
+    }
+
+    hideEditWindow() {
+        this.setState({
+            showingEditWindow: false
+        });
+    }
+
+    mockEditTask(task: TaskType) {
+        // only temporary, no persistence, exists at this level only
+        // but proof of concept
+        this.setState({
+            showingDetails: false,
+            creditReward: task.creditReward,
+            uid: task.uid,
+            name: task.name,
+            isComplete: task.isComplete,
+            description: task.description,
+            tags: task.tags,
+            owner: task.owner,
+            sharedwith: task.sharedwith
+        })
+    }
+
     render() {
 
-        let task;
+        let task, editWindow;
 
         if (this.state.showingDetails) {
             task = <div>
@@ -104,16 +142,20 @@ export class Task extends Component<TaskProps, TaskState> {
                             onClick={(event) => {
                                 this.handleCheck(event);
                             }}
-                            defaultChecked={this.props.task.isComplete}/>
+                            defaultChecked={this.state.isComplete}/>
                             <div className="taskName"
                             onClick={() => {
                                 this.toggleDetail();
                             }}
-                            >{this.props.task.name}</div>
-                            <button className="editTaskButton">Edit</button>
+                            >{this.state.name}</div>
+                            <button className="editTaskButton"
+                            onClick={() => {
+                                this.showEditWindow();
+                            }}
+                            >Edit</button>
                         </div>
                         <div className="taskBody">
-                            {this.props.task.description}
+                            {this.state.description}
                         </div>
                     </div>;
         } else {
@@ -123,19 +165,39 @@ export class Task extends Component<TaskProps, TaskState> {
                             onClick={(event) => {
                                 this.handleCheck(event);
                             }}
-                            defaultChecked={this.props.task.isComplete}/>
+                            defaultChecked={this.state.isComplete}/>
                             <div className="taskName"
                             onClick={() => {
                                 this.toggleDetail();
                             }}
-                            >{this.props.task.name}</div>
-                            <button className="editTaskButton">Edit</button>
+                            >{this.state.name}</div>
+                            <button className="editTaskButton"
+                            onClick={() => {
+                                this.showEditWindow();
+                            }}
+                            >Edit</button>
                         </div>
                     </div>;
         }
 
+        if (this.state.showingEditWindow) {
+            editWindow = <EditTaskWindow
+                task={this.props.task}
+                editTask={(task) => {
+                    this.mockEditTask(task);
+                }}
+                closeBox={() => {
+                    this.hideEditWindow();
+                }}
+            />
+            task = '';
+        } else {
+            editWindow = '';
+        }
+
         return(
             <div className="task">
+                {editWindow}
                 {task}
             </div>
         )
