@@ -13,11 +13,10 @@ interface SettingsProps {
     updateState(selected: string): void;
 }
 
-class Settings extends Component<SettingsProps, AppState> {
+class Settings extends Component<SettingsProps> {
 
     constructor(props: any){
         super(props);
-        // no state
     }
 
     render() {
@@ -25,9 +24,11 @@ class Settings extends Component<SettingsProps, AppState> {
             <div id="settings-general">
                 <h1>General Settings</h1>
                 <button className='home-button invisibleButton fa fa-angle-left' onClick={() => this.props.updateState('home')}> Back to Home</button>
-                <button className="settings-button invisibleButton "  onClick={() => this.props.updateState('about')}>About</button>
+                <button className="settings-button invisibleButton "  onClick={() => this.props.updateState('about')}>
+                    <i className="fa fa-info" aria-hidden="true"></i>   About
+                </button>
                 <button className=" settings-button invisibleButton" onClick={() => this.props.updateState('howto')}>  
-                    <i className="fa fa-question-circle-o" aria-hidden="true"></i> How To
+                    <i className="fa fa-question-circle-o" aria-hidden="true"></i>  How To
                 </button>
             </div>
         );
