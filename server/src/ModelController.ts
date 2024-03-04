@@ -27,7 +27,7 @@ export class ModelController {
   private idManager: IDManager;
   private eggManager: EggManager;
   private writeManager: WriteManager;
-  private currentUser?: User;
+  private currentUser?: User;  // KEPT ONLY FOR TESTING PURPOSES!!
 
   constructor(userManager: UserManager, idManager: IDManager, eggManager: EggManager,
               writeManager: WriteManager) {
@@ -57,9 +57,9 @@ export class ModelController {
   // TODO: implement this
   // TODO: test me
   async signup(username: string, password: string): Promise<string> {
-    let exists: boolean = await this.userManager.usernameExists(username);
+    let exists: boolean = this.userManager.usernameExists(username);
     if (exists) {
-      console.log("DEBUG: user already there.");
+      // console.log("DEBUG: user already there.");
       throw new Error('Username already exists!');
     }
     if (password.length < 8) {
@@ -71,16 +71,14 @@ export class ModelController {
       // for testing only
       this.userManager.addUser(username, password, this.currentUser);
     }
-    await this.writeUserToDB();
+    await this.writeUserToDB(this.currentUser);
     return this.currentUser.getID().id;
   }
 
   // PRIVATE HELPERS
   // If user is not signed-in, throws an Error.
-  private async writeUserToDB() {
-    if (this.currentUser !== undefined) {
-       await this.writeManager.writeUser(this.currentUser);
-    }
+  private async writeUserToDB(user: User) {
+    await this.writeManager.writeUser(user);
   }
 
   private async writeTaskToDB(task: Task) {
@@ -115,28 +113,30 @@ export class ModelController {
   // data manipulation methods
   // TODO: implement this
   // TODO: test me
-  async addFolder(name: string, description: string, eggType: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async addFolder(userID: UserID, name: string, description: string, eggType: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     if (taskFolderMap.has(name)) {
       throw new Error('Duplicated value: the given folder name already exists');
     }
     const newFolder = new TaskFolder(name, description, eggType);
     taskFolderMap.set(name, newFolder);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async setFolder(name: string, newName?: string, description?: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async setFolder(userID: UserID, name: string, newName?: string, description?: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(name);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -146,23 +146,24 @@ export class ModelController {
     }
     if (newName !== undefined) {
       folder.setName(newName);
-      this.currentUser.getTaskFolders().set(newName, folder);
-      this.currentUser.getTaskFolders().delete(name);
+      currentUser.getTaskFolders().set(newName, folder);
+      currentUser.getTaskFolders().delete(name);
     }
     if (description !== undefined) {
       folder.setDescription(description);
     }
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async deleteFolder(name: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async deleteFolder(userID: UserID, name: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(name);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -172,42 +173,44 @@ export class ModelController {
       await this.deleteTaskFromDB(value);
     })
     taskFolderMap.delete(name);  // remove task folder
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async addTask(folderName: string, taskName: string, description: string, tags: string[],
+  async addTask(userID: UserID, folderName: string, taskName: string, description: string, tags: string[],
           whoSharedWith: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<TaskID> {
-    if (this.currentUser === undefined) {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
-    let folder = this.currentUser.getTaskFolders().get(folderName);
+    let folder = currentUser.getTaskFolders().get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
     let task = new Task(TEMP_ID_TASK,
-                        taskName, description, tags, this.currentUser.getID(),
+                        taskName, description, tags, currentUser.getID(),
                         whoSharedWith, startDate, cycleDuration, deadline);
     task.setID(this.idManager.nextTaskID(task));
     
     folder.getTasks().set(task.getID(), task);  // add task to folder
     await this.writeTaskToDB(task);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
     return task.getID();
   }
 
   // TODO: implement this
   // TODO: test me
-  async setTask(folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
+  async setTask(userID: UserID, folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<void> {
-    if (this.currentUser === undefined) {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -242,17 +245,18 @@ export class ModelController {
       task.setDeadline(deadline);
     }
     await this.writeTaskToDB(task);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async deleteTask(folderName: string, id: TaskID): Promise<void> {
-    if (this.currentUser === undefined) {
+  async deleteTask(userID: UserID, folderName: string, id: TaskID): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -264,85 +268,90 @@ export class ModelController {
     }
     folder.getTasks().delete(id);
     await this.deleteTaskFromDB(task);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async addUnivCredits(amount: number): Promise<void> {
-    if (this.currentUser === undefined) {
+  async addUnivCredits(userID: UserID, amount: number): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     if (amount < 0) {
       throw new Error(this.NEGATIVE_VALUE);
     }
-    const sum = this.currentUser.getUnivCredits() + amount;
-    this.currentUser.setUnivCredits(sum);
-    await this.writeUserToDB();
+    const sum = currentUser.getUnivCredits() + amount;
+    currentUser.setUnivCredits(sum);
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async removeUnivCredits(amount: number): Promise<void> {
-    if (this.currentUser === undefined) {
+  async removeUnivCredits(userID: UserID, amount: number): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     if (amount < 0) {
       throw new Error(this.NEGATIVE_VALUE);
     }
-    const diff = this.currentUser.getUnivCredits() - amount;
-    this.currentUser.setUnivCredits(diff);
-    await this.writeUserToDB();
+    const diff = currentUser.getUnivCredits() - amount;
+    currentUser.setUnivCredits(diff);
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async addEggCredits(amount: number, folderName: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async addEggCredits(userID: UserID, amount: number, folderName: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     if (amount < 0) {
       throw new Error(this.NEGATIVE_VALUE);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
     const sum = folder.getEggCredits() + amount;
     folder.setEggCredits(sum);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async removeEggCredits(amount: number, folderName: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async removeEggCredits(userID: UserID, amount: number, folderName: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     if (amount < 0) {
       throw new Error(this.NEGATIVE_VALUE);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
     const diff = folder.getEggCredits() - amount;
     folder.setEggCredits(diff);
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 
   // TODO: implement this
   // TODO: test me
-  async buyAccessory(folderName: string, accesssoryType: string): Promise<boolean> {
-    if (this.currentUser === undefined) {
+  async buyAccessory(userID: UserID, folderName: string, accesssoryType: string): Promise<boolean> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -363,33 +372,34 @@ export class ModelController {
       throw new Error('Impossible: undefined accessory');
     }
     const eggCred = folder.getEggCredits();
-    const univCred = this.currentUser.getUnivCredits();
+    const univCred = currentUser.getUnivCredits();
     if (eggCred + univCred < accessory.cost) {
       return false;  // not enough credits to buy this accessory
     }
 
     // actual purchase
     if (eggCred >= accessory.cost) {
-      await this.removeEggCredits(accessory.cost, folderName);
+      await this.removeEggCredits(userID, accessory.cost, folderName);
     } else {
-      await this.removeEggCredits(eggCred, folderName);
-      await this.removeUnivCredits(accessory.cost - eggCred);
+      await this.removeEggCredits(userID, eggCred, folderName);
+      await this.removeUnivCredits(userID, accessory.cost - eggCred);
     }
     // adding the actual accessory
     folder.getEgg().getEquippedAccessories().add(accesssoryType);
 
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
     return true;
   }
 
   // TODO: implement this
   // TODO: test me
-  async buyInteraction(folderName: string, interactionType: string): Promise<boolean> {
-    if (this.currentUser === undefined) {
+  async buyInteraction(userID: UserID, folderName: string, interactionType: string): Promise<boolean> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -407,36 +417,37 @@ export class ModelController {
       throw new Error('Impossible: undefined interaction');
     }
     const eggCred = folder.getEggCredits();
-    const univCred = this.currentUser.getUnivCredits();
+    const univCred = currentUser.getUnivCredits();
     if (eggCred + univCred < interaction.cost) {
       return false;  // not enough credits to buy this accessory
     }
 
     // actual purchase
     if (eggCred >= interaction.cost) {
-      await this.removeEggCredits(interaction.cost, folderName);
+      await this.removeEggCredits(userID, interaction.cost, folderName);
     } else {
-      await this.removeEggCredits(eggCred, folderName);
-      await this.removeUnivCredits(interaction.cost - eggCred);
+      await this.removeEggCredits(userID, eggCred, folderName);
+      await this.removeUnivCredits(userID, interaction.cost - eggCred);
     }
     // applying the actual interaction -> gain exp
-    await this.gainExp(interaction.expGained, folderName);
+    await this.gainExp(userID, interaction.expGained, folderName);
 
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
     return true;
   }
 
   // TODO: implement this
   // TODO: test me
-  async gainExp(amount: number, folderName: string): Promise<void> {
-    if (this.currentUser === undefined) {
+  async gainExp(userID: UserID, amount: number, folderName: string): Promise<void> {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
     if (amount < 0) {
       throw new Error(this.NEGATIVE_VALUE);
     }
     // reference to the taskfolder of the current user.
-    const taskFolderMap = this.currentUser.getTaskFolders();
+    const taskFolderMap = currentUser.getTaskFolders();
     const folder = taskFolderMap.get(folderName);
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
@@ -460,6 +471,6 @@ export class ModelController {
     }
 
 
-    await this.writeUserToDB();
+    await this.writeUserToDB(currentUser);
   }
 }

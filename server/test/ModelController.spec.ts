@@ -175,7 +175,7 @@ describe('addFolder', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         let folderName = "name " + i;
         let folder = new TaskFolder(folderName, "desc " + i, "eggType " + i)
-        await contr.addFolder(folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
+        await contr.addFolder(user.getID(), folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
 
         // test here
         let expected = folder.getJSON();
@@ -188,14 +188,14 @@ describe('addFolder', function () {
   describe('folder already exists → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
       let desc = "desc ";
       let eggType = "eggType ";
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.doesNotThrow(async () => await contr.addFolder(folderName + i, desc + i, eggType + i));
-        assert.rejects(async () => await contr.addFolder(folderName + i, desc + i, eggType + i), Error,
+        assert.doesNotThrow(async () => await contr.addFolder(user.getID(), folderName + i, desc + i, eggType + i));
+        assert.rejects(async () => await contr.addFolder(user.getID(), folderName + i, desc + i, eggType + i), Error,
                       'Duplicated value: the given folder name already exists');
       }
     });
@@ -213,15 +213,15 @@ describe('setFolder', function () {
       let desc = "desc ";
       let eggType = "eggType ";
       for (let i = 0; i < MAX_CASES; i++) {
-        contr.addFolder(folderName + i, desc, eggType);
+        contr.addFolder(user.getID(), folderName + i, desc, eggType);
 
                 
         let before = await viewer.getTaskFolderInfo(user.getID(), folderName + i);
-        await contr.setFolder(folderName + i);
+        await contr.setFolder(user.getID(), folderName + i);
         let after = await viewer.getTaskFolderInfo(user.getID(), folderName + i);
         assert.strictEqual(before, after);
 
-        await contr.setFolder(folderName + i, folderName + i + "k", desc + i);
+        await contr.setFolder(user.getID(), folderName + i, folderName + i + "k", desc + i);
 
         let folder = new TaskFolder(folderName + i + "k", desc + i, eggType);
         // test here
@@ -235,14 +235,14 @@ describe('setFolder', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
       let desc = "desc ";
       let eggType = "eggType ";
-      await contr.addFolder(folderName, desc, eggType);
+      await contr.addFolder(user.getID(), folderName, desc, eggType);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.setFolder(folderName + i, folderName + i + "k", desc), Error,
+        assert.rejects(async () => await contr.setFolder(user.getID(), folderName + i, folderName + i + "k", desc), Error,
                       'The folder name does not exist');
       }
     });
@@ -250,16 +250,16 @@ describe('setFolder', function () {
   describe('newName already exists —> exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
-      await contr.addFolder("already exist", "desc", "eggType");
+      let user = await getDefaultUser(contr);
+      await contr.addFolder(user.getID(), "already exist", "desc", "eggType");
       let folderName = "name ";
       for (let i = 0; i < MAX_CASES; i++) {
         // add folders so they can be set
-        await contr.addFolder(folderName + i, "desc", "eggType");
+        await contr.addFolder(user.getID(), folderName + i, "desc", "eggType");
       }
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.setFolder(folderName + i, "already exist", "desc"), Error,
+        assert.rejects(async () => await contr.setFolder(user.getID(), folderName + i, "already exist", "desc"), Error,
                       'Duplicated value: the new folder name already exists');
       }
     });
@@ -276,9 +276,9 @@ describe('deleteFolder', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         let folderName = "name " + i;
         let folder = new TaskFolder(folderName, "desc " + i, "eggType " + i)
-        await contr.addFolder(folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
+        await contr.addFolder(user.getID(), folder.getName(), folder.getDescription(), folder.getEgg().getEggType());
         let actualBeforeDelete = await viewer.getTaskFolderInfo(user.getID(), folderName);
-        await contr.deleteFolder(folder.getName());
+        await contr.deleteFolder(user.getID(), folder.getName());
 
         // test here
         let actual = await viewer.getTaskFolderInfo(user.getID(), folderName);
@@ -291,11 +291,11 @@ describe('deleteFolder', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.deleteFolder(folderName + i), Error,
+        assert.rejects(async () => await contr.deleteFolder(user.getID(), folderName + i), Error,
                       'The folder name does not exist');
       }
     });
@@ -310,9 +310,9 @@ describe('addTask', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "folderName";
-      await contr.addFolder(folderName, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
       for (let i = 0; i < MAX_CASES; i++) {
-        let taskID = await contr.addTask(folderName, "task name " + i, "desc " + i, [], []);
+        let taskID = await contr.addTask(user.getID(), folderName, "task name " + i, "desc " + i, [], []);
         let expectedTask = new Task(TEMP_ID_TASK, "task name " + i, "desc " + i, [], user.getID(), []);
         expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
@@ -326,11 +326,11 @@ describe('addTask', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.addTask(folderName + i, "task name " + i, "desc " + i, [], []), Error,
+        assert.rejects(async () => await contr.addTask(user.getID(), folderName + i, "task name " + i, "desc " + i, [], []), Error,
                       'The folder name does not exist');
       }
     });
@@ -345,10 +345,10 @@ describe('setTask', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "folderName";
-      await contr.addFolder(folderName, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
       for (let i = 0; i < MAX_CASES; i++) {
-        let taskID = await contr.addTask(folderName,      "task name " + i,       "desc " + i, [], []);
-        await contr.setTask(folderName, taskID, false,          "task name " + i + "k", "desc " + i + "k");
+        let taskID = await contr.addTask(user.getID(), folderName,      "task name " + i,       "desc " + i, [], []);
+        await contr.setTask(user.getID(), folderName, taskID, false,          "task name " + i + "k", "desc " + i + "k");
         let expectedTask = new Task(TEMP_ID_TASK, "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
         expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
@@ -362,13 +362,13 @@ describe('setTask', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "eggType");
-      let taskID = await contr.addTask(folderName, "task name", "desc", [], []);
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
+      let taskID = await contr.addTask(user.getID(), folderName, "task name", "desc", [], []);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.setTask(folderName + i, taskID, false, "task name", "desc", [], []), Error,
+        assert.rejects(async () => await contr.setTask(user.getID(), folderName + i, taskID, false, "task name", "desc", [], []), Error,
                       'The folder name does not exist');
       }
     });
@@ -378,16 +378,16 @@ describe('setTask', function () {
       let contr = getContr();
       let user = await getDefaultUser(contr);
       let folderAAA = "folder AAA";
-      await contr.addFolder(folderAAA, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderAAA, "desc", "eggType");
       let taskIDs: Set<TaskID> = new Set<TaskID>();
       for (let i = 0; i < MAX_CASES; i++) {
-        taskIDs.add(await contr.addTask(folderAAA, "task name " + i, "desc " + i, [], []));
+        taskIDs.add(await contr.addTask(user.getID(), folderAAA, "task name " + i, "desc " + i, [], []));
       }
       let folderBBB = "folder BBB";
-      await contr.addFolder(folderBBB, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderBBB, "desc", "eggType");
       taskIDs.forEach(taskID => {
         // test here
-        assert.rejects(async () => await contr.setTask(folderBBB, taskID, false, "task name", "desc", [], []), Error,
+        assert.rejects(async () => await contr.setTask(user.getID(), folderBBB, taskID, false, "task name", "desc", [], []), Error,
                       'The taskID does not exist in this folder');
       });
     });
@@ -403,10 +403,10 @@ describe('deleteTask', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "folderName";
-      await contr.addFolder(folderName, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
       for (let i = 0; i < MAX_CASES; i++) {
-        let taskID = await contr.addTask(folderName, "task name " + i, "desc " + i, [], []);
-        await contr.deleteTask(folderName, taskID);
+        let taskID = await contr.addTask(user.getID(), folderName, "task name " + i, "desc " + i, [], []);
+        await contr.deleteTask(user.getID(), folderName, taskID);
         let expected = "";
 
         // test here -- deleted from view
@@ -423,13 +423,13 @@ describe('deleteTask', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "eggType");
-      let taskID = await contr.addTask(folderName, "task name", "desc", [], []);
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
+      let taskID = await contr.addTask(user.getID(), folderName, "task name", "desc", [], []);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.deleteTask(folderName + i, taskID), Error,
+        assert.rejects(async () => await contr.deleteTask(user.getID(), folderName + i, taskID), Error,
                       'The folder name does not exist');
       }
     });
@@ -439,16 +439,16 @@ describe('deleteTask', function () {
       let contr = getContr();
       let user = await getDefaultUser(contr);
       let folderAAA = "folder AAA";
-      await contr.addFolder(folderAAA, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderAAA, "desc", "eggType");
       let taskIDs: Set<TaskID> = new Set<TaskID>();
       for (let i = 0; i < MAX_CASES; i++) {
-        taskIDs.add(await contr.addTask(folderAAA, "task name " + i, "desc " + i, [], []));
+        taskIDs.add(await contr.addTask(user.getID(), folderAAA, "task name " + i, "desc " + i, [], []));
       }
       let folderBBB = "folder BBB";
-      await contr.addFolder(folderBBB, "desc", "eggType");
+      await contr.addFolder(user.getID(), folderBBB, "desc", "eggType");
       taskIDs.forEach(taskID => {
         // test here
-        assert.rejects(async () => await contr.deleteTask(folderBBB, taskID), Error,
+        assert.rejects(async () => await contr.deleteTask(user.getID(), folderBBB, taskID), Error,
                       'The taskID does not exist in this folder');
       });
     });
@@ -465,7 +465,7 @@ describe('addUnivCredits', function () {
       // 0 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.addUnivCredits(0);
+        await contr.addUnivCredits(user.getID(), 0);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -473,7 +473,7 @@ describe('addUnivCredits', function () {
       // 1 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.addUnivCredits(1);
+        await contr.addUnivCredits(user.getID(), 1);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits + 1, userAfter.univCredits);
@@ -481,7 +481,7 @@ describe('addUnivCredits', function () {
       // 10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.addUnivCredits(10000);
+        await contr.addUnivCredits(user.getID(), 10000);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits + 10000, userAfter.univCredits);
@@ -495,12 +495,12 @@ describe('addUnivCredits', function () {
       let viewer = getViewer(contr);
       // -1 case
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.rejects(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.addUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        assert.rejects(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.addUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -520,7 +520,7 @@ describe('removeUnivCredits', function () {
       // 0 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.removeUnivCredits(0);
+        await contr.removeUnivCredits(user.getID(), 0);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -528,7 +528,7 @@ describe('removeUnivCredits', function () {
       // 1 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.removeUnivCredits(1);
+        await contr.removeUnivCredits(user.getID(), 1);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits - 1, userAfter.univCredits);
@@ -536,7 +536,7 @@ describe('removeUnivCredits', function () {
       // 10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        await contr.removeUnivCredits(10000);
+        await contr.removeUnivCredits(user.getID(), 10000);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits - 10000, userAfter.univCredits);
@@ -550,12 +550,12 @@ describe('removeUnivCredits', function () {
       let viewer = getViewer(contr);
       // -1 case
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.rejects(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.removeUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        assert.rejects(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.removeUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -574,11 +574,11 @@ describe('addEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "eggType")
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          await contr.addEggCredits(num, folderName);
+          await contr.addEggCredits(user.getID(), num, folderName);
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits + num, folderAfter.eggCredits);
@@ -596,11 +596,11 @@ describe('addEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "eggType")
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          assert.rejects(async () => await contr.addEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.addEggCredits(user.getID(), num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
@@ -621,11 +621,11 @@ describe('removeEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "eggType")
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          await contr.removeEggCredits(num, folderName);
+          await contr.removeEggCredits(user.getID(), num, folderName);
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits - num, folderAfter.eggCredits);
@@ -643,11 +643,11 @@ describe('removeEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "eggType")
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          assert.rejects(async () => await contr.removeEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.removeEggCredits(user.getID(), num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
@@ -691,10 +691,10 @@ describe('buyAccessory', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
-        await contr.addUnivCredits(10000 * MAX_CASES);
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
+        await contr.addUnivCredits(user.getID(), 10000 * MAX_CASES);
         for (let i = 0; i < MAX_CASES; i++) {
-          let ret = await contr.buyAccessory(folderName, "acc1");
+          let ret = await contr.buyAccessory(user.getID(), folderName, "acc1");
           let folder = user.getTaskFolders().get(folderName);
           assert(folder !== undefined);
           let accs = folder.getEgg().getEquippedAccessories();  // should have exactly one acc
@@ -721,13 +721,13 @@ describe('buyAccessory', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let eggCredits = 10000 * MAX_CASES;
-        await contr.addEggCredits(eggCredits, folderName);
+        await contr.addEggCredits(user.getID(), eggCredits, folderName);
         let folder = user.getTaskFolders().get(folderName);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
-          assert(await contr.buyAccessory(folderName, "acc1"));
+          assert(await contr.buyAccessory(user.getID(), folderName, "acc1"));
           eggCredits -= 100;  // default accesory cost
           assert.strictEqual(eggCredits, folder.getEggCredits());
           folder.getEgg().getEquippedAccessories().clear();
@@ -743,15 +743,15 @@ describe('buyAccessory', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let folder = user.getTaskFolders().get(folderName);
         let univCredits = MAX_CASES * 100;
-        await contr.addUnivCredits(univCredits);
+        await contr.addUnivCredits(user.getID(), univCredits);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
           let eggCredits = 50 + (i % 17);
-          await contr.addEggCredits(eggCredits, folderName);  // varying egg credits
-          assert(await contr.buyAccessory(folderName, "acc1"));
+          await contr.addEggCredits(user.getID(), eggCredits, folderName);  // varying egg credits
+          assert(await contr.buyAccessory(user.getID(), folderName, "acc1"));
           univCredits -= (100 - eggCredits);
           assert.strictEqual(0, folder.getEggCredits());
           assert.strictEqual(univCredits, user.getUnivCredits());
@@ -768,15 +768,15 @@ describe('buyAccessory', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let folder = user.getTaskFolders().get(folderName);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
           let eggCredits = 50 + (i % 17);
-          await contr.addEggCredits(eggCredits, folderName);  // varying egg credits
-          assert(! (await contr.buyAccessory(folderName, "acc1")) );  // assert we cannot buy
+          await contr.addEggCredits(user.getID(), eggCredits, folderName);  // varying egg credits
+          assert(! (await contr.buyAccessory(user.getID(), folderName, "acc1")) );  // assert we cannot buy
           assert.strictEqual(eggCredits, folder.getEggCredits());
-          await contr.removeEggCredits(eggCredits, folderName);
+          await contr.removeEggCredits(user.getID(), eggCredits, folderName);
         }
       }
     });
@@ -784,12 +784,12 @@ describe('buyAccessory', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "egg1");
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.buyAccessory(folderName + i, "acc1"), Error,
+        assert.rejects(async () => await contr.buyAccessory(user.getID(), folderName + i, "acc1"), Error,
                       'The folder name does not exist');
       }
     });
@@ -799,10 +799,10 @@ describe('buyAccessory', function () {
       let contr = getContr();
       let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "egg1");
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.buyAccessory(folderName, "fakeAcc" + i), Error,
+        assert.rejects(async () => await contr.buyAccessory(user.getID(), folderName, "fakeAcc" + i), Error,
                       'not allowed to buy this accessory');
       }
     });
@@ -841,13 +841,13 @@ describe('buyInteraction', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
-        await contr.addUnivCredits(10000 * MAX_CASES);
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
+        await contr.addUnivCredits(user.getID(), 10000 * MAX_CASES);
         let folder = user.getTaskFolders().get(folderName);
         assert(folder !== undefined);
         let exp = folder.getEgg().getExp();
         for (let i = 0; i < MAX_CASES; i++) {
-          assert(await contr.buyInteraction(folderName, "inter1"));
+          assert(await contr.buyInteraction(user.getID(), folderName, "inter1"));
           exp += 100;  // default exp value
           assert.strictEqual(exp, folder.getEgg().getExp());
         }
@@ -864,13 +864,13 @@ describe('buyInteraction', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let eggCredits = 10000 * MAX_CASES;
-        await contr.addEggCredits(eggCredits, folderName);
+        await contr.addEggCredits(user.getID(), eggCredits, folderName);
         let folder = user.getTaskFolders().get(folderName);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
-          assert(await contr.buyInteraction(folderName, "inter1"));
+          assert(await contr.buyInteraction(user.getID(), folderName, "inter1"));
           eggCredits -= 100;  // default accesory cost
           assert.strictEqual(eggCredits, folder.getEggCredits());
           folder.getEgg().getEquippedAccessories().clear();
@@ -886,15 +886,15 @@ describe('buyInteraction', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let folder = user.getTaskFolders().get(folderName);
         let univCredits = MAX_CASES * 100;
-        await contr.addUnivCredits(univCredits);
+        await contr.addUnivCredits(user.getID(), univCredits);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
           let eggCredits = 50 + (i % 17);
-          await contr.addEggCredits(eggCredits, folderName);  // varying egg credits
-          assert(await contr.buyInteraction(folderName, "inter1"));
+          await contr.addEggCredits(user.getID(), eggCredits, folderName);  // varying egg credits
+          assert(await contr.buyInteraction(user.getID(), folderName, "inter1"));
           univCredits -= (100 - eggCredits);
           assert.strictEqual(0, folder.getEggCredits());
           assert.strictEqual(univCredits, user.getUnivCredits());
@@ -911,15 +911,15 @@ describe('buyInteraction', function () {
         let user = await getDefaultUser(contr);
         let viewer = getViewer(contr);
         let folderName = "name";
-        await contr.addFolder(folderName, "desc", "egg1");
+        await contr.addFolder(user.getID(), folderName, "desc", "egg1");
         let folder = user.getTaskFolders().get(folderName);
         assert(folder !== undefined);
         for (let i = 0; i < MAX_CASES; i++) {
           let eggCredits = 50 + (i % 17);
-          await contr.addEggCredits(eggCredits, folderName);  // varying egg credits
-          assert( !(await (contr.buyInteraction(folderName, "inter1")) ));  // assert we cannot buy
+          await contr.addEggCredits(user.getID(), eggCredits, folderName);  // varying egg credits
+          assert( !(await (contr.buyInteraction(user.getID(), folderName, "inter1")) ));  // assert we cannot buy
           assert.strictEqual(eggCredits, folder.getEggCredits());
-          await contr.removeEggCredits(eggCredits, folderName);
+          await contr.removeEggCredits(user.getID(), eggCredits, folderName);
         }
       }
     });
@@ -927,12 +927,12 @@ describe('buyInteraction', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "egg1");
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.buyInteraction(folderName + i, "inter1"), Error,
+        assert.rejects(async () => await contr.buyInteraction(user.getID(), folderName + i, "inter1"), Error,
                       'The folder name does not exist');
       }
     });
@@ -942,10 +942,10 @@ describe('buyInteraction', function () {
       let contr = getContr();
       let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "egg1");
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.buyInteraction(folderName, "fakeInter" + i), Error,
+        assert.rejects(async () => await contr.buyInteraction(user.getID(), folderName, "fakeInter" + i), Error,
                       'not allowed to buy this interaction');
       }
     });
@@ -958,12 +958,12 @@ describe('gainExp', function () {
   describe('folder DNE (does not exist) → exception', function () {
     it('should throw an error', async function () {
       let contr = getContr();
-      await getDefaultUser(contr);
+      let user = await getDefaultUser(contr);
       let folderName = "name ";
-      await contr.addFolder(folderName, "desc", "egg1");
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.rejects(async () => await contr.gainExp(1000, folderName + i), Error,
+        assert.rejects(async () => await contr.gainExp(user.getID(), 1000, folderName + i), Error,
                       'The folder name does not exist');
       }
     });
@@ -976,7 +976,7 @@ describe('gainExp', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "egg1")
+      await contr.addFolder(user.getID(), folderName, "desc", "egg1")
       let folder = user.getTaskFolders().get(folderName);
       assert(folder !== undefined);
       let maxLevels = 5;
@@ -988,7 +988,7 @@ describe('gainExp', function () {
         }
         for (let i = 0; i < maxLevels; i++) {
           // exp check
-          await contr.gainExp(num, folderName);
+          await contr.gainExp(user.getID(), num, folderName);
           exp += num;
           if (firstTime && offByOne) {
             num += 1;
@@ -1030,11 +1030,11 @@ describe('gainExp', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-      await contr.addFolder(folderName, "desc", "eggType")
+      await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let eggBefore = await viewer.getEggInfo(user.getID(), folderName);
-          assert.rejects(async () => await contr.gainExp(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.gainExp(user.getID(), num, folderName), Error, 'Illegal operation: negative credit value');
           let eggAfter = await viewer.getEggInfo(user.getID(), folderName);
   
           assert.strictEqual(eggBefore, eggAfter);
