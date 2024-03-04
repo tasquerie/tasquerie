@@ -124,4 +124,13 @@ export class ModelView {
   async getAccessory(name: string): Promise<string> {
     return await this.eggManager.getAccessoryJSON(name);
   }
+
+  async getUsername(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    return user.getUsername();
+  }
 }

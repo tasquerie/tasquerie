@@ -26,6 +26,10 @@ export class User {
     this.streak = 0;
   }
 
+  getUsername(): string {
+    return this.username;
+  }
+
   getID(): UserID {
     return this.uniqueID;
   }
