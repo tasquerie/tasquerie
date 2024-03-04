@@ -8,13 +8,12 @@
 import React, {Component} from 'react';
 import logo from './logo.svg';
 import {AppState} from '../App';
-import { SettingsState } from './SettingsPages';
 
 interface SettingsProps {
     updateState(selected: string): void;
 }
 
-class Settings extends Component<SettingsProps, SettingsState> {
+class Settings extends Component<SettingsProps> {
 
     constructor(props: any){
         super(props);
