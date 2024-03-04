@@ -1,7 +1,6 @@
 // Unit tests for ModelController
 
 import { strict as assert } from 'assert';
-import { expect } from 'chai';
 import { IDManager } from '../src/model/IDManager';
 import { UserManager } from '../src/model/UserManager';
 import { EggManager } from '../src/model/EggManager';
@@ -136,8 +135,8 @@ describe('signup', function () {
       await contr.signup(username, password);
       for (let i = 0; i < MAX_CASES; i++) {
         password = "password " + i;
-        // assert.throws(async () => await contr.signup(username, password), Error, 'Username already exists!');
-        expect(contr.signup(username, password)).to.be.throw('Username already exists!');
+        assert.rejects(async () => await contr.signup(username, password), Error, 'Username already exists!');
+        // expect(contr.signup(username, password)).to.be.throw('Username already exists!');
       }
     });
   });
@@ -147,7 +146,7 @@ describe('signup', function () {
       let password = ""
       for (let i = 0; i < MAX_PASS_LEN; i++) {
         let username = "user " + i;
-        assert.throws(async () => await contr.signup(username, password), Error, 'Password must be at least 8 characters long.');
+        assert.rejects(async () => await contr.signup(username, password), Error, 'Password must be at least 8 characters long.');
         password += "a";
       }
       // NOW PASSWORD IS LENGTH 8 --> SHOULD WORK
@@ -191,7 +190,7 @@ describe('addFolder', function () {
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
         assert.doesNotThrow(async () => await contr.addFolder(folderName + i, desc + i, eggType + i));
-        assert.throws(async () => await contr.addFolder(folderName + i, desc + i, eggType + i), Error,
+        assert.rejects(async () => await contr.addFolder(folderName + i, desc + i, eggType + i), Error,
                       'Duplicated value: the given folder name already exists');
       }
     });
@@ -238,7 +237,7 @@ describe('setFolder', function () {
       await contr.addFolder(folderName, desc, eggType);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.setFolder(folderName + i, folderName + i + "k", desc), Error,
+        assert.rejects(async () => await contr.setFolder(folderName + i, folderName + i + "k", desc), Error,
                       'The folder name does not exist');
       }
     });
@@ -255,7 +254,7 @@ describe('setFolder', function () {
       }
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.setFolder(folderName + i, "already exist", "desc"), Error,
+        assert.rejects(async () => await contr.setFolder(folderName + i, "already exist", "desc"), Error,
                       'Duplicated value: the new folder name already exists');
       }
     });
@@ -291,7 +290,7 @@ describe('deleteFolder', function () {
       let folderName = "name ";
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.deleteFolder(folderName + i), Error,
+        assert.rejects(async () => await contr.deleteFolder(folderName + i), Error,
                       'The folder name does not exist');
       }
     });
@@ -325,7 +324,7 @@ describe('addTask', function () {
       let folderName = "name ";
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.addTask(folderName + i, "task name " + i, "desc " + i, [], []), Error,
+        assert.rejects(async () => await contr.addTask(folderName + i, "task name " + i, "desc " + i, [], []), Error,
                       'The folder name does not exist');
       }
     });
@@ -362,7 +361,7 @@ describe('setTask', function () {
       let taskID = await contr.addTask(folderName, "task name", "desc", [], []);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.setTask(folderName + i, taskID, false, "task name", "desc", [], []), Error,
+        assert.rejects(async () => await contr.setTask(folderName + i, taskID, false, "task name", "desc", [], []), Error,
                       'The folder name does not exist');
       }
     });
@@ -381,7 +380,7 @@ describe('setTask', function () {
       await contr.addFolder(folderBBB, "desc", "eggType");
       taskIDs.forEach(taskID => {
         // test here
-        assert.throws(async () => await contr.setTask(folderBBB, taskID, false, "task name", "desc", [], []), Error,
+        assert.rejects(async () => await contr.setTask(folderBBB, taskID, false, "task name", "desc", [], []), Error,
                       'The taskID does not exist in this folder');
       });
     });
@@ -423,7 +422,7 @@ describe('deleteTask', function () {
       let taskID = await contr.addTask(folderName, "task name", "desc", [], []);
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.deleteTask(folderName + i, taskID), Error,
+        assert.rejects(async () => await contr.deleteTask(folderName + i, taskID), Error,
                       'The folder name does not exist');
       }
     });
@@ -442,7 +441,7 @@ describe('deleteTask', function () {
       await contr.addFolder(folderBBB, "desc", "eggType");
       taskIDs.forEach(taskID => {
         // test here
-        assert.throws(async () => await contr.deleteTask(folderBBB, taskID), Error,
+        assert.rejects(async () => await contr.deleteTask(folderBBB, taskID), Error,
                       'The taskID does not exist in this folder');
       });
     });
@@ -489,12 +488,12 @@ describe('addUnivCredits', function () {
       let viewer = getViewer(contr);
       // -1 case
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.throws(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        assert.throws(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -544,12 +543,12 @@ describe('removeUnivCredits', function () {
       let viewer = getViewer(contr);
       // -1 case
       for (let i = 0; i < MAX_CASES; i++) {
-        assert.throws(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
-        assert.throws(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
+        assert.rejects(async () => await contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
@@ -594,7 +593,7 @@ describe('addEggCredits', function () {
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          assert.throws(async () => await contr.addEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.addEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
@@ -641,7 +640,7 @@ describe('removeEggCredits', function () {
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
-          assert.throws(async () => await contr.removeEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.removeEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
@@ -783,7 +782,7 @@ describe('buyAccessory', function () {
       await contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.buyAccessory(folderName + i, "acc1"), Error,
+        assert.rejects(async () => await contr.buyAccessory(folderName + i, "acc1"), Error,
                       'The folder name does not exist');
       }
     });
@@ -796,7 +795,7 @@ describe('buyAccessory', function () {
       await contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.buyAccessory(folderName, "fakeAcc" + i), Error,
+        assert.rejects(async () => await contr.buyAccessory(folderName, "fakeAcc" + i), Error,
                       'not allowed to buy this accessory');
       }
     });
@@ -911,7 +910,7 @@ describe('buyInteraction', function () {
         for (let i = 0; i < MAX_CASES; i++) {
           let eggCredits = 50 + (i % 17);
           await contr.addEggCredits(eggCredits, folderName);  // varying egg credits
-          assert(await (!contr.buyInteraction(folderName, "inter1")));  // assert we cannot buy
+          assert( !(await (contr.buyInteraction(folderName, "inter1")) ));  // assert we cannot buy
           assert.strictEqual(eggCredits, folder.getEggCredits());
           await contr.removeEggCredits(eggCredits, folderName);
         }
@@ -926,7 +925,7 @@ describe('buyInteraction', function () {
       await contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.buyInteraction(folderName + i, "inter1"), Error,
+        assert.rejects(async () => await contr.buyInteraction(folderName + i, "inter1"), Error,
                       'The folder name does not exist');
       }
     });
@@ -939,7 +938,7 @@ describe('buyInteraction', function () {
       await contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.buyInteraction(folderName, "fakeInter" + i), Error,
+        assert.rejects(async () => await contr.buyInteraction(folderName, "fakeInter" + i), Error,
                       'not allowed to buy this interaction');
       }
     });
@@ -957,7 +956,7 @@ describe('gainExp', function () {
       await contr.addFolder(folderName, "desc", "egg1");
       for (let i = 0; i < MAX_CASES; i++) {
         // test here
-        assert.throws(async () => await contr.gainExp(1000, folderName + i), Error,
+        assert.rejects(async () => await contr.gainExp(1000, folderName + i), Error,
                       'The folder name does not exist');
       }
     });
@@ -1028,7 +1027,7 @@ describe('gainExp', function () {
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let eggBefore = await viewer.getEggInfo(user.getID(), folderName);
-          assert.throws(async () => await contr.gainExp(num, folderName), Error, 'Illegal operation: negative credit value');
+          assert.rejects(async () => await contr.gainExp(num, folderName), Error, 'Illegal operation: negative credit value');
           let eggAfter = await viewer.getEggInfo(user.getID(), folderName);
   
           assert.strictEqual(eggBefore, eggAfter);
