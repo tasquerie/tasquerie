@@ -697,7 +697,7 @@ describe('buyAccessory', function () {
           let ret = await contr.buyAccessory(user.getID(), folderName, "acc1");
           let folder = user.getTaskFolders().get(folderName);
           assert(folder !== undefined);
-          let accs = folder.getEgg().getEquippedAccessories();  // should have exactly one acc
+          let accs = folder.getEgg().getOwnedAccessories();  // should have exactly one acc
           accs.forEach(async function (accType) {
             const accessory = await contr.getEggManager().getAccessory(accType);
             assert(accessory !== undefined);
@@ -705,7 +705,7 @@ describe('buyAccessory', function () {
             assert.strictEqual(accessory.name, "acc1");
             assert.strictEqual(accessory.graphicLink, "");
           });
-          folder.getEgg().getEquippedAccessories().clear();
+          folder.getEgg().getOwnedAccessories().clear();
           assert(ret);
         }
       }
@@ -730,7 +730,7 @@ describe('buyAccessory', function () {
           assert(await contr.buyAccessory(user.getID(), folderName, "acc1"));
           eggCredits -= 100;  // default accesory cost
           assert.strictEqual(eggCredits, folder.getEggCredits());
-          folder.getEgg().getEquippedAccessories().clear();
+          folder.getEgg().getOwnedAccessories().clear();
         }
       }
     });
@@ -755,7 +755,7 @@ describe('buyAccessory', function () {
           univCredits -= (100 - eggCredits);
           assert.strictEqual(0, folder.getEggCredits());
           assert.strictEqual(univCredits, user.getUnivCredits());
-          folder.getEgg().getEquippedAccessories().clear();
+          folder.getEgg().getOwnedAccessories().clear();
         }
       }
     });
@@ -873,7 +873,7 @@ describe('buyInteraction', function () {
           assert(await contr.buyInteraction(user.getID(), folderName, "inter1"));
           eggCredits -= 100;  // default accesory cost
           assert.strictEqual(eggCredits, folder.getEggCredits());
-          folder.getEgg().getEquippedAccessories().clear();
+          folder.getEgg().getOwnedAccessories().clear();
         }
       }
     });
@@ -898,7 +898,7 @@ describe('buyInteraction', function () {
           univCredits -= (100 - eggCredits);
           assert.strictEqual(0, folder.getEggCredits());
           assert.strictEqual(univCredits, user.getUnivCredits());
-          folder.getEgg().getEquippedAccessories().clear();
+          folder.getEgg().getOwnedAccessories().clear();
         }
       }
     });

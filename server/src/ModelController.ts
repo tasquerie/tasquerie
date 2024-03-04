@@ -364,7 +364,7 @@ export class ModelController {
     if (!eggType.allowedAccessories.has(accesssoryType)) {
       throw new Error('not allowed to buy this accessory');
     }
-    if (folder.getEgg().getEquippedAccessories().has(accesssoryType)) {
+    if (folder.getEgg().getOwnedAccessories().has(accesssoryType)) {
       throw new Error('you already purchased this accessory');
     }
     const accessory = this.eggManager.getAccessory(accesssoryType);
@@ -385,7 +385,7 @@ export class ModelController {
       await this.removeUnivCredits(userID, accessory.cost - eggCred);
     }
     // adding the actual accessory
-    folder.getEgg().getEquippedAccessories().add(accesssoryType);
+    folder.getEgg().getOwnedAccessories().add(accesssoryType);
 
     await this.writeUserToDB(currentUser);
     return true;
@@ -471,6 +471,36 @@ export class ModelController {
     }
 
 
+    await this.writeUserToDB(currentUser);
+  }
+
+  async equipAccesssory(userID: UserID, folderName: string, accesory: string) {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    const taskFolderMap = currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    if (folder.getEgg().getOwnedAccessories().has(accesory)) {
+      folder.getEgg().getEquippedAccessories().add(accesory);
+    }
+    await this.writeUserToDB(currentUser);
+  }
+
+  async unequipAccesssory(userID: UserID, folderName: string, accesory: string) {
+    const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
+    if (currentUser === undefined) {
+      throw new Error(this.USER_NOT_SIGNED_IN);
+    }
+    const taskFolderMap = currentUser.getTaskFolders();
+    const folder = taskFolderMap.get(folderName);
+    if (folder === undefined) {
+      throw new Error('The folder name does not exist');
+    }
+    folder.getEgg().getEquippedAccessories().delete(accesory);
     await this.writeUserToDB(currentUser);
   }
 }
