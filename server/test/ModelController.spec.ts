@@ -348,7 +348,7 @@ describe('setTask', function () {
       await contr.addFolder(user.getID(), folderName, "desc", "eggType");
       for (let i = 0; i < MAX_CASES; i++) {
         let taskID = await contr.addTask(user.getID(), folderName,      "task name " + i,       "desc " + i, [], []);
-        await contr.setTask(user.getID(), folderName, taskID, false,          "task name " + i + "k", "desc " + i + "k");
+        await contr.setTask(user.getID(), taskID, false,          "task name " + i + "k", "desc " + i + "k");
         let expectedTask = new Task(TEMP_ID_TASK, "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
         expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
@@ -359,39 +359,39 @@ describe('setTask', function () {
       }
     });
   });
-  describe('folder DNE (does not exist) → exception', function () {
-    it('should throw an error', async function () {
-      let contr = getContr();
-      let user = await getDefaultUser(contr);
-      let folderName = "name ";
-      await contr.addFolder(user.getID(), folderName, "desc", "eggType");
-      let taskID = await contr.addTask(user.getID(), folderName, "task name", "desc", [], []);
-      for (let i = 0; i < MAX_CASES; i++) {
-        // test here
-        assert.rejects(async () => await contr.setTask(user.getID(), folderName + i, taskID, false, "task name", "desc", [], []), Error,
-                      'The folder name does not exist');
-      }
-    });
-  });
-  describe('taskID DNE IN FOLDER (not in general) —> exception', function () {
-    it('should throw an error', async function () {
-      let contr = getContr();
-      let user = await getDefaultUser(contr);
-      let folderAAA = "folder AAA";
-      await contr.addFolder(user.getID(), folderAAA, "desc", "eggType");
-      let taskIDs: Set<TaskID> = new Set<TaskID>();
-      for (let i = 0; i < MAX_CASES; i++) {
-        taskIDs.add(await contr.addTask(user.getID(), folderAAA, "task name " + i, "desc " + i, [], []));
-      }
-      let folderBBB = "folder BBB";
-      await contr.addFolder(user.getID(), folderBBB, "desc", "eggType");
-      taskIDs.forEach(taskID => {
-        // test here
-        assert.rejects(async () => await contr.setTask(user.getID(), folderBBB, taskID, false, "task name", "desc", [], []), Error,
-                      'The taskID does not exist in this folder');
-      });
-    });
-  });
+  // describe('folder DNE (does not exist) → exception', function () {
+  //   it('should throw an error', async function () {
+  //     let contr = getContr();
+  //     let user = await getDefaultUser(contr);
+  //     let folderName = "name ";
+  //     await contr.addFolder(user.getID(), folderName, "desc", "eggType");
+  //     let taskID = await contr.addTask(user.getID(), folderName, "task name", "desc", [], []);
+  //     for (let i = 0; i < MAX_CASES; i++) {
+  //       // test here
+  //       assert.rejects(async () => await contr.setTask(user.getID(), folderName + i, taskID, false, "task name", "desc", [], []), Error,
+  //                     'The folder name does not exist');
+  //     }
+  //   });
+  // });
+  // describe('taskID DNE IN FOLDER (not in general) —> exception', function () {
+  //   it('should throw an error', async function () {
+  //     let contr = getContr();
+  //     let user = await getDefaultUser(contr);
+  //     let folderAAA = "folder AAA";
+  //     await contr.addFolder(user.getID(), folderAAA, "desc", "eggType");
+  //     let taskIDs: Set<TaskID> = new Set<TaskID>();
+  //     for (let i = 0; i < MAX_CASES; i++) {
+  //       taskIDs.add(await contr.addTask(user.getID(), folderAAA, "task name " + i, "desc " + i, [], []));
+  //     }
+  //     let folderBBB = "folder BBB";
+  //     await contr.addFolder(user.getID(), folderBBB, "desc", "eggType");
+  //     taskIDs.forEach(taskID => {
+  //       // test here
+  //       assert.rejects(async () => await contr.setTask(user.getID(), folderBBB, taskID, false, "task name", "desc", [], []), Error,
+  //                     'The taskID does not exist in this folder');
+  //     });
+  //   });
+  // });
 });
 
 

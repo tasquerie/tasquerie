@@ -202,21 +202,17 @@ export class ModelController {
 
   // TODO: implement this
   // TODO: test me
-  async setTask(userID: UserID, folderName: string, id: TaskID, isComplete?: boolean, taskName?: string,
+  async setTask(userID: UserID, id: TaskID, isComplete?: boolean, taskName?: string,
           description?: string, tags?: string[], whoSharedWith?: UserID[],
           startDate?: DateTime, cycleDuration?: Duration, deadline?: DateTime): Promise<void> {
     const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
     if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
     }
-    // reference to the taskfolder of the current user.
-    const taskFolderMap = currentUser.getTaskFolders();
-    const folder = taskFolderMap.get(folderName);
-    if (folder === undefined) {
-      throw new Error('The folder name does not exist');
+    const task = (await this.idManager.getTaskByID(userID, id)).content as Task | undefined;
+    if (task === undefined) {
+      throw new Error('The taskID does not exist');
     }
-    let taskIDtoTask = folder.getTasks();
-    let task = taskIDtoTask.get(id);
     if (task === undefined) {
       throw new Error('The taskID does not exist in this folder');
     }
