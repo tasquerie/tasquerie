@@ -6,7 +6,6 @@ import Archive from './pages/Archive';
 import Settings from './pages/Settings';
 import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
-import Howto from './Components/Howto';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import HowtoPg from './pages/HowtoPg';
