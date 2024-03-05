@@ -52,8 +52,8 @@ export class Egg {
       eggType: this.eggType,
       eggStage:this.eggStage,
       exp:this.exp,
-      equippedAccessories:this.equippedAccessories,
-      ownedAccessories:this.ownedAccessories
+      equippedAccessories:Array.from(this.equippedAccessories),
+      ownedAccessories:Array.from(this.ownedAccessories)
     };
     return JSON.stringify(jsonEgg);
   }
