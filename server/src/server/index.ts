@@ -91,7 +91,7 @@ app.get("/", (req: Request, res: Response) => {
 // for view methods
 app.get("/view", async (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let request = req.query;
     let result = "";
     let error = "";
@@ -314,7 +314,7 @@ app.use(express.json());
 // for login methods
 app.post("/login", async (req: Request, res: Response) => {
     // url: http://localhost:3000/login
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let result = "";
     let error = "";
     let func = req.body.func;
