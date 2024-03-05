@@ -1,10 +1,13 @@
 import { User } from "./model/User";
 import { db } from "../firebase/firebase"
-import { DocumentData, deleteField } from "firebase/firestore";
+import { deleteField } from "firebase/firestore";
 import { UserID } from "./types/UserID";
 import { TaskID } from "./types/TaskID";
 import { Result } from "./types/FirebaseResult"
 import { Task } from "./model/Task";
+import { EggType } from "./types/EggType";
+import { Interaction } from "./types/Interaction";
+import { Accessory } from "./types/Accessory";
 
 export const FirebaseUserAPI = {
     /**
@@ -20,7 +23,7 @@ export const FirebaseUserAPI = {
     addUser: async (user: User): Promise<Result> => {
         try {
             const userID = user.getID();
-            const documentRef = db.collection("userInfo").doc(userID as unknown as string);
+            const documentRef = db.collection("userInfo").doc(userID.id);
             const snapshot = await documentRef.get();
 
             if (snapshot.exists) {
@@ -35,15 +38,17 @@ export const FirebaseUserAPI = {
         }
     },
 
+
     /**
      * Returns the user in db given UID.
      * If something is read from the db after this function call, status is true.
      * Otherwise, if nothing is read from db or there is server error, status is false.
      *
+     * If the given userID has a match, content is User object
      * If the given userID has no matching user in db, content is undefined.
      * If server error, content is error code.
      * @param userID user id of the user to query
-     * @returns Promise \<Result\> { status: boolean, content: string | undefined }
+     * @returns Promise \<Result\> { status: boolean, content: User | string | undefined }
      */
     getUser: async (userID: UserID): Promise<Result> => {
         try {
@@ -54,15 +59,15 @@ export const FirebaseUserAPI = {
             if (!snapshot.exists) {
                 return { status: false, content: undefined };
             }
-
-            return {status: true, content: JSON.stringify(snapshot.data()) }
+            const data = snapshot.data() as User;
+            return {status: true, content: data }
         } catch (err: any) {
             return { status: false, content: err.code }
         }
     },
-
-
 }
+
+
 
 export const FirebaseTaskAPI =  {
     /**
@@ -73,7 +78,7 @@ export const FirebaseTaskAPI =  {
      * If the given userID does not exist in the db, content is undefined.
      * If server error, content is error code.
      * @param task Task object to add to db
-     * @returns
+     * @returns Promise \<Result\> { status: boolean, content: string | undefined }
      */
     addTask: async (task: Task): Promise<Result> => {
         try {
@@ -97,11 +102,15 @@ export const FirebaseTaskAPI =  {
         }
     },
 
-    // NOTE: I don't like how it takes entire task object
+
     /**
+     * Given a Task, we delete that task from the db.
      *
-     * @param task  Task object
-     * @returns
+     * If successful, content is "success".
+     * If the given Task does not exist in the db, content is undefined.
+     * If server error, content is error code.
+     * @param task  Task object to delete
+     * @returns Promise \<Result\> { status: boolean, content: string | undefined }
      */
     removeTask: async (task: Task): Promise<Result> => {
         try {
@@ -125,16 +134,17 @@ export const FirebaseTaskAPI =  {
         }
     },
 
+
     /**
      * Given a userID and taskID, queries the task.
      * If something is read from the db after this fucntion call, status is true.
      * Otherwise, if nothing is read from db or there is server error, status is false.
      *
      * If the given userID or taskID has no matching user in db or task, content is undefined.
-     * If server error, content is erro code.
+     * If server error, content is error code.
      * @param userID user id of the user to query
      * @param taskID  task id of the task to query
-     * @returns Promise \<Result\> { status: boolean, content: string | undefined }
+     * @returns Promise \<Result\> { status: boolean, content: Task | string | undefined }
      */
     getTask: async (userID: UserID, taskID: TaskID): Promise<Result> => {
         try {
@@ -150,7 +160,8 @@ export const FirebaseTaskAPI =  {
 
             const task = snapshot.data()?.[TID];
             if (task !== undefined) {
-                return { status: true, content: JSON.stringify(task) };
+                const data = task as Task;
+                return { status: true, content: data };
             } else {
                 return { status: false, content: undefined }
             }
@@ -158,6 +169,49 @@ export const FirebaseTaskAPI =  {
             return { status: false, content: err.code }
         }
     },
+}
 
 
+
+export const FirebaseDataAPI = {
+    /**
+     * Given a document to query and name to fetch, return the read-only data associated with
+     * the given parameters.
+     *
+     * If something is read from the db after this function call, status is true.
+     * Otherwise, if nothing is read from db or there is server error, status is false.
+     *
+     * If the given document does not exist, content is undefined.
+     * If server error, content is error code
+     * @param document document name to query in db
+     * @param name specific item to fetch
+     * @returns Promise \<Result\> { status: boolean, content: EggType | Interaction | Accessory | string | undefined }
+     */
+    getType: async (document: string, name: string): Promise<Result> => {
+        try {
+            const documentRef = db.collection("Data").doc(document);
+            const snapshot = await documentRef.get();
+
+            if (!snapshot.exists) {
+                return { status: false, content: undefined };
+            }
+
+            const type = snapshot.data()?.[name];
+            if (type !== undefined) {
+                let data = undefined
+                if (document === "egg") {
+                    data = type as EggType;
+                } else if (document == "interaction") {
+                    data = type as Interaction;
+                } else {
+                    data = type as Accessory;
+                }
+                return { status: true, content: data };
+            } else {
+                return { status: false, content: undefined };
+            }
+        } catch (err: any) {
+            return { status: false, content: err.code }
+        }
+    },
 }

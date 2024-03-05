@@ -12,39 +12,51 @@ import { TaskID } from '../src/types/TaskID';
 
 const MAX_CASES = 100
 
+// for testing
+const TEMP_ID: UserID = {
+  id: "NULL"
+};
+
+const TEMP_ID_TASK: TaskID = {
+  id: "NULL"
+};
+
 describe('getUserInfo', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct user data', function () {
+    it('should return correct user data', async function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
       for (let i = 0; i < MAX_CASES; i++) {
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         user.setStreak(i);
         user.setUnivCredits(1000 * i);
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
-        let task = new Task(man, "taskname", "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, "taskname", "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
 
         // test here
-        let actual = modelView.getUserInfo(user.getID());
+        let actual = await modelView.getUserInfo(user.getID());
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(user.getJSON(), actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         for (let i = 0; i < MAX_CASES; i++) {
           let id: UserID = {
             id: user.getID() + i.toString()
           };
           // test here
-          assert.strictEqual("",  modelView.getUserInfo(id));
+          assert.strictEqual("", await modelView.getUserInfo(id));
         }
       });
     });
@@ -53,41 +65,61 @@ describe('getUserInfo', function () {
 
 describe('getTaskInfo', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct task data', function () {
+    it('should return correct task data', async function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
+<<<<<<< HEAD
       let user = new User(man, "username", "password");
       const userID = user.getID();
+=======
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
+>>>>>>> origin/main
       let folder = new TaskFolder("name", "desc", "eggType");
       user.getTaskFolders().set(folder.getName(), folder);
       for (let i = 0; i < MAX_CASES; i++) {
         let taskName = "task " + i.toString();
-        let task = new Task(man, taskName, "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, taskName, "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
 
         // test here
+<<<<<<< HEAD
         let actual = modelView.getTaskInfo(userID, task.getID());
+=======
+        let actual = await modelView.getTaskInfo(user.getID(), task.getID());
+>>>>>>> origin/main
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(task.getJSON() ,  actual);
       }
     });
     describe('non-existent TaskID → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
+<<<<<<< HEAD
         let user = new User(man, "username", "password");
         const userID = user.getID();
+=======
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
+>>>>>>> origin/main
         let folder = new TaskFolder("name", "desc", "eggType");
-        let task = new Task(man, "taskname", "desc", [], user.getID(),[]);
+        let task = new Task(TEMP_ID_TASK, "taskname", "desc", [], user.getID(),[]);
+        task.setID(man.nextTaskID(task));
         folder.getTasks().set(task.getID(), task);
         for (let i = 0; i < MAX_CASES; i++) {
           let id: TaskID = {
             id: task.getID() + i.toString()
           };
           // test here
+<<<<<<< HEAD
           assert.strictEqual("",  modelView.getTaskInfo(userID, id));
+=======
+          assert.strictEqual("", await modelView.getTaskInfo(user.getID(), id));
+>>>>>>> origin/main
         }
       });
     });
@@ -96,27 +128,29 @@ describe('getTaskInfo', function () {
 
 describe('getTaskFolderInfo', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct taskFolder data', function () {
+    it('should return correct taskFolder data', async function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-      let user = new User(man, "username", "password");
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
       for (let i = 0; i < MAX_CASES; i++) {
         let folder = new TaskFolder("name " + i, "desc " + i, "eggType " + i);
         user.getTaskFolders().set(folder.getName(), folder);
 
         // test here
-        let actual = modelView.getTaskFolderInfo(user.getID(), folder.getName());
+        let actual = await modelView.getTaskFolderInfo(user.getID(), folder.getName());
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(folder.getJSON() ,  actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
@@ -124,22 +158,23 @@ describe('getTaskFolderInfo', function () {
             id: user.getID() + i.toString()
           };
           // test here
-          assert.strictEqual("",  modelView.getTaskFolderInfo(id, folder.getName()));
+          assert.strictEqual("",  await modelView.getTaskFolderInfo(id, folder.getName()));
         }
       });
     });
     describe('non-existent folder name → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name ", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
           let folderName = folder.getName() + i;
           // test here
-          assert.strictEqual("",  modelView.getTaskFolderInfo(user.getID(), folderName));
+          assert.strictEqual("",  await modelView.getTaskFolderInfo(user.getID(), folderName));
         }
       });
     });
@@ -151,11 +186,12 @@ describe('getTaskFolderInfo', function () {
 
 describe('getEggInfo', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct Egg data', function () {
+    it('should return correct Egg data', async function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-      let user = new User(man, "username", "password");
+      let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
       for (let i = 0; i < MAX_CASES; i++) {
         let folder = new TaskFolder("name " + i, "desc " + i, "eggType " + i);
         user.getTaskFolders().set(folder.getName(), folder);
@@ -165,17 +201,18 @@ describe('getEggInfo', function () {
 
 
         // test here
-        let actual = modelView.getEggInfo(user.getID(), folder.getName());
+        let actual = await modelView.getEggInfo(user.getID(), folder.getName());
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(egg.getJSON() ,  actual);
       }
     });
     describe('non-existent UserID → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
@@ -183,22 +220,23 @@ describe('getEggInfo', function () {
             id: user.getID() + i.toString()
           };
           // test here
-          assert.strictEqual("",  modelView.getEggInfo(id, folder.getName()));
+          assert.strictEqual("",  await modelView.getEggInfo(id, folder.getName()));
         }
       });
     });
     describe('non-existent folder name → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-        let user = new User(man, "username", "password");
+        let user = new User(TEMP_ID, "username", "password");
+        user.setID(man.nextUserID(user));
         let folder = new TaskFolder("name ", "desc", "eggType");
         user.getTaskFolders().set(folder.getName(), folder);
         for (let i = 0; i < MAX_CASES; i++) {
           let folderName = folder.getName() + i;
           // test here
-          assert.strictEqual("",  modelView.getEggInfo(user.getID(), folderName));
+          assert.strictEqual("",  await modelView.getEggInfo(user.getID(), folderName));
         }
       });
     });
@@ -208,7 +246,7 @@ describe('getEggInfo', function () {
 
 describe('getEggType', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct EggType data', function () {
+    it('should return correct EggType data', async function () {
       /* for reference, this test ONLY runs when DB flag is set to false:
          the following is dummy data from EggManager:
       this.eggTypes.set("egg1", this.makeEggType("egg1"))
@@ -225,26 +263,26 @@ describe('getEggType', function () {
       let modelView = new ModelView(man, eggMan);
       if (!eggMan.USE_DB) {
         // test here
-        let expected = eggMan.getEggTypeJSON("egg1");
-        let actual = modelView.getEggType("egg1");
+        let expected = await eggMan.getEggTypeJSON("egg1");
+        let actual = await modelView.getEggType("egg1");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected ,  actual);
 
-        expected = eggMan.getEggTypeJSON("egg2");
-        actual = modelView.getEggType("egg2");
+        expected = await eggMan.getEggTypeJSON("egg2");
+        actual = await modelView.getEggType("egg2");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected ,  actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
         for (let i = 0; i < MAX_CASES; i++) {
           let eggType = i.toString();
           // test here
-          assert.strictEqual("",  modelView.getEggType(eggType));
+          assert.strictEqual("",  await modelView.getEggType(eggType));
         }
       });
     });
@@ -254,7 +292,7 @@ describe('getEggType', function () {
 
 describe('getInteraction', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct Interaction data', function () {
+    it('should return correct Interaction data', async function () {
       /* for reference, this test ONLY runs when DB flag is set to false:
          the following is dummy data from EggManager:
       this.eggTypes.set("egg1", this.makeEggType("egg1"))
@@ -271,26 +309,26 @@ describe('getInteraction', function () {
       let modelView = new ModelView(man, eggMan);
       if (!eggMan.USE_DB) {
         // test here
-        let expected = eggMan.getInteractionJSON("inter1");
-        let actual = modelView.getInteraction("inter1");
+        let expected = await eggMan.getInteractionJSON("inter1");
+        let actual = await modelView.getInteraction("inter1");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected ,  actual);
 
-        expected = eggMan.getInteractionJSON("inter2");
-        actual = modelView.getInteraction("inter2");
+        expected = await eggMan.getInteractionJSON("inter2");
+        actual = await modelView.getInteraction("inter2");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected, actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
         for (let i = 0; i < MAX_CASES; i++) {
           let interaction = i.toString();
           // test here
-          assert.strictEqual("", modelView.getInteraction(interaction));
+          assert.strictEqual("", await modelView.getInteraction(interaction));
         }
       });
     });
@@ -299,7 +337,7 @@ describe('getInteraction', function () {
 
 describe('getAccessory', function () {
   describe('normal use case with full JSON', function () {
-    it('should return correct Accessory data', function () {
+    it('should return correct Accessory data', async function () {
       /* for reference, this test ONLY runs when DB flag is set to false:
          the following is dummy data from EggManager:
       this.eggTypes.set("egg1", this.makeEggType("egg1"))
@@ -316,26 +354,26 @@ describe('getAccessory', function () {
       let modelView = new ModelView(man, eggMan);
       if (!eggMan.USE_DB) {
         // test here
-        let expected = eggMan.getAccessoryJSON("acc1");
-        let actual = modelView.getAccessory("acc1");
+        let expected = await eggMan.getAccessoryJSON("acc1");
+        let actual = await modelView.getAccessory("acc1");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected, actual);
 
-        expected = eggMan.getAccessoryJSON("acc2");
-        actual = modelView.getAccessory("acc2");
+        expected = await eggMan.getAccessoryJSON("acc2");
+        actual = await modelView.getAccessory("acc2");
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(expected, actual);
       }
     });
     describe('non-existent eggType → empty string', function () {
-      it('should return empty string', function () {
+      it('should return empty string', async function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
         for (let i = 0; i < MAX_CASES; i++) {
           let acc = i.toString();
           // test here
-          assert.strictEqual("", modelView.getAccessory(acc));
+          assert.strictEqual("", await modelView.getAccessory(acc));
         }
       });
     });
