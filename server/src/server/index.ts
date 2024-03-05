@@ -12,6 +12,7 @@ import { logEvent } from "firebase/analytics";
 
 import userRoutes from './routes/firebase/userRoutes';
 import taskRoutes from './routes/firebase/taskRoutes';
+import { Task } from "../model/Task";
 dotenv.config();
 
 const app : Express = express();
@@ -33,7 +34,7 @@ const viewer    = new ModelView(idMan, eggMan);
 var RateLimit = require('express-rate-limit');
 var limiter = RateLimit({
     windowMS: 15 * 60 * 1000, // 15 min
-    max:100,
+    max:200,
     message: "Too many requests from this IP, try after 15 min"
 });
 
@@ -51,17 +52,6 @@ export function getContr(): ModelController {
 
 export function getViewer(): ModelView {
     return viewer;
-}
-
-function println(appendStr: string) {
-    return appendStr + newline;
-}
-
-//DELETE: if not needed
-function checkString(input:any, strName:string, res:Response) {
-    if (typeof(input) !== 'string') {
-        res.status(400).send(strName + " is not defined or is not a string");
-    }
 }
 
 function checkStringArray(input:any): boolean {
@@ -90,25 +80,7 @@ function checkUserIDArray(input:any): boolean {
     }
 }
 
-function checkDateTime(input:any): boolean {
-    return (typeof(input) === "object" && input !== null &&
-            "year" in input && typeof(input.year) === 'number' &&
-            "month" in input && typeof(input.month) === 'number' &&
-            "day" in input && typeof(input.day) === 'number' &&
-            "hour" in input && typeof(input.hour) === 'number' &&
-            "minute" in input && typeof(input.minute) === 'number'
-            );
-}
-
-function checkDuration(input:any): boolean {
-        return (typeof(input) === "object" && input !== null &&
-                "weeks" in input && typeof(input.weeks) === 'number' &&
-                "days" in input && typeof(input.days) === 'number' &&
-                "hours" in input && typeof(input.hours) === 'number'
-                );
-}
-
-function checkTaskID(input:any):boolean {
+function checkID(input:any):boolean {
     return (typeof(input) === "object" && input !== null && "id" in input && typeof(input.id) === "string");
 }
 
@@ -116,39 +88,8 @@ app.get("/", (req: Request, res: Response) => {
     res.send("all my fellas");
 });
 
-app.get("/test", (req: Request, res: Response) => {
-    let reqObj = req.query;
-    let resStr = "";
-    // url: http://localhost:3000/test?func=login&arg1=username&arg2=password
-    resStr += okResp + newline + newline;
-    resStr += println("func: " + reqObj.func);
-    resStr += println("arg1: " + reqObj.arg1);
-    resStr += println("full query: " + req.query);
-    res.send(resStr);
-    /**
-     * req.query will be how we will get information from the request
-     * append '?var1=value1&var2=value2' etc to the endpoint, e.g. 'localhost:3000/user?var1=value1&var2=value2'
-     * req.query looks like a json where the one above will turn out to be
-     * {
-     *  'var1': 'value1',
-     *  'var2': 'value2'
-     * }
-     */
-    /**
-     * /////// SPECS ///////////
-     * endpoints correspond to data classes/types
-     * frontend can call a function associated with a class with the following format:
-     * localhost:3232/[class]?target=[function name]&[parameters]
-     * parameters should match target function parameters directly
-     * for example, to call getEggType(name: string),
-     * [parameters] would be name=[query name]
-     * the whole request would look like:
-     * localhost:3232/egg?target=getEggType&name=[query name]
-     */
-});
-
 // for view methods
-app.get("/view", (req: Request, res: Response) => {
+app.get("/view", async (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let request = req.query;
@@ -156,35 +97,54 @@ app.get("/view", (req: Request, res: Response) => {
     let error = "";
     switch(request.func) {
         case "getUserInfo":
-            const userIdStr = request.UserID;
-            if (typeof userIdStr !== "string") {
-                error = "id is not defined or is not a string";
+            const userInfoID = request.UserID;
+            if (typeof(userInfoID) !== "string") {
+                error = "UserID is not defined or is not a string";
                 break;
             }
-            const userID: UserID = {
-                id: userIdStr
+            let userInfoUserID:UserID;
+            try {
+                userInfoUserID = JSON.parse(userInfoID);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
             }
-            // Testing without db
-            result = "" + userID;
-            //result = viewer.getUserInfo(userID);
+
+            result = await viewer.getUserInfo(userInfoUserID);
             break;
         case "getTaskInfo":
-            const taskIdStr = request.TaskID;
-            if (typeof(taskIdStr) !== "string") {
-                error = "id is not defined or is not a string";
+            const userTaskID = request.UserID;
+            if (typeof(userTaskID) !== "string") {
+                error = "UserID is not defined or is not a string";
                 break;
             }
-            const taskID: TaskID = {
-                id: taskIdStr
+            const taskIdStr = request.TaskID;
+            if (typeof(taskIdStr) !== "string") {
+                error = "TaskID is not defined or is not a string";
+                break;
             }
-            // Testing without db
-            result = "getTaskInfo";
-            //result = viewer.getTaskInfo(taskID);
+
+            let taskInfoUserID:UserID;
+            try {
+                taskInfoUserID = JSON.parse(userTaskID);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
+            }
+            let taskID:TaskID;
+            try {
+                taskID = JSON.parse(taskIdStr);
+            } catch (err:any) {
+                error = "TaskID is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getTaskInfo(taskInfoUserID, taskID);
             break;
         case "getTaskFolderInfo":
             const tfUserIdStr = request.UserID;
             if (typeof(tfUserIdStr) !== "string") {
-                error = "id is not defined or is not a string";
+                error = "UserID is not defined or is not a string";
                 break;
             }
             const tfFolderNameStr = request.folderName;
@@ -192,17 +152,27 @@ app.get("/view", (req: Request, res: Response) => {
                 error = "folderName is not defined or is not a string";
                 break;
             }
-            const tfUserID: UserID = {
-                id: tfUserIdStr
+            let tfUserID:UserID;
+            try {
+                tfUserID = JSON.parse(tfUserIdStr);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
             }
-            // Testing without db
-            result = "getTaskFolderInfo";
-            //result = viewer.getTaskFolderInfo(tfUserID, tfFolderNameStr);
+            let tfFolderName:string;
+            try {
+                tfFolderName = JSON.parse(tfFolderNameStr);
+            } catch (err:any) {
+                error = "folderName is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getTaskFolderInfo(tfUserID, tfFolderName);
             break;
         case "getEggInfo":
             const eggUserIdStr = request.UserID;
             if (typeof(eggUserIdStr) !== "string") {
-                error = "id is not defined or is not a string";
+                error = "UserID is not defined or is not a string";
                 break;
             }
             const eggFolderNameStr = request.folderName;
@@ -210,51 +180,129 @@ app.get("/view", (req: Request, res: Response) => {
                 error = "folderName is not defined or is not a string";
                 break;
             }
-            const eUserID: UserID = {
-                id: eggUserIdStr
+            let eggUserID:UserID;
+            try {
+                eggUserID = JSON.parse(eggUserIdStr);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
             }
-            // Testing without db
-            result = "getEggInfo";
-            //result = viewer.getEggInfo(eUserID, eggFolderNameStr);
+            let eggFolderName:string;
+            try {
+                eggFolderName = JSON.parse(eggFolderNameStr);
+            } catch (err:any) {
+                error = "folderName is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getEggInfo(eggUserID, eggFolderName);
             break;
         case "getEggType":
-            const eggName  = request.name;
-            if (typeof(eggName) !== "string") {
+            const eggNameStr  = request.name;
+            if (typeof(eggNameStr) !== "string") {
                 error = "name is not defined or is not a string";
                 break;
             }
-            // Testing without db
-            result = "getEggType";
-            //result = viewer.getEggType(eggName);
+            let eggName:string;
+            try {
+                eggName = JSON.parse(eggNameStr);
+            } catch (err:any) {
+                error = "name is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getEggType(eggName);
             break;
         case "getInteraction":
-            const interName  = request.name;
-            if (typeof(interName) !== "string") {
+            const interNameStr  = request.name;
+            if (typeof(interNameStr) !== "string") {
                 error = "name is not defined or is not a string";
                 break;
             }
-            // Testing without db
-            result = "getInteraction";
-            //result = viewer.getInteraction(interName);
+            let interName:string;
+            try {
+                interName = JSON.parse(interNameStr);
+            } catch (err:any) {
+                error = "name is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getInteraction(interName);
             break;
         case "getAccessory":
-            const accesName  = request.name;
-            if (typeof(accesName) !== "string") {
+            const accesNameStr  = request.name;
+            if (typeof(accesNameStr) !== "string") {
                 error = "name is not defined or is not a string";
                 break;
             }
-            // Testing without db
-            result = "getAcessory";
-            //result = viewer.getAccessory(accesName);
+            let accesName:string;
+            try {
+                accesName = JSON.parse(accesNameStr);
+            } catch (err:any) {
+                error = "name is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getAccessory(accesName);
+            break;
+        case "getUsername":
+            const userNameStr  = request.UserID;
+            if (typeof(userNameStr) !== "string") {
+                error = "UserID is not defined or is not a string";
+                break;
+            }
+            let userName:UserID;
+            try {
+                userName = JSON.parse(userNameStr);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getUsername(userName);
+            break;
+        case "getAllEggInfo":
+            const allEggStr  = request.UserID;
+            if (typeof(allEggStr) !== "string") {
+                error = "UserID is not defined or is not a string";
+                break;
+            }
+            let allEgg:UserID;
+            try {
+                allEgg = JSON.parse(allEggStr);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getAllEggInfo(allEgg);
+            break;
+        case "getAllTaskFolderInfo":
+            const allTaskFoldStr  = request.UserID;
+            if (typeof(allTaskFoldStr) !== "string") {
+                error = "UserID is not defined or is not a string";
+                break;
+            }
+            let allTaskFold:UserID;
+            try {
+                allTaskFold = JSON.parse(allTaskFoldStr);
+            } catch (err:any) {
+                error = "UserID is not a JSON string";
+                break;
+            }
+
+            result = await viewer.getAllTaskFolderInfo(allTaskFold);
             break;
         default:
             error = 'The function of the request is not defined';
     }
     if (error !== "") {
         res.status(400).send(error);
-    } else if (result === "") {
-        res.status(400).send("The requested view does not exist");
-    } else {
+    } 
+    // else if (result === "") {
+    //     res.status(400).send("The requested view does not exist");
+    // } 
+    else {
         res.send(result);
     }
 });
@@ -263,8 +311,8 @@ app.get("/view", (req: Request, res: Response) => {
 app.use(limiter);
 app.use(express.json());
 
-// // for login methods
-app.post("/login", (req: Request, res: Response) => {
+// for login methods
+app.post("/login", async (req: Request, res: Response) => {
     // url: http://localhost:3000/login
     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let result = "";
@@ -286,7 +334,6 @@ app.post("/login", (req: Request, res: Response) => {
             break;
         case "logout":
             contr.logout();
-            //result = "logout successful";
             break;
         case "signup":
             const signupUserName = req.body.username;
@@ -300,9 +347,8 @@ app.post("/login", (req: Request, res: Response) => {
                 break;
             }
             try {
-                result = "" + contr.signup(signupUserName, signupPassword);
+                result = "" + await contr.signup(signupUserName, signupPassword);
             } catch (err:any){
-                //res.status(400).json(err.message);
                 error = err.message;
             }
             break;
@@ -317,14 +363,19 @@ app.post("/login", (req: Request, res: Response) => {
 });
 
 // for controller methods
-app.post("/controller", (req: Request, res: Response) => {
+app.post("/controller", async (req: Request, res: Response) => {
     // url: http://localhost:3000/controller
     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     let func = req.body.func;
-    let result = "";
+    let result;
     let error = ""
     switch(func) {
         case "addFolder":
+            const addFolderID = req.body.UserID;
+            if (!checkID(addFolderID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const addFolderName = req.body.name;
             if (typeof(addFolderName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
@@ -341,7 +392,7 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                contr.addFolder(addFolderName, addFolderDesc, addFolderEggType);
+                await contr.addFolder(addFolderID, addFolderName, addFolderDesc, addFolderEggType);
                 // For testing only. Make sure to put it as a comment after testing
                 result = "addFolder";
             } catch (err:any) {
@@ -349,6 +400,11 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             break;
         case "setFolder":
+            const setFolderID = req.body.UserID;
+            if (!checkID(setFolderID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const setFolderName = req.body.name;
             if (typeof(setFolderName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
@@ -365,7 +421,7 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                contr.setFolder(setFolderName, setFolderNewName, setFolderDesc);
+                await contr.setFolder(setFolderID, setFolderName, setFolderNewName, setFolderDesc);
                 // For testing only. Make sure to put it as a comment after testing
                 result = "setFolder";
             } catch (err:any) {
@@ -373,13 +429,19 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             break;
         case "deleteFolder":
+            const deleteFolderID = req.body.UserID;
+            if (!checkID(deleteFolderID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const delFolderName = req.body.name;
             if (typeof(delFolderName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
                 break;
             }
             try {
-                contr.deleteFolder(delFolderName);
+                
+                await contr.deleteFolder(deleteFolderID, delFolderName);
                 // For testing only. Make sure to put it as a comment after testing
                 result = "deleteFolder";
             } catch (err:any){
@@ -387,6 +449,11 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             break;
         case "addTask":
+            const addTaskUserID = req.body.UserID;
+            if (!checkID(addTaskUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const addTaskFoldName = req.body.folderName;
             if (typeof(addTaskFoldName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
@@ -413,22 +480,22 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             const addTaskStart = req.body.startDate;
-            if (addTaskStart !== undefined && !checkDateTime(addTaskStart)) {
-                error = "The type of the start Date is not a DateTime but is defined";
+            if (addTaskStart !== undefined && typeof(addTaskStart) !== 'string') {
+                error = "The type of startDate is not a string but is defined";
                 break;
             }
             const addTaskCycle = req.body.cycleDuration;
-            if (addTaskCycle !== undefined && !checkDuration(addTaskCycle)) {
-                error = "The type of the cycle Duration is not a Duration but is defined";
+            if (addTaskCycle !== undefined && typeof(addTaskCycle) !== 'string') {
+                error = "The type of cycleDuration is not a string but is defined";
                 break;
             }
             const addTaskDeadline = req.body.deadline;
-            if (addTaskDeadline !== undefined && !checkDateTime(addTaskDeadline)) {
-                error = "The type of the deadline is not a DateTime but is defined";
+            if (addTaskDeadline !== undefined && typeof(addTaskDeadline) !== 'string') {
+                error = "The type of deadline is not a string but is defined";
                 break;
             }
             try {
-                result = "" + contr.addTask(addTaskFoldName, addTaskName, addTaskDesc,
+                result = await contr.addTask(addTaskUserID, addTaskFoldName, addTaskName, addTaskDesc,
                                             addTaskTags, addTaskShared, addTaskStart,
                                             addTaskCycle, addTaskDeadline);
             } catch (err:any){
@@ -436,13 +503,13 @@ app.post("/controller", (req: Request, res: Response) => {
             }
             break;
         case "setTask":
-            const setTaskFoldName = req.body.folderName;
-            if (typeof(setTaskFoldName) !== 'string') {
-                error = "The name of the folder is undefined or is not a string";
+            const setTaskUserID = req.body.UserID;
+            if (!checkID(setTaskUserID)) {
+                error = "Wrong type for User ID";
                 break;
             }
             const setTaskId = req.body.TaskID;
-            if (!checkTaskID(setTaskId)) {
+            if (!checkID(setTaskId)) {
                 error = "The id is undefined or is not a string";
                 break;
             }
@@ -472,71 +539,99 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             const setTaskStart = req.body.startDate;
-            if (setTaskStart !== undefined && !checkDateTime(setTaskStart)) {
-                error = "The type of the start Date is not a DateTime but is defined";
+            if (setTaskStart !== undefined && typeof(setTaskStart) !== 'string') {
+                error = "The type of startDate is not a string but is defined";
                 break;
             }
             const setTaskCycle = req.body.cycleDuration;
-            if (setTaskCycle !== undefined && !checkDuration(setTaskCycle)) {
-                error = "The type of the cycle Duration is not a Duration but is defined";
+            if (setTaskCycle !== undefined && typeof(setTaskCycle) !== 'string') {
+                error = "The type of cycleDuration is not a string but is defined";
                 break;
             }
             const setTaskDeadline = req.body.deadline;
-            if (setTaskDeadline !== undefined && !checkDateTime(setTaskDeadline)) {
-                error = "The type of the deadline is not a DateTime but is defined";
+            if (setTaskDeadline !== undefined && typeof(setTaskDeadline) !== 'string') {
+                error = "The type of deadline is not a string but is defined";
                 break;
             }
             try {
-                result = "" + contr.setTask(setTaskFoldName, setTaskId, setTaskCompl,
+                await contr.setTask(setTaskUserID, setTaskId, setTaskCompl,
                                             setTaskName, setTaskDesc, setTaskTags,
                                             setTaskShared, setTaskStart, setTaskCycle,
                                             setTaskDeadline);
+                // Only for testing. Comment if not needed
+                result = "setTask";
             } catch (err:any){
                 error = err.message;
             }
             break;
         case "deleteTask":
+            const deleteTaskUserID = req.body.UserID;
+            if (!checkID(deleteTaskUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const delTaskFoldName = req.body.folderName;
             if (typeof(delTaskFoldName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
                 break;
             }
-            const delTaskID = req.body.id;
-            if (!checkTaskID(delTaskID)) {
+            const delTaskID = req.body.TaskID;
+            if (!checkID(delTaskID)) {
                 error = "The id is undefined or is not a string";
                 break;
             }
             try {
-                contr.deleteTask(delTaskFoldName, delTaskID);
+                await contr.deleteTask(deleteTaskUserID, delTaskFoldName, delTaskID);
+                //For testing only. Comment if not used
+                result = "deleteTask";
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "addUnivCredits":
+            const addUCredUserID = req.body.UserID;
+            if (!checkID(addUCredUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const addUCred = req.body.amount;
             if (typeof(addUCred) !== 'number') {
                 error = "The amount is undefined or is not a number";
                 break;
             }
             try {
-                contr.addUnivCredits(addUCred);
+                await contr.addUnivCredits(addUCredUserID, addUCred);
+                //For testing only. Comment if not used
+                result = "addUnivCredits";
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "removeUnivCredits":
+            const removeUCredUserID = req.body.UserID;
+            if (!checkID(removeUCredUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const remUCred = req.body.amount;
             if (typeof(remUCred) !== 'number') {
                 error = "The amount is undefined or is not a number";
                 break;
             }
             try {
-                contr.removeUnivCredits(remUCred);
+                await contr.removeUnivCredits(removeUCredUserID, remUCred);
+                //For testing only. Comment if not used
+                result = "removeUnivCredits";
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "addEggCredits":
+            const addEggCredUserID = req.body.UserID;
+            if (!checkID(addEggCredUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const addAmount = req.body.amount;
             if (typeof(addAmount) !== 'number') {
                 error = "The amount is undefined or is not a number";
@@ -548,12 +643,19 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                contr.addEggCredits(addAmount, addEggCredFoldName);
+                await contr.addEggCredits(addEggCredUserID, addAmount, addEggCredFoldName);
+                //For testing only. Comment if not used
+                result = "addEggCredits";
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "removeEggCredits":
+            const removeEggCredUserID = req.body.UserID;
+            if (!checkID(removeEggCredUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const remAmount = req.body.amount;
             if (typeof(remAmount) !== 'number') {
                 error = "The amount is undefined or is not a number";
@@ -565,46 +667,63 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                contr.removeEggCredits(remAmount, remEggCredFoldName);
+                await contr.removeEggCredits(removeEggCredUserID, remAmount, remEggCredFoldName);
+                //For testing only. Comment if not used
+                result = "removeEggCredits";
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "buyAccessory":
+            const AccessUserID = req.body.UserID;
+            if (!checkID(AccessUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const AccessFoldName = req.body.folderName;
             if (typeof(AccessFoldName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
                 break;
             }
-            const AccessType = req.body.accesssoryType;
+            const AccessType = req.body.accessoryType;
             if (typeof(AccessType) !== 'string') {
-                error = "The type of the accesssory is undefined or is not a string";
+                error = "The type of the accessory is undefined or is not a string";
                 break;
             }
             try {
-                result = "" + contr.buyAccessory(AccessFoldName, AccessType);
+                result = "" + await contr.buyAccessory(AccessUserID, AccessFoldName, AccessType);
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "buyInteraction":
+            const InterUserID = req.body.UserID;
+            if (!checkID(InterUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const InterFoldName = req.body.folderName;
             if (typeof(InterFoldName) !== 'string') {
                 error = "The name of the folder is undefined or is not a string";
                 break;
             }
-            const InterType = req.body.accesssoryType;
+            const InterType = req.body.interactionType;
             if (typeof(InterType) !== 'string') {
                 error = "The type of the interaction is undefined or is not a string";
                 break;
             }
             try {
-                result = "" + contr.buyInteraction(InterFoldName, InterType);
+                result = "" + await contr.buyInteraction(InterUserID, InterFoldName, InterType);
             } catch (err:any) {
                 error = err.message;
             }
             break;
         case "gainExp":
+            const expUserID = req.body.UserID;
+            if (!checkID(expUserID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
             const expAmount = req.body.amount;
             if (typeof(expAmount) !== 'number') {
                 error = "The amount is undefined or is not a number";
@@ -616,11 +735,62 @@ app.post("/controller", (req: Request, res: Response) => {
                 break;
             }
             try {
-                contr.gainExp(expAmount, expFoldName);
+                await contr.gainExp(expUserID, expAmount, expFoldName);
+                result = "gainExp";
             } catch (err:any) {
                 error = err.message;
             }
             break;
+        case "equipAccessory":
+            const equipAccessID = req.body.UserID;
+            if (!checkID(equipAccessID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
+            const equipAccessFoldName = req.body.folderName;
+            if (typeof(equipAccessFoldName) !== 'string') {
+                error = "The name of the folder is undefined or is not a string";
+                break;
+            }
+            const equipAccessory = req.body.accessory;
+            if (typeof(equipAccessory) !== 'string') {
+                error = "The accessory is undefined or is not a string";
+                break;
+            }
+            try {
+                // TODO: change if we are gonna change to returning boolean
+                //result = "" + await contr.equipAccessory(equipAccessID, equipAccessFoldName, equipAccessory);
+                await contr.equipAccessory(equipAccessID, equipAccessFoldName, equipAccessory);
+                //Only for testing. Comment if not used
+                result = "equipAccessory";
+            } catch (err:any) {
+                error = err.message;
+            }
+            break;
+        case "unequipAccessory":
+            const unequipAccessID = req.body.UserID;
+            if (!checkID(unequipAccessID)) {
+                error = "Wrong type for User ID";
+                break;
+            }
+            const unequipAccessFoldName = req.body.folderName;
+            if (typeof(unequipAccessFoldName) !== 'string') {
+                error = "The name of the folder is undefined or is not a string";
+                break;
+            }
+            const unequipAccessory = req.body.accessory;
+            if (typeof(unequipAccessory) !== 'string') {
+                error = "The accessory is undefined or is not a string";
+                break;
+            }
+            try {
+                await contr.unequipAccessory(unequipAccessID, unequipAccessFoldName, unequipAccessory);
+                //Only for testing. Comment if not used
+                result = "unequipAccessory";
+            } catch (err:any) {
+                error = err.message;
+            }
+            break
         default:
             error = "The function of the request is not defined";
     }
@@ -629,7 +799,7 @@ app.post("/controller", (req: Request, res: Response) => {
     if (error != "") {
         res.status(400).json(error);
     } else {
-        res.send(result);
+        res.json(result);
     }
 });
 
