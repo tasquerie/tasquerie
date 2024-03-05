@@ -25,15 +25,18 @@ export const FirebaseUserAPI = {
             const userID = user.getID();
             const documentRef = db.collection("userInfo").doc(userID.id);
             const snapshot = await documentRef.get();
-
+            console.log("A");
             if (snapshot.exists) {
-                return { status: false, content: undefined };
+                console.log("B");
+                return { status: false, content: JSON.stringify(snapshot.data()) };
             }
-
-            await documentRef.set(user);
+            console.log("C");
+            await documentRef.set(user.toFirestoreObject());
 
             return { status: true, content: "success" };
         } catch (err: any) {
+            console.log("D");
+            console.log(err);
             return { status: false, content: err.code }
         }
     },

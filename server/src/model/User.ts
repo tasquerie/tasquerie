@@ -65,4 +65,20 @@ export class User {
     };
     return JSON.stringify(jsonUser);
   }
+
+  toFirestoreObject(): object {
+    return {
+      uniqueID: this.uniqueID.id,
+      username: this.username,
+      password: this.password,
+      taskFolders: Object.fromEntries(
+        Array.from(this.taskFolders.entries()).map(([folderName, folder]) => [
+          folderName,
+          folder.toFirestoreObject(),
+        ])
+      ),
+      univCredits: this.univCredits,
+      streak: this.streak,
+    };
+  }
 }

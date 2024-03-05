@@ -121,9 +121,9 @@ export class Task {
       tags:this.tags,
       owner:this.owner,
       whoSharedWith: this.whoSharedWith,
-      startDate: this.startDate, 
-      cycleDuration: this.cycleDuration, 
-      deadline: this.deadline 
+      startDate: this.startDate,
+      cycleDuration: this.cycleDuration,
+      deadline: this.deadline
     };
     return JSON.stringify(jsonTask);
   }

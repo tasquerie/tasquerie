@@ -63,4 +63,13 @@ export class TaskFolder {
     };
     return JSON.stringify(jsonTaskFolder);
   }
+
+  toFirestoreObject(): object {
+    return {
+      name: this.name,
+      description: this.description,
+      egg: this.egg.toFirestoreObject(),
+      eggCredits: this.eggCredits,
+    };
+  }
 }
