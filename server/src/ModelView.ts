@@ -155,11 +155,7 @@ export class ModelView {
     }
     user = user as User;
     let folderMap = user.getTaskFolders();
-    let folderInfos:string[] = [];
-    folderMap.forEach((value: TaskFolder, key: string) => {
-      folderInfos.push(value.getJSON());
-    });
-    return JSON.stringify(folderInfos);
+    return JSON.stringify(Array.from(folderMap.values()));
   }
 
   async getAllTaskIDs(uid: UserID, folderName: string): Promise<string> {
@@ -174,11 +170,7 @@ export class ModelView {
       return "";
     }
     let taskMap = taskFolder.getTasks();
-    let taskIDs:string[] = [];
-    taskMap.forEach((value: Task, key: TaskID) => {
-      taskIDs.push(value.getJSON());
-    });
-    return JSON.stringify(taskIDs);
+    return JSON.stringify(Array.from(taskMap.values()));
   }
 
   async getAllowedAccessories(uid: UserID, folderName: string): Promise<string> {
@@ -197,11 +189,7 @@ export class ModelView {
     let allowedAcc = (await eggMan.getEggType(eggType))?.allowedAccessories;
     assert(allowedAcc !== undefined);
 
-    let allowedAccArray:string[] = [];
-    allowedAcc.forEach((value: string) => {
-      allowedAccArray.push(value);
-    });
-    return JSON.stringify(allowedAccArray);
+    return JSON.stringify(Array.from(allowedAcc));
   }
 
   async getAllowedInteractions(uid: UserID, folderName: string): Promise<string> {
@@ -219,12 +207,7 @@ export class ModelView {
     let eggMan = new EggManager();
     let allowedInt = (await eggMan.getEggType(eggType))?.allowedInteractions;
     assert(allowedInt !== undefined);
-
-    let allowedIntArray:string[] = [];
-    allowedInt.forEach((value: string) => {
-      allowedIntArray.push(value);
-    });
-    return JSON.stringify(allowedIntArray);
+    return JSON.stringify(Array.from(allowedInt));
   }
 
   async getOwnedAccessories(uid: UserID, folderName: string): Promise<string> {
@@ -239,12 +222,7 @@ export class ModelView {
       return "";
     }
     let ownedAcc = taskFolder.getEgg().getOwnedAccessories();
-
-    let ownedAccArray:string[] = [];
-    ownedAcc.forEach((value: string) => {
-      ownedAccArray.push(value);
-    });
-    return JSON.stringify(ownedAccArray);
+    return JSON.stringify(Array.from(ownedAcc));
   }
 
   async getEquippedAccessories(uid: UserID, folderName: string): Promise<string> {
@@ -259,11 +237,6 @@ export class ModelView {
       return "";
     }
     let equipAcc = taskFolder.getEgg().getEquippedAccessories();
-
-    let equipAccArray:string[] = [];
-    equipAcc.forEach((value: string) => {
-      equipAccArray.push(value);
-    });
-    return JSON.stringify(equipAccArray);
+    return JSON.stringify(Array.from(equipAcc));
   }
 }

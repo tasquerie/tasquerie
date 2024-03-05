@@ -181,6 +181,8 @@ describe('addFolder', function () {
         let expected = folder.getJSON();
         let actual = await viewer.getTaskFolderInfo(user.getID(), folderName);
         // console.log(actual);  // to see what data looks like
+        // debug to verify data
+        // console.log(user.getJSON());
         assert.strictEqual(expected, actual);
       }
     });
@@ -368,6 +370,9 @@ describe('setTask', function () {
         await contr.setTask(user.getID(), taskID, false,          "task name " + i + "k", "desc " + i + "k");
         let expectedTask = new Task(TEMP_ID_TASK, "task name " + i + "k", "desc " + i + "k", [], user.getID(), []);
         expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
+
+        // debug to verify data
+        // console.log(user.getTaskFolders().get(folderName)?.getJSON());
 
         // test here
 <<<<<<< HEAD

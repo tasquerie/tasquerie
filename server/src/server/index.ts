@@ -102,15 +102,16 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "UserID is not defined or is not a string";
                 break;
             }
-            let userInfoUserID:UserID;
-            try {
-                userInfoUserID = JSON.parse(userInfoID);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
+            // let userInfoUserID:UserID;
+            // try {
+            //     userInfoUserID = JSON.parse(userInfoID);
+            // } catch (err:any) {
+            //     error = "UserID is not a JSON string";
+            //     break;
+            // }
 
-            result = await viewer.getUserInfo(userInfoUserID);
+            const userInforUserID:UserID = {id: userInfoID};
+            result = await viewer.getUserInfo(userInforUserID);
             break;
         case "getTaskInfo":
             const userTaskID = request.UserID;
@@ -283,13 +284,13 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "UserID is not defined or is not a string";
                 break;
             }
-            let allTaskFold:UserID;
-            try {
-                allTaskFold = JSON.parse(allTaskFoldStr);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
+            const allTaskFold:UserID = {id:allTaskFoldStr};
+            // try {
+            //     allTaskFold = JSON.parse(allTaskFoldStr);
+            // } catch (err:any) {
+            //     error = "UserID is not a JSON string";
+            //     break;
+            // }
 
             result = await viewer.getAllTaskFolderInfo(allTaskFold);
             break;

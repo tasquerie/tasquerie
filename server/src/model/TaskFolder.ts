@@ -57,9 +57,8 @@ export class TaskFolder {
     const jsonTaskFolder = {
       name: this.name,
       description: this.description,
-      egg: this.egg,
       eggCredits: this.eggCredits,
-      taskIDtoTasks: this.taskIDtoTasks,
+      taskIDtoTasksKeys: Array.from(this.taskIDtoTasks.keys()),
     };
     return JSON.stringify(jsonTaskFolder);
   }

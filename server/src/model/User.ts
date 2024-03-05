@@ -62,7 +62,7 @@ export class User {
       // Take ID out when testing
       uniqueID: this.uniqueID,
       username:this.username,
-      taskFolders: this.taskFolders,
+      taskFolderKeys: Array.from(this.taskFolders.keys()),
       univCredits:this.univCredits,
       streak:this.streak
     };

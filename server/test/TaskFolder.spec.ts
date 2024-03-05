@@ -8,9 +8,14 @@ describe('GetJson Function', function () {
 			let first = new TaskFolder("testName", "testDescription", "testEggType");
       const result = first.getJSON();
 			let firstEgg = new Egg("testEggType");
-			let eggString = firstEgg.getJSON();
+			// let eggString = firstEgg.getJSON();
 
-      assert.strictEqual(result, "{\"name\":\"testName\",\"description\":\"testDescription\",\"egg\":" + eggString + ",\"eggCredits\":0,\"taskIDtoTasks\":{}}");
+			// console.log("DEBUG");
+			// console.log(result);
+
+			let expected = '{"name":"testName","description":"testDescription","eggCredits":0,"taskIDtoTasksKeys":[]}';
+
+      assert.strictEqual(result, expected);
     });
   });
 });
