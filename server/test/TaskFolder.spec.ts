@@ -10,8 +10,8 @@ describe('GetJson Function', function () {
 			let firstEgg = new Egg("testEggType");
 			// let eggString = firstEgg.getJSON();
 
-			console.log("DEBUG");
-			console.log(result);
+			// console.log("DEBUG");
+			// console.log(result);
 
 			let expected = '{"name":"testName","description":"testDescription","eggCredits":0,"taskIDtoTasksKeys":[]}';
 
