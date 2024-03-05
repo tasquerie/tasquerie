@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { EggManager } from "./model/EggManager";
 import { IDManager } from "./model/IDManager";
 import { Task } from "./model/Task";
@@ -15,14 +16,6 @@ export class ModelView {
     this.eggManager = eggManager;
   }
 
-  /**
-   * Grabs the user info associated with the given userID.
-   * Returns the string representation of the User object.
-   * Returns undefined if user does not exist.
-   *
-   * @param id The userID you want to search for
-   * @returns The string representation of the User object
-   */
   /**
    * Grabs the user info associated with the given userID.
    * Returns the string representation of the User object.
@@ -74,7 +67,6 @@ export class ModelView {
       return "";
     }
     user = user as User;
-    user = user as User;
     const taskFolder = user.getTaskFolders().get(folderName);
     if (taskFolder === undefined) {
       return "";
@@ -93,8 +85,6 @@ export class ModelView {
     if (user === undefined) {
       return "";
     }
-
-    user = user as User;
 
     user = user as User;
     const taskFolder =  user.getTaskFolders().get(folderName);
@@ -170,5 +160,110 @@ export class ModelView {
       folderInfos.push(value.getJSON());
     });
     return JSON.stringify(folderInfos);
+  }
+
+  async getAllTaskIDs(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let taskMap = taskFolder.getTasks();
+    let taskIDs:string[] = [];
+    taskMap.forEach((value: Task, key: TaskID) => {
+      taskIDs.push(value.getJSON());
+    });
+    return JSON.stringify(taskIDs);
+  }
+
+  async getAllowedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let eggType = taskFolder.getEgg().getEggType();
+    let eggMan = new EggManager();
+    let allowedAcc = (await eggMan.getEggType(eggType))?.allowedAccessories;
+    assert(allowedAcc !== undefined);
+
+    let allowedAccArray:string[] = [];
+    allowedAcc.forEach((value: string) => {
+      allowedAccArray.push(value);
+    });
+    return JSON.stringify(allowedAccArray);
+  }
+
+  async getAllowedInteractions(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let eggType = taskFolder.getEgg().getEggType();
+    let eggMan = new EggManager();
+    let allowedInt = (await eggMan.getEggType(eggType))?.allowedInteractions;
+    assert(allowedInt !== undefined);
+
+    let allowedIntArray:string[] = [];
+    allowedInt.forEach((value: string) => {
+      allowedIntArray.push(value);
+    });
+    return JSON.stringify(allowedIntArray);
+  }
+
+  async getOwnedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let ownedAcc = taskFolder.getEgg().getOwnedAccessories();
+
+    let ownedAccArray:string[] = [];
+    ownedAcc.forEach((value: string) => {
+      ownedAccArray.push(value);
+    });
+    return JSON.stringify(ownedAccArray);
+  }
+
+  async getEquippedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let equipAcc = taskFolder.getEgg().getEquippedAccessories();
+
+    let equipAccArray:string[] = [];
+    equipAcc.forEach((value: string) => {
+      equipAccArray.push(value);
+    });
+    return JSON.stringify(equipAccArray);
   }
 }
