@@ -19,7 +19,7 @@ export class ModelView {
   /**
    * Grabs the user info associated with the given userID.
    * Returns the string representation of the User object.
-   * Returns undefined if user does not exist.
+   * Returns an empty string if user does not exist.
    *
    * @param id The userID you want to search for
    * @returns The string representation of the User object
