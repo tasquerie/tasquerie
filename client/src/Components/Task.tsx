@@ -6,7 +6,7 @@ import { EditTaskWindow } from './EditTaskWindow';
 // NOTE: egg image sizes are strictly 256x256. Otherwise things break
 
 export interface TaskType {
-    uid: string;
+    taskID: string;
     name: string;
     isComplete: boolean;
     description: string;
@@ -23,14 +23,14 @@ export interface TaskType {
 }
 
 interface TaskProps {
-    toggleCompletion(): void;
-    task: TaskType;
-    // task: string; // taskID, call backend to get info
+    folderName: string;
+    // task: TaskType;
+    taskID: string; // taskID, call backend to get info
 }
 
-interface TaskState {
+export interface TaskState {
     showingDetails: boolean;
-    uid: string;
+    taskID: string;
     name: string;
     isComplete: boolean;
     description: string;
@@ -49,52 +49,75 @@ export class Task extends Component<TaskProps, TaskState> {
         super(props);
         this.state = {
             showingDetails: false,
-            creditReward: this.props.task.creditReward,
-            uid: this.props.task.uid,
-            name: this.props.task.name,
-            isComplete: this.props.task.isComplete,
-            description: this.props.task.description,
-            tags: this.props.task.tags,
-            owner: this.props.task.owner,
-            sharedwith: this.props.task.sharedwith,
+            creditReward: 5, // must hard code this, unfortunately
+                            // nothing in backend stores amount of credits
+                            // rewarded for a task
+            taskID: this.props.taskID,
+            name: '',
+            isComplete: false,
+            description: '',
+            tags: [],
+            owner: '',
+            sharedwith: [],
             showingEditWindow: false
         };
     }
 
     async componentDidMount() {
-        // load all of current task's info
-        // await this.loadTaskInfo(this.props.task);
+        // load all of current task's info before rendering
+        await this.loadTaskInfo(this.props.taskID);
     }
 
     async loadTaskInfo(taskID: string) {
         let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
         args.set("TaskID", taskID);
         let task = await BackendWrapper.view("getTaskInfo", args);
         // maybe error handling
-        // this.setState({
-        //     name: task.name,
-        //     isComplete: task.isComplete,
-        //     description: task.description,
-        //     tags: task.tags
-        // })
+        this.setState({
+            name: task.name,
+            isComplete: task.isComplete,
+            description: task.description
+            // ignoring tags, owner, and shares rn
+        });
         // check if optional fields exist and handle those
     }
 
-    handleCheck(event: any) {
-        if(this.props.task.isComplete){
-            // temporarily disallow unchecking
+    async handleCheck(event: any) {
+        if(this.state.isComplete){
+            // disallow unchecking
+            // if you check off a task - you're DONE. no going back
             event.preventDefault();
             // TODO: figure out some way to only check boxes when double clicked
             // and not single clicked. react's double click event also causes
             // two single click events. tragic
         }
         else{
-            this.props.toggleCompletion();
+            await this.toggleCompletion();
         }
     }
 
-    toggleCompletion() {
-        
+    async toggleCompletion() {
+        // mark task as complete
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+        args.set("isComplete", true);
+        try {
+            await BackendWrapper.controller("setTask", args);
+        } catch (e) {
+            // shouldn't happen
+            console.log("Failure to mark task as completed");
+        }
+
+        // award credits to user
+        args.delete("isComplete");
+        args.set("folderName", this.props.folderName);
+        args.set("amount", this.state.creditReward);
+        try {
+            await BackendWrapper.controller("addEggCredits", args);
+        } catch (e) {
+            console.log("Failure to award egg specific credits");
+        }
     }
 
     toggleDetail() {
@@ -115,20 +138,12 @@ export class Task extends Component<TaskProps, TaskState> {
         });
     }
 
-    mockEditTask(task: TaskType) {
-        // only temporary, no persistence, exists at this level only
-        // but proof of concept
-        this.setState({
-            showingDetails: false,
-            creditReward: task.creditReward,
-            uid: task.uid,
-            name: task.name,
-            isComplete: task.isComplete,
-            description: task.description,
-            tags: task.tags,
-            owner: task.owner,
-            sharedwith: task.sharedwith
-        })
+    async deleteTask() {
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+        args.set("folderName", this.props.folderName);
+        args.set("TaskID", this.state.taskID);
+        BackendWrapper.controller("deleteTask", args);
     }
 
     render() {
@@ -139,8 +154,8 @@ export class Task extends Component<TaskProps, TaskState> {
             task = <div>
                         <div className="taskHeader">
                             <input type="checkbox" 
-                            onClick={(event) => {
-                                this.handleCheck(event);
+                            onClick={async (event) => {
+                                await this.handleCheck(event);
                             }}
                             defaultChecked={this.state.isComplete}/>
                             <div className="taskName"
@@ -162,8 +177,8 @@ export class Task extends Component<TaskProps, TaskState> {
             task = <div>
                         <div className="taskHeader">
                             <input type="checkbox" 
-                            onClick={(event) => {
-                                this.handleCheck(event);
+                            onClick={async (event) => {
+                                await this.handleCheck(event);
                             }}
                             defaultChecked={this.state.isComplete}/>
                             <div className="taskName"
@@ -182,14 +197,15 @@ export class Task extends Component<TaskProps, TaskState> {
 
         if (this.state.showingEditWindow) {
             editWindow = <EditTaskWindow
-                task={this.props.task}
-                editTask={(task) => {
-                    this.mockEditTask(task);
-                }}
+                task={this.state}
+                taskID={this.props.taskID}
                 closeBox={() => {
                     this.hideEditWindow();
                 }}
-            />
+                deleteTask={async () => {
+                    await this.deleteTask();
+                }}
+            />;
             task = '';
         } else {
             editWindow = '';

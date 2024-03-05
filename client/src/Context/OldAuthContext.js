@@ -2,10 +2,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword   } from 'firebase/auth';
 import { auth } from '../firebase/firebase'
 
-export const AuthContext = createContext();
+export const OldAuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
-export const AuthContextProvider = ({ children }) => {
+export const useAuth = () => useContext(OldAuthContext);
+export const OldAuthContextProvider = ({ children }) => {
 
   // const provider = new GoogleAuthProvider();
   // provider.setCustomParameters({ prompt: 'select_account' });

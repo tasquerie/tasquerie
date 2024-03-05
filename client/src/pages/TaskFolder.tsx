@@ -6,24 +6,30 @@ import { TaskList } from '../Components/TaskList'
 import { Egg } from '../Components/Egg'
 import { InteractionList } from '../Components/InteractionList'
 import { Interaction } from '../Components/Interaction';
+import AuthContext from '../Context/AuthContext';
 
 interface TaskFolderProps {
+    folderName: string;
     updateState(selected: string): void;
     eggId: number;
 }
 
 interface TaskFolderState {
-    addTaskWindowState: string // 'hidden' | 'shown'
+    folderName: string;
+    egg: any // Egg object in backend
     eggFunctionTab: string // 'tasks' | 'interactions' | 'accessories'
     eggCredits: number
 }
 
 class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
 
     constructor(props: any){
         super(props);
         this.state = {
-            addTaskWindowState: 'hidden',
+            folderName: "yee",
+            egg: null,
             eggFunctionTab: 'tasks',
             eggCredits: mocks.specificCredits[this.props.eggId]
         }
@@ -34,18 +40,6 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         mocks.specificCredits[this.props.eggId] += rewardCredits;
         this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
         // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
-    }
-
-    showAddTaskWindow() {
-        this.setState({
-            addTaskWindowState: 'shown'
-        });
-    }
-
-    hideAddTaskWindow() {
-        this.setState({
-            addTaskWindowState: 'hidden'
-        })
     }
 
     updateCredits(newAmount: number) {
@@ -62,8 +56,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         let showingTab;
         if(this.state.eggFunctionTab === 'tasks'){
             showingTab = <TaskList
-            updateCredits={(newAmount: number) => {this.updateCredits(newAmount)}}
-            eggId={this.props.eggId} />;
+                folderName={this.props.folderName}
+            />;
         }
         else if (this.state.eggFunctionTab === 'interactions') {
             showingTab = <InteractionList

@@ -3,16 +3,16 @@ import { Task, TaskType } from './Task'
 import { AddTaskWindow } from '../Components/AddTaskWindow';
 import * as mocks from '../Mocks'
 import AuthContext from '../Context/AuthContext';
+import { BackendWrapper } from '../BackendWrapper';
 
 interface TaskListProps {
-  updateCredits(newAmount: number): void;
-  eggId: number;
+  folderName: string;
 }
 
 interface TaskListState {
-  addTaskWindowState: string // 'hidden' or 'shown'
-  tasks: TaskType[];
-  // tasks: string[]; // list of taskIDs that can be gotten from backend
+  showingAddTaskWindow: boolean;
+  // tasks: TaskType[];
+  taskIDs: string[]; // list of taskIDs that can be gotten from backend
 }
 
 export class TaskList extends Component<TaskListProps, TaskListState> {
@@ -22,37 +22,13 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   constructor(props: TaskListProps){
     super(props);
     this.state = {
-      addTaskWindowState: 'hidden',
-      tasks: []
+      showingAddTaskWindow: false,
+      taskIDs: []
     }
   }
 
   async componentDidMount() {
-      this.getTasks();
-  }
-
-  toggleCompletion(taskId: number, rewardCredits: number) {
-      mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
-      mocks.specificCredits[this.props.eggId] += rewardCredits;
-      this.props.updateCredits(mocks.specificCredits[this.props.eggId]);
-      // this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
-      // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
-  }
-
-  showAddTaskWindow() {
-      this.setState({
-          addTaskWindowState: 'shown'
-      });
-  }
-
-  hideAddTaskWindow() {
-      this.setState({
-          addTaskWindowState: 'hidden'
-      })
-  }
-
-  addTask(task: TaskType) {
-      mocks.tasksList[this.props.eggId].push(task);
+      await this.getTasks();
   }
 
   /**
@@ -60,35 +36,56 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
    */
   async getTasks() {
     // do some calls ig
-    let taskList: TaskType[] = [];
-    this.setState({
-      tasks: taskList
-    })
+    let args: Map<string, any> = new Map();
+    args.set("UserID", this.context.getUser());
+    args.set("folderName", this.props.folderName);
+
+    try{
+      let taskFolderInfo = await BackendWrapper.view("getTaskInfo", args);
+      // check if response is "empty"
+      let taskList: string[] = taskFolderInfo.taskIDs;
+      // TODO: right now taskIDtoTasks is a Map which is bad news
+      // tomorrow changes will be made to get a list, so assume that right now
+      // might become an endpoint too
+      this.setState({
+        taskIDs: taskList
+      });
+    } catch (e) {
+      console.log("Couldn't retrieve tasks of this folder");
+    }
+  }
+
+  showAddTaskWindow() {
+      this.setState({
+          showingAddTaskWindow: true
+      });
+  }
+
+  hideAddTaskWindow() {
+      this.setState({
+          showingAddTaskWindow: false
+      })
   }
 
   render() {
     // refactor to use this.state.tasks
     let tasks = [];
-    for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
-      let task: TaskType = mocks.tasksList[this.props.eggId][i];
+    for(let i = 0; i < this.state.taskIDs.length; i++) {
       tasks.push(
         <Task
-          toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
-          task={task}
+          folderName={this.props.folderName}
+          taskID={this.state.taskIDs[i]}
         />
       );
     }
 
     let addTaskWindow;
-    if (this.state.addTaskWindowState == 'shown') {
+    if (this.state.showingAddTaskWindow) {
       addTaskWindow = <AddTaskWindow
-      addTask = {(task: TaskType) => {
-        this.addTask(task);
-      }}
+      folderName={this.props.folderName}
       closeBox = {() => {
         this.hideAddTaskWindow();
       }}
-      visible={this.state.addTaskWindowState}
     />;
     } else {
       addTaskWindow = '';

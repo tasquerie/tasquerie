@@ -73,7 +73,7 @@ export class BackendWrapper {
             }
             // JSON case 
             else {
-                return responseBody;
+                return JSON.parse(responseBody);
             }
         } catch (e) {
             // alert("There was an error contacting the server.");

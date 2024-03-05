@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Task, TaskType } from './Task';
+import AuthContext from '../Context/AuthContext';
+import { BackendWrapper } from '../BackendWrapper';
 
 interface AddTaskWindowProps {
-    addTask(task: TaskType): void;
+    folderName: string;
     closeBox(): void;
-    visible: string;
 }
 
 interface AddTaskWindowState {
@@ -13,14 +14,33 @@ interface AddTaskWindowState {
 }
 
 export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowState> {
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
+
     constructor(props: AddTaskWindowProps) {
         super(props);
         // no state for now
     }
 
+    async addTask() {
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+        args.set("folderName", this.props.folderName);
+        args.set("taskName", this.state.taskName);
+        args.set("description", this.state.taskDescription);
+        args.set("tags", []);
+        args.set("whoSharedWith", []);
+
+        try {
+            await BackendWrapper.controller("addTask", args);
+        } catch (e) {
+            console.log("Unable to add task");
+        }
+    }
+
     render() {
         return(
-            <div id="addTaskWindow" className={this.props.visible}>
+            <div id="addTaskWindow">
                 <button onClick={() => {
                     this.props.closeBox();
                 }}>
@@ -45,16 +65,8 @@ export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowSt
                     id="addTaskDescription"
                     placeholder="Task Description"
                 ></textarea>
-                <button onClick={() => {
-                    let task: TaskType = {
-                        uid: "AAAAAAAAAAAAA",
-                        name: this.state.taskName,
-                        isComplete: false,
-                        description: this.state.taskDescription,
-                        creditReward: 5
-                    }
-                    this.props.addTask(task);
-                    this.props.closeBox();
+                <button onClick={async () => {
+                    await this.addTask();
                 }}>
                     Add Task
                 </button>

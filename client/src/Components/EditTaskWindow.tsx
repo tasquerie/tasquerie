@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { Task, TaskType } from './Task';
+import { TaskState, TaskType } from './Task';
+import { BackendWrapper } from '../BackendWrapper';
+import AuthContext from '../Context/AuthContext';
 
 interface EditTaskWindowProps {
-    task: TaskType;
-    editTask(task: TaskType): void;
+    task: TaskState;
+    taskID: string;
     closeBox(): void;
+    deleteTask(): void;
 }
 
 interface EditTaskWindowState {
-    uid: string;
     name: string;
     isComplete: boolean;
     description: string;
@@ -18,11 +20,13 @@ interface EditTaskWindowState {
 }
 
 export class EditTaskWindow extends Component<EditTaskWindowProps, EditTaskWindowState> {
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
+
     constructor(props: EditTaskWindowProps) {
         super(props);
         // no state for now
         this.state = {
-            uid: this.props.task.uid,
             name: this.props.task.name,
             isComplete: this.props.task.isComplete,
             description: this.props.task.description,
@@ -33,19 +37,19 @@ export class EditTaskWindow extends Component<EditTaskWindowProps, EditTaskWindo
     }
 
     async editTask() {
-        // call to modelcontroller
-    }
-
-    mockEditTask() {
-        let task: TaskType = {
-            uid: "AAAAAAAAAAAAA",
-            name: this.state.name,
-            isComplete: false,
-            description: this.state.description,
-            creditReward: 5
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+        args.set("taskName", this.state.name);
+        args.set("description", this.state.description);
+        try {
+            BackendWrapper.controller("setTask", args);
+        } catch (e) {
+            // uhm.
+            // shouldn't happen - if user is logged in, their ID should be valid
+            // but if this errors for some reason, don't modify the task and uhh
+            // do nothing
+            console.log("Failure to edit task.");
         }
-        this.props.editTask(task);
-        this.props.closeBox();
     }
 
     render() {
@@ -69,24 +73,21 @@ export class EditTaskWindow extends Component<EditTaskWindowProps, EditTaskWindo
                 <textarea
                     onChange={(event) => {
                         this.setState({
-                            name: event.target.value
+                            description: event.target.value
                         })
                     }}
                     id="editTaskDescription"
                     defaultValue={this.state.description}
                 ></textarea>
                 <button onClick={() => {
-                    let task: TaskType = {
-                        uid: "AAAAAAAAAAAAA",
-                        name: this.state.name,
-                        isComplete: false,
-                        description: this.state.description,
-                        creditReward: 5
-                    }
-                    this.props.editTask(task);
-                    this.props.closeBox();
+                    this.editTask();
                 }}>
-                    Add Task
+                    Edit Task
+                </button>
+                <button onClick={() => {
+                    this.props.deleteTask();
+                }}>
+                    Delete Task
                 </button>
             </div>
         )
