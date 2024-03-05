@@ -7,21 +7,19 @@
 // notification icons) for certain eggs in this component.
 
 import React, { Component } from 'react';
-import { Egg, EggType } from './Egg';
 import { EggCard } from './EggCard';
 import { AddEggCard } from './AddEggCard';
-import { eggCollection, folderNames } from '../Mocks';
 import { AddEggWindow } from './AddEggWindow';
 import { BackendWrapper } from '../BackendWrapper';
 import AuthContext from '../Context/AuthContext';
 
 interface EggCollectionProps {
-  displayTaskFolder(eggId: number): void;
+  displayTaskFolder(folderName: string): void;
 }
 
 interface EggCollectionState {
-  addEggState: string; // 'hidden' | 'shown'
-  eggs: EggType[];
+  showingAddEggWindow: boolean;
+  folders: any[];
 }
 
 class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
@@ -31,56 +29,59 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
   constructor(props: EggCollectionProps){
     super(props);
     this.state ={
-      addEggState: 'hidden',
-      eggs: []
+      showingAddEggWindow: false,
+      folders: []
     }
   }
 
   async componentDidMount() {
-      console.log('EggCollection componentdidmount');
-      // await this.getEggs();
+      // console.log('EggCollection componentdidmount');
+      await this.loadTaskFolders();
+  }
+
+  async loadTaskFolders() {
+    let args: Map<string, any> = new Map();
+    args.set("UserID", this.context.getUser());
+
+    try{
+      let folders = await BackendWrapper.view("getAllTaskFolderInfo", args);
+      // assumes this gets back a list of folder OBJECTS
+      // if not - TODO: change this to a loop where each folderName then
+      // gets getTaskFolderInfo'd
+      this.setState({
+        folders: folders
+      })
+    } catch (e) {
+      console.log("Failure to load task folders");
+    }
   }
 
   showAddEggWindow() {
-    this.setState({addEggState: 'shown'})
+    this.setState({showingAddEggWindow: true});
   }
 
   hideAddEggWindow() {
-    this.setState({addEggState: 'hidden'})
-  }
-
-  /**
-   * Gets all eggs from backend API
-   */
-  async getEggs() {
-    let args: Map<string, any> = new Map();
-    args.set("UserID", this.context.getUser());
-    let user = await BackendWrapper.view("getUserInfo", args);
-    // user should not be empty string
-    let eggList: EggType[] = [];
-    this.setState({
-      eggs: eggList
-    })
+    this.setState({showingAddEggWindow: false});
   }
 
   render() {
     // refactor to use this.state.eggs later
     let eggs = [];
-    for(let i = 0; i < eggCollection.length; i++){
-      eggs.push(<button className="invisibleButton" id={folderNames[i]}
-      onClick={() => this.props.displayTaskFolder(i)}>
-        <EggCard
-        cardName={folderNames[i]}
-        egg={eggCollection[i]}
-        />
-      </button>)
+    for(let i = 0; i < this.state.folders.length; i++){
+      eggs.push(
+        <button className="invisibleButton" key={this.state.folders[i].name}
+          onClick={() => this.props.displayTaskFolder(this.state.folders[i].name)}>
+          <EggCard
+            folder={this.state.folders[i]}
+          />
+        </button>
+      );
     }
 
     let addEggWindow;
-    if (this.state.addEggState == 'shown') {
+    if (this.state.showingAddEggWindow) {
       addEggWindow = <AddEggWindow
       closeBox = {() => this.hideAddEggWindow()}
-      visible = {this.state.addEggState}
     />
     } else {
       addEggWindow = '';
@@ -93,7 +94,7 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
         <button 
           onClick={() => this.showAddEggWindow()}
           className="invisibleButton" 
-          id={'yahaha'}
+          key={'yahaha'}
           ><AddEggCard/></button>
       </div>
     );

@@ -162,6 +162,7 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
                 <div id="taskFolderTitle">{this.state.folderName}</div>
                 <p>You have: <span>{this.state.eggCredits}</span> credits for this egg</p>
                 <Egg
+                    folderName={this.state.folderName}
                     egg={this.state.egg}
                 />
                 <div id="eggExp">EXP: {this.state.egg.exp}/{nextExpBound}</div>

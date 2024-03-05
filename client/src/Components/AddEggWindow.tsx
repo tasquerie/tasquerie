@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Task, TaskType } from './Task';
-import { Egg, EggType } from './Egg';
+import { Egg } from './Egg';
 import * as mocks from '../Mocks'
 
 interface AddEggWindowProps {
     closeBox(): void;
-    visible: string;
 }
 
 interface AddEggWindowState {
@@ -29,12 +28,13 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
     }
 
     addEgg(eggType: number) {
-        mocks.folderNames.push(this.state.folderName);
-        let newEgg: EggType = {...mocks.allEggs[eggType]};
-        mocks.eggCollection.push(newEgg);
-        mocks.tasksList.push([]);
-        mocks.interactionsList.push([]);
-        mocks.specificCredits.push(0);
+        // TODO: change this to a backend call
+        // mocks.folderNames.push(this.state.folderName);
+        // let newEgg: EggType = {...mocks.allEggs[eggType]};
+        // mocks.eggCollection.push(newEgg);
+        // mocks.tasksList.push([]);
+        // mocks.interactionsList.push([]);
+        // mocks.specificCredits.push(0);
     }
 
     render() {
@@ -69,7 +69,7 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
             );
         }
         return(
-            <div id="addEggWindow" className={this.props.visible}>
+            <div id="addEggWindow">
                 <button onClick={() => {
                     this.props.closeBox();
                 }}>

@@ -21,12 +21,12 @@ import AuthContext from '../Context/AuthContext';
 
 
 interface HomeProps {
-    displaytaskFolder(eggId: number): void;
+    displaytaskFolder(folderName: string): void;
     updateState(selected: string): void;
 }
 
 interface HomeState {
-    // who knows
+    universalCredits: number;
 }
 
 class Home extends Component<HomeProps, HomeState> {
@@ -36,29 +36,33 @@ class Home extends Component<HomeProps, HomeState> {
     constructor(props: any) {
         super(props);
         this.state = {
+            universalCredits: 0
         }
     }
 
     async componentDidMount() {
-        let funcArgs: Map<string, any> = new Map();
-        funcArgs.set("UserID", this.context.getUser());
-        let res = await BackendWrapper.view("getUserInfo", funcArgs);
-        console.log(res);
-        funcArgs.set("folderName", "test");
-        res = await BackendWrapper.view("getTaskFolderInfo", funcArgs);
-        console.log(res);
+        await this.loadUniversalCredits();
+    }
+
+    async loadUniversalCredits() {
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+
+        try {
+            let user = await BackendWrapper.view("getUserInfo", args);
+            this.setState({
+                universalCredits: user.univCredits
+            });
+        } catch (e) {
+            console.log("Failure to get universal credits");
+        }
     }
 
     render() {
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
-                <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div>
-                {/* <p>A brief description of Tasquerie goes here...</p> */}
-                {/* <UpcomingTasks tasks={this.state.tasks} /> */}
-                {/* <TaskCollection tasks={this.state.tasks} /> */}
-                {/* <p>This is the home page</p> */}
-                {/* Button to switch to profile page */}
+                <div id='universalCredits'>You have <span>{this.state.universalCredits}</span> universal credits</div>
                 <div id='homeSidebar'>
                     <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('profile')}>
                         <i className="fa fa-user" aria-hidden="true"></i>

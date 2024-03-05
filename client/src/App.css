@@ -355,6 +355,20 @@ html {
   width: 200px;
 }
 
+/* ----- EGG ----- */
+
+.egg {
+  position: relative;
+}
+
+.eggImg {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+}
+
+/* ----- ALERT BOX ----- */
+
 #alertBox {
   z-index: 4;
 
