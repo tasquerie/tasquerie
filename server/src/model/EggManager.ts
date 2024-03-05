@@ -118,7 +118,14 @@ export class EggManager {
     if (eggType === undefined) {
       return "";
     }
-    return JSON.stringify(eggType);
+    const jsonEgg = {
+      name: eggType.name,
+      levelBoundaries: eggType.levelBoundaries,
+      graphicLinks: eggType.graphicLinks,
+      allowedAccessories: Array.from(eggType.allowedAccessories),
+      allowedInteractions: Array.from(eggType.allowedInteractions),
+    };
+    return JSON.stringify(jsonEgg);
   }
 
   public async getInteractionJSON(name: string): Promise<string> {
