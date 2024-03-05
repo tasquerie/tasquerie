@@ -212,9 +212,6 @@ export class ModelController {
     if (task === undefined) {
       throw new Error('The taskID does not exist');
     }
-    if (task === undefined) {
-      throw new Error('The taskID does not exist in this folder');
-    }
     if (isComplete !== undefined) {
       task.setIsComplete(isComplete);
     }
@@ -469,7 +466,7 @@ export class ModelController {
     await this.writeUserToDB(currentUser);
   }
 
-  async equipAccesssory(userID: UserID, folderName: string, accesory: string) {
+  async equipAccessory(userID: UserID, folderName: string, accessory: string): Promise<void> {
     const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
     if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
@@ -479,13 +476,15 @@ export class ModelController {
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
-    if (folder.getEgg().getOwnedAccessories().has(accesory)) {
-      folder.getEgg().getEquippedAccessories().add(accesory);
+    if (folder.getEgg().getOwnedAccessories().has(accessory)) {
+      folder.getEgg().getEquippedAccessories().add(accessory);
+      //return true;
     }
     await this.writeUserToDB(currentUser);
+    //return false;
   }
 
-  async unequipAccesssory(userID: UserID, folderName: string, accesory: string) {
+  async unequipAccessory(userID: UserID, folderName: string, accessory: string): Promise<void> {
     const currentUser = (await this.idManager.getUserByID(userID)).content as User | undefined;
     if (currentUser === undefined) {
       throw new Error(this.USER_NOT_SIGNED_IN);
@@ -495,7 +494,7 @@ export class ModelController {
     if (folder === undefined) {
       throw new Error('The folder name does not exist');
     }
-    folder.getEgg().getEquippedAccessories().delete(accesory);
+    folder.getEgg().getEquippedAccessories().delete(accessory);
     await this.writeUserToDB(currentUser);
   }
 }

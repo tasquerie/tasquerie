@@ -18,15 +18,7 @@ export class ModelView {
   /**
    * Grabs the user info associated with the given userID.
    * Returns the string representation of the User object.
-   * Returns undefined if user does not exist.
-   *
-   * @param id The userID you want to search for
-   * @returns The string representation of the User object
-   */
-  /**
-   * Grabs the user info associated with the given userID.
-   * Returns the string representation of the User object.
-   * Returns undefined if user does not exist.
+   * Returns an empty string if user does not exist.
    *
    * @param id The userID you want to search for
    * @returns The string representation of the User object
@@ -74,7 +66,6 @@ export class ModelView {
       return "";
     }
     user = user as User;
-    user = user as User;
     const taskFolder = user.getTaskFolders().get(folderName);
     if (taskFolder === undefined) {
       return "";
@@ -93,8 +84,6 @@ export class ModelView {
     if (user === undefined) {
       return "";
     }
-
-    user = user as User;
 
     user = user as User;
     const taskFolder =  user.getTaskFolders().get(folderName);
