@@ -6,13 +6,13 @@ import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
 
 interface TaskListProps {
+  refreshFolder(): void;
   folderName: string;
+  taskList: string[] // list of taskIDs from backend
 }
 
 interface TaskListState {
   showingAddTaskWindow: boolean;
-  // tasks: TaskType[];
-  taskIDs: string[]; // list of taskIDs that can be gotten from backend
 }
 
 export class TaskList extends Component<TaskListProps, TaskListState> {
@@ -22,36 +22,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   constructor(props: TaskListProps){
     super(props);
     this.state = {
-      showingAddTaskWindow: false,
-      taskIDs: []
-    }
-  }
-
-  async componentDidMount() {
-      await this.getTasks();
-  }
-
-  /**
-   * Gets all of user's tasks from backend API
-   */
-  async getTasks() {
-    // do some calls ig
-    let args: Map<string, any> = new Map();
-    args.set("UserID", this.context.getUser());
-    args.set("folderName", this.props.folderName);
-
-    try{
-      let taskFolderInfo = await BackendWrapper.view("getTaskInfo", args);
-      // check if response is "empty"
-      let taskList: string[] = taskFolderInfo.taskIDs;
-      // TODO: right now taskIDtoTasks is a Map which is bad news
-      // tomorrow changes will be made to get a list, so assume that right now
-      // might become an endpoint too
-      this.setState({
-        taskIDs: taskList
-      });
-    } catch (e) {
-      console.log("Couldn't retrieve tasks of this folder");
+      showingAddTaskWindow: false
     }
   }
 
@@ -70,11 +41,14 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   render() {
     // refactor to use this.state.tasks
     let tasks = [];
-    for(let i = 0; i < this.state.taskIDs.length; i++) {
+    for(let i = 0; i < this.props.taskList.length; i++) {
       tasks.push(
         <Task
           folderName={this.props.folderName}
-          taskID={this.state.taskIDs[i]}
+          taskID={this.props.taskList[i]}
+          refreshFolder={() => {
+            this.props.refreshFolder();
+          }}
         />
       );
     }

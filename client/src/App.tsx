@@ -13,7 +13,7 @@ import HowtoPg from './pages/HowtoPg';
 export interface AppState {
   currentPage: string;
   userID: string;
-  displayingEggId: number;
+  displayingFolder: string;
 }
 
 class App extends Component<{}, AppState> {
@@ -24,7 +24,7 @@ class App extends Component<{}, AppState> {
     this.state = {
       currentPage: 'login',
       userID: '', // You can set this to an initial value as needed
-      displayingEggId: -1
+      displayingFolder: ''
     };
     // Bind switchState method to the class instance
     this.switchState = this.switchState.bind(this);
@@ -33,7 +33,7 @@ class App extends Component<{}, AppState> {
   switchState(page: string) {
     this.setState({ currentPage: page });
     if(page !== "taskFolder") {
-      this.setState({displayingEggId : -1});
+      this.setState({displayingFolder: ''});
     }
   }
 
@@ -41,7 +41,7 @@ class App extends Component<{}, AppState> {
     // if id >= 0, display a page
     // id = -1 means no egg is being displayed
     this.setState({
-      displayingEggId : eggId,
+      displayingFolder: '',
       currentPage : "taskFolder"
     });
   }
@@ -151,11 +151,9 @@ class App extends Component<{}, AppState> {
       return (
         <div>
           <TaskFolder
+          folderName={this.state.displayingFolder}
           updateState = {
             (selected: string) => this.setState({currentPage : selected})
-          }
-          eggId = {
-            this.state.displayingEggId
           }
           />
         </div>

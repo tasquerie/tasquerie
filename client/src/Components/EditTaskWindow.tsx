@@ -42,7 +42,7 @@ export class EditTaskWindow extends Component<EditTaskWindowProps, EditTaskWindo
         args.set("taskName", this.state.name);
         args.set("description", this.state.description);
         try {
-            BackendWrapper.controller("setTask", args);
+            await BackendWrapper.controller("setTask", args);
         } catch (e) {
             // uhm.
             // shouldn't happen - if user is logged in, their ID should be valid

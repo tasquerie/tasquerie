@@ -26,6 +26,7 @@ interface TaskProps {
     folderName: string;
     // task: TaskType;
     taskID: string; // taskID, call backend to get info
+    refreshFolder(): void;
 }
 
 export interface TaskState {
@@ -53,7 +54,7 @@ export class Task extends Component<TaskProps, TaskState> {
                             // nothing in backend stores amount of credits
                             // rewarded for a task
             taskID: this.props.taskID,
-            name: '',
+            name: 'Placeholder Task',
             isComplete: false,
             description: '',
             tags: [],
@@ -107,6 +108,7 @@ export class Task extends Component<TaskProps, TaskState> {
         } catch (e) {
             // shouldn't happen
             console.log("Failure to mark task as completed");
+            return;
         }
 
         // award credits to user
@@ -118,6 +120,8 @@ export class Task extends Component<TaskProps, TaskState> {
         } catch (e) {
             console.log("Failure to award egg specific credits");
         }
+
+        this.props.refreshFolder();
     }
 
     toggleDetail() {
@@ -143,7 +147,12 @@ export class Task extends Component<TaskProps, TaskState> {
         args.set("UserID", this.context.getUser());
         args.set("folderName", this.props.folderName);
         args.set("TaskID", this.state.taskID);
-        BackendWrapper.controller("deleteTask", args);
+        try {
+            await BackendWrapper.controller("deleteTask", args);
+            this.props.refreshFolder();
+        } catch (e) {
+            console.log("Failure to delete task");
+        }
     }
 
     render() {
