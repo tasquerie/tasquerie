@@ -92,7 +92,7 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/view", async (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
     console.log('--- view called ---');
-    console.log(req.body);
+    console.log(req.query);
     res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let request = req.query;
     let result = "";
@@ -230,6 +230,8 @@ app.use(express.json());
 
 // for login methods
 app.post("/login", async (req: Request, res: Response) => {
+    console.log('--- login called ---');
+    console.log(req.body);
     // url: http://localhost:3000/login
     res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let result = "";
