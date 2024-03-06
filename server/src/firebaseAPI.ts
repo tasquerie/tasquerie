@@ -22,18 +22,39 @@ export const FirebaseUserAPI = {
      */
     addUser: async (user: User): Promise<Result> => {
         try {
+            // debug
+            // console.log("Debug DB: sucesss")
             const userID = user.getID();
+            // debug
+            // console.log("Debug DB: sucesss")
             const documentRef = db.collection("userInfo").doc(userID.id);
+            // const documentRef = db.collection("userInfo").doc("defaultUser");
+            // debug
+            // console.log("Debug DB: sucesss")
             const snapshot = await documentRef.get();
+            // debug
+            // console.log("Debug DB: sucesss")
 
             if (snapshot.exists) {
+                // debug
+                console.log("Debug DB: sucesss BRANCH")
                 return { status: false, content: undefined };
             }
 
+            // debug
+            console.log("Debug DB: sucesss final A")
+
             await documentRef.set(user);
+
+            // debug
+            console.log("Debug DB: sucesss final B")
 
             return { status: true, content: "success" };
         } catch (err: any) {
+            // debug
+            console.log("Debug DB: fail")
+            console.log("Debug DB: code: " + err.code)
+
             return { status: false, content: err.code }
         }
     },
@@ -54,14 +75,25 @@ export const FirebaseUserAPI = {
         try {
             const UID = userID.id;
             const documentRef = db.collection("userInfo").doc(UID);
+            // const documentRef = db.collection("userInfo").doc("defaultUser");
             const snapshot = await documentRef.get();
+            // console.log("Debug Get DB id: " + UID)
 
             if (!snapshot.exists) {
+                // console.log("Debug Get DB: branch")
                 return { status: false, content: undefined };
             }
+            // console.log("Debug Get DB: final A")
             const data = snapshot.data() as User;
-            return {status: true, content: data }
+            let dataString = JSON.stringify(snapshot.data());
+            let dataObj = JSON.parse(dataString);
+            const user = new User(dataObj.uniqueID, dataObj.username, dataObj.password);
+            // console.log("Debug Get DB: final B");
+            // console.log("Debug Get DB: final B data: " + JSON.stringify(snapshot.data()));
+            // console.log("Debug Get DB: final B data: " + JSON.stringify(snapshot.data()));
+            return {status: true, content: user }
         } catch (err: any) {
+            console.log("Debug Get DB: fail")
             return { status: false, content: err.code }
         }
     },

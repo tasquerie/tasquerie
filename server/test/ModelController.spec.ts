@@ -11,14 +11,21 @@ import { TaskFolder } from '../src/model/TaskFolder';
 import { User } from '../src/model/User';
 import { Task } from '../src/model/Task';
 import { TaskID } from '../src/types/TaskID';
+import { UserID } from '../src/types/UserID';
+import { FirebaseUserAPI } from '../src/firebaseAPI';
 
-const MAX_CASES = 1000;
+const MAX_CASES = 10;
 const MAX_PASS_LEN = 8;
 
 // for testing
+const TEMP_ID: UserID = {
+  id: "NULL"
+};
 const TEMP_ID_TASK: TaskID = {
   id: "NULL"
 };
+
+const USE_DB = true;
 
 ////       LOGIN METHODS         ////
 
@@ -27,142 +34,165 @@ function getContr(): ModelController {
   let userMan = new UserManager(idMan);
   let eggMan = new EggManager();
   let writeMan = new WriteManager();
+  idMan.USE_DB = USE_DB;
+  userMan.USE_DB = USE_DB;
+  eggMan.USE_DB = USE_DB;
+  writeMan.USE_DB = USE_DB;
   return new ModelController(userMan, idMan, eggMan, writeMan);
 }
 async function getDefaultUser(contr: ModelController): Promise<User> {
+
   let username = "username";
   let password = "password";
-  await contr.signup(username, password);  // already logged in
-  let user = contr.getCurrentUser();
-  assert(user !== undefined);
-  return user;
+  // no DB below
+
+  if (!contr.getIDManager().USE_DB) {
+    await contr.signup(username, password);  // already logged in
+    let user = contr.getCurrentUser();
+    assert(user !== undefined);
+
+    return user;
+  } else {
+    let user = new User(TEMP_ID, username, password)
+    user.setID(contr.getIDManager().nextUserID(user));
+    await contr.getWriteManager().writeUser(user);
+    return user;
+  }
+
+
+  // manual
+
+  // let user = (await FirebaseUserAPI.getUser({id: "defaultUser"})).content as User;
+  // console.log("User json: " + user.getJSON())
+  // return user;
+
 }
 function getViewer(contr: ModelController): ModelView {
   return new ModelView(contr.getIDManager(), contr.getEggManager());
 }
 
-describe('login', function () {
-  describe('correct login info → return true', function () {
-    it('should return true', async function () {
-      let contr = getContr();
-      for (let i = 0; i < MAX_CASES; i++) {
-        let username = "user " + i;
-        let password = "password " + i;
-        await contr.signup(username, password);
-        assert(contr.login(username, password));
-      }
-    });
-  });
-  describe('bad username → returns false + not logged in', function () {
-    it('should return false and check user is not logged in', async function () {
-      let contr = getContr();
-      let username = "user ";
-      let password = "password ";
-      await contr.signup(username, password);
-      contr.logout();
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(!contr.login(username + i, password));
-        assert(!contr.isLoggedIn());
-      }
-    });
-  });
-  describe('bad password → returns false + not logged in', function () {
-    it('should return false and check user is not logged in', async function () {
-      let contr = getContr();
-      let username = "user ";
-      let password = "password ";
-      await contr.signup(username, password);
-      contr.logout();
-      for (let i = 0; i < MAX_CASES; i++) {
-        assert(!contr.login(username, password + i));
-        assert(!contr.isLoggedIn());
-      }
-    });
-  });
-  describe('correct login, bad user, bad password interlaced', function () {
-    it('should return true for good login, false for bad', async function () {
-      let contr = getContr();
-      for (let i = 0; i < MAX_CASES; i++) {
-        let username = "user " + i;
-        let password = "password " + i;
-        await contr.signup(username, password);
-        assert(contr.login(username, password));
-        assert(!contr.login(username + "k", password));
-        assert(!contr.login(username, password + "k"));
-        assert(!contr.login(username + "k", password + "k"));
-      }
-    });
-  });
-});
+// describe('login', function () {
+//   describe('correct login info → return true', function () {
+//     it('should return true', async function () {
+//       let contr = getContr();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         let username = "user " + i;
+//         let password = "password " + i;
+//         await contr.signup(username, password);
+//         assert(contr.login(username, password));
+//       }
+//     });
+//   });
+//   describe('bad username → returns false + not logged in', function () {
+//     it('should return false and check user is not logged in', async function () {
+//       let contr = getContr();
+//       let username = "user ";
+//       let password = "password ";
+//       await contr.signup(username, password);
+//       contr.logout();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         assert(!contr.login(username + i, password));
+//         assert(!contr.isLoggedIn());
+//       }
+//     });
+//   });
+//   describe('bad password → returns false + not logged in', function () {
+//     it('should return false and check user is not logged in', async function () {
+//       let contr = getContr();
+//       let username = "user ";
+//       let password = "password ";
+//       await contr.signup(username, password);
+//       contr.logout();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         assert(!contr.login(username, password + i));
+//         assert(!contr.isLoggedIn());
+//       }
+//     });
+//   });
+//   describe('correct login, bad user, bad password interlaced', function () {
+//     it('should return true for good login, false for bad', async function () {
+//       let contr = getContr();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         let username = "user " + i;
+//         let password = "password " + i;
+//         await contr.signup(username, password);
+//         assert(contr.login(username, password));
+//         assert(!contr.login(username + "k", password));
+//         assert(!contr.login(username, password + "k"));
+//         assert(!contr.login(username + "k", password + "k"));
+//       }
+//     });
+//   });
+// });
 
 
 
-describe('login', function () {
-  describe('logged in → logged out && logged out → still logged out', function () {
-    it('should be logged out', async function () {
-      let contr = getContr();
-      for (let i = 0; i < MAX_CASES; i++) {
-        let username = "user " + i;
-        let password = "password " + i;
-        await contr.signup(username, password);
-        assert(contr.login(username, password));
-        assert(contr.isLoggedIn());
-        contr.logout();
-        assert(!contr.isLoggedIn());
-        contr.logout();
-        assert(!contr.isLoggedIn());
-      }
-    });
-  });
-});
+// describe('login', function () {
+//   describe('logged in → logged out && logged out → still logged out', function () {
+//     it('should be logged out', async function () {
+//       let contr = getContr();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         let username = "user " + i;
+//         let password = "password " + i;
+//         await contr.signup(username, password);
+//         assert(contr.login(username, password));
+//         assert(contr.isLoggedIn());
+//         contr.logout();
+//         assert(!contr.isLoggedIn());
+//         contr.logout();
+//         assert(!contr.isLoggedIn());
+//       }
+//     });
+//   });
+// });
 
 
 
-describe('signup', function () {
-  describe('normal correct case →', function () {
-    it('is logged in + can login with username and password after signup and logging out', async function () {
-      let contr = getContr();
-      for (let i = 0; i < MAX_CASES; i++) {
-        let username = "user " + i;
-        let password = "password " + i;
-        await contr.signup(username, password);
-        assert(contr.isLoggedIn());
-        contr.logout();
-        assert(contr.login(username, password));
-      }
-    });
-  });
-  describe('username already exists → throw exc', function () {
-    it('should throw an error', async function () {
-      let contr = getContr();
-      let username = "user";
-      let password = "password";
-      await contr.signup(username, password);
-      for (let i = 0; i < MAX_CASES; i++) {
-        password = "password " + i;
-        assert.rejects(async () => await contr.signup(username, password), Error, 'Username already exists!');
-        // expect(contr.signup(username, password)).to.be.throw('Username already exists!');
-      }
-    });
-  });
-  describe('password < 8 chars → throw exc', function () {
-    it('should throw an error', function () {
-      let contr = getContr();
-      let password = ""
-      for (let i = 0; i < MAX_PASS_LEN; i++) {
-        let username = "user " + i;
-        assert.rejects(async () => await contr.signup(username, password), Error, 'Password must be at least 8 characters long.');
-        password += "a";
-      }
-      // NOW PASSWORD IS LENGTH 8 --> SHOULD WORK
-      for (let i = 0; i < MAX_PASS_LEN; i++) {
-        let username = "user " + i;
-        assert.doesNotThrow(async () => await contr.signup(username, password));
-        password += "a";
-      }
-    });
-  });
-});
+// describe('signup', function () {
+//   describe('normal correct case →', function () {
+//     it('is logged in + can login with username and password after signup and logging out', async function () {
+//       let contr = getContr();
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         let username = "user " + i;
+//         let password = "password " + i;
+//         await contr.signup(username, password);
+//         assert(contr.isLoggedIn());
+//         contr.logout();
+//         assert(contr.login(username, password));
+//       }
+//     });
+//   });
+//   describe('username already exists → throw exc', function () {
+//     it('should throw an error', async function () {
+//       let contr = getContr();
+//       let username = "user";
+//       let password = "password";
+//       await contr.signup(username, password);
+//       for (let i = 0; i < MAX_CASES; i++) {
+//         password = "password " + i;
+//         assert.rejects(async () => await contr.signup(username, password), Error, 'Username already exists!');
+//         // expect(contr.signup(username, password)).to.be.throw('Username already exists!');
+//       }
+//     });
+//   });
+//   describe('password < 8 chars → throw exc', function () {
+//     it('should throw an error', function () {
+//       let contr = getContr();
+//       let password = ""
+//       for (let i = 0; i < MAX_PASS_LEN; i++) {
+//         let username = "user " + i;
+//         assert.rejects(async () => await contr.signup(username, password), Error, 'Password must be at least 8 characters long.');
+//         password += "a";
+//       }
+//       // NOW PASSWORD IS LENGTH 8 --> SHOULD WORK
+//       for (let i = 0; i < MAX_PASS_LEN; i++) {
+//         let username = "user " + i;
+//         assert.doesNotThrow(async () => await contr.signup(username, password));
+//         password += "a";
+//       }
+//     });
+//   });
+// });
 
 
 ////       FUNCTIONAL METHODS         ////

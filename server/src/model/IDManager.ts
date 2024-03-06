@@ -22,20 +22,16 @@ export class IDManager {
 
   // TODO: Integrate with database
   public nextUserID(user: User | undefined): UserID {
-    if (this.USE_DB) {
-      throw new Error("not Implemented");
-    } else {
-      var next_id = Math.floor(Math.random() * this.MAX_USER_ID);
-      while (this.userIDToUser.has(next_id.toString())) {
-        next_id = Math.floor(Math.random() * this.MAX_USER_ID);
-      }
-      this.userIDToUser.set(next_id.toString(), user);
-
-      const idObj: UserID = {
-        id: next_id.toString()
-      };
-      return idObj;
+    var next_id = Math.floor(Math.random() * this.MAX_USER_ID);
+    while (this.userIDToUser.has(next_id.toString())) {
+      next_id = Math.floor(Math.random() * this.MAX_USER_ID);
     }
+    this.userIDToUser.set(next_id.toString(), user);
+
+    const idObj: UserID = {
+      id: next_id.toString()
+    };
+    return idObj;
   }
 
   /**

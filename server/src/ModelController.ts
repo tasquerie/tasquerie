@@ -107,6 +107,11 @@ export class ModelController {
     return this.eggManager;
   }
 
+  public getWriteManager(): WriteManager {
+    // for testing only.
+    return this.writeManager;
+  }
+
 
 
   // data manipulation methods

@@ -4,7 +4,7 @@ import { Result } from "./../types/FirebaseResult"
 import { FirebaseUserAPI, FirebaseTaskAPI } from "../firebaseAPI";
 export class WriteManager {
   // ALL FIELDS FOR TESTING ONLY!!
-  private USE_DB: boolean = false;
+  public USE_DB: boolean = false;
 
   // TODO: integrate with database
   public async writeUser(user: User): Promise<string | undefined> {
