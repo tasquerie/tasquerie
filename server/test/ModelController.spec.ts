@@ -33,6 +33,8 @@ async function getDefaultUser(contr: ModelController): Promise<User> {
   let username = "username";
   let password = "password";
   await contr.signup(username, password);  // already logged in
+  // debug
+  // console.log("DEBUG LOGIN: " + contr.login(username, password))
   let user = contr.getCurrentUser();
   assert(user !== undefined);
   return user;
