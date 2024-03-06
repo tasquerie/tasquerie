@@ -44,7 +44,24 @@ export const FirebaseUserAPI = {
             // debug
             console.log("Debug DB: sucesss final A")
 
-            await documentRef.set(user);
+            try {
+                await documentRef.set(user);
+            } catch (error: unknown) {
+                // debug
+                console.log("Debug DB: error with documentRef.set(user)");
+                // some code that handles the error
+                if (typeof error === "string") {
+                    // handle string error
+                    console.log("Debug DB: string error: " + error);
+                } else if (error instanceof Error) {
+                    // handle Error object
+                    console.log("Debug DB: error error: " + error.message);
+                } else {
+                    // handle other types of errors
+                    console.log("Debug DB: other error " + error);
+                }
+                return { status: false, content: "error with documentRef.set(user);" }
+            }
 
             // debug
             console.log("Debug DB: sucesss final B")
