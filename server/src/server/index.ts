@@ -102,13 +102,6 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "UserID is not defined or is not a string";
                 break;
             }
-            // let userInfoUserID:UserID;
-            // try {
-            //     userInfoUserID = JSON.parse(userInfoID);
-            // } catch (err:any) {
-            //     error = "UserID is not a JSON string";
-            //     break;
-            // }
 
             const userInforUserID:UserID = {id: userInfoID};
             result = await viewer.getUserInfo(userInforUserID);
@@ -125,20 +118,8 @@ app.get("/view", async (req: Request, res: Response) => {
                 break;
             }
 
-            let taskInfoUserID:UserID;
-            try {
-                taskInfoUserID = JSON.parse(userTaskID);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
-            let taskID:TaskID;
-            try {
-                taskID = JSON.parse(taskIdStr);
-            } catch (err:any) {
-                error = "TaskID is not a JSON string";
-                break;
-            }
+            const taskInfoUserID:UserID = {id:userTaskID};
+            const taskID:TaskID = {id:taskIdStr};
 
             result = await viewer.getTaskInfo(taskInfoUserID, taskID);
             break;
@@ -153,22 +134,8 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "folderName is not defined or is not a string";
                 break;
             }
-            let tfUserID:UserID;
-            try {
-                tfUserID = JSON.parse(tfUserIdStr);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
-            let tfFolderName:string;
-            try {
-                tfFolderName = JSON.parse(tfFolderNameStr);
-            } catch (err:any) {
-                error = "folderName is not a JSON string";
-                break;
-            }
-
-            result = await viewer.getTaskFolderInfo(tfUserID, tfFolderName);
+            let tfUserID:UserID = {id:tfUserIdStr};
+            result = await viewer.getTaskFolderInfo(tfUserID, tfFolderNameStr);
             break;
         case "getEggInfo":
             const eggUserIdStr = request.UserID;
@@ -181,22 +148,9 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "folderName is not defined or is not a string";
                 break;
             }
-            let eggUserID:UserID;
-            try {
-                eggUserID = JSON.parse(eggUserIdStr);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
-            let eggFolderName:string;
-            try {
-                eggFolderName = JSON.parse(eggFolderNameStr);
-            } catch (err:any) {
-                error = "folderName is not a JSON string";
-                break;
-            }
+            let eggUserID:UserID = {id: eggUserIdStr};
 
-            result = await viewer.getEggInfo(eggUserID, eggFolderName);
+            result = await viewer.getEggInfo(eggUserID, eggFolderNameStr);
             break;
         case "getEggType":
             const eggNameStr  = request.name;
@@ -204,15 +158,7 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "name is not defined or is not a string";
                 break;
             }
-            let eggName:string;
-            try {
-                eggName = JSON.parse(eggNameStr);
-            } catch (err:any) {
-                error = "name is not a JSON string";
-                break;
-            }
-
-            result = await viewer.getEggType(eggName);
+            result = await viewer.getEggType(eggNameStr);
             break;
         case "getInteraction":
             const interNameStr  = request.name;
@@ -220,15 +166,8 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "name is not defined or is not a string";
                 break;
             }
-            let interName:string;
-            try {
-                interName = JSON.parse(interNameStr);
-            } catch (err:any) {
-                error = "name is not a JSON string";
-                break;
-            }
 
-            result = await viewer.getInteraction(interName);
+            result = await viewer.getInteraction(interNameStr);
             break;
         case "getAccessory":
             const accesNameStr  = request.name;
@@ -236,15 +175,8 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "name is not defined or is not a string";
                 break;
             }
-            let accesName:string;
-            try {
-                accesName = JSON.parse(accesNameStr);
-            } catch (err:any) {
-                error = "name is not a JSON string";
-                break;
-            }
 
-            result = await viewer.getAccessory(accesName);
+            result = await viewer.getAccessory(accesNameStr);
             break;
         case "getUsername":
             const userNameStr  = request.UserID;
@@ -252,13 +184,7 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "UserID is not defined or is not a string";
                 break;
             }
-            let userName:UserID;
-            try {
-                userName = JSON.parse(userNameStr);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
+            let userName:UserID = {id:userNameStr};
 
             result = await viewer.getUsername(userName);
             break;
@@ -268,13 +194,7 @@ app.get("/view", async (req: Request, res: Response) => {
                 error = "UserID is not defined or is not a string";
                 break;
             }
-            let allEgg:UserID;
-            try {
-                allEgg = JSON.parse(allEggStr);
-            } catch (err:any) {
-                error = "UserID is not a JSON string";
-                break;
-            }
+            let allEgg:UserID = {id:allEggStr};
 
             result = await viewer.getAllEggInfo(allEgg);
             break;
@@ -285,12 +205,6 @@ app.get("/view", async (req: Request, res: Response) => {
                 break;
             }
             const allTaskFold:UserID = {id:allTaskFoldStr};
-            // try {
-            //     allTaskFold = JSON.parse(allTaskFoldStr);
-            // } catch (err:any) {
-            //     error = "UserID is not a JSON string";
-            //     break;
-            // }
 
             result = await viewer.getAllTaskFolderInfo(allTaskFold);
             break;
@@ -298,13 +212,13 @@ app.get("/view", async (req: Request, res: Response) => {
             error = 'The function of the request is not defined';
     }
     if (error !== "") {
-        res.status(400).send(error);
+        res.status(400).json(error);
     } 
     // else if (result === "") {
     //     res.status(400).send("The requested view does not exist");
     // } 
     else {
-        res.send(result);
+        res.json(result);
     }
 });
 
@@ -359,7 +273,7 @@ app.post("/login", async (req: Request, res: Response) => {
     if (error !== "") {
         res.status(400).json(error);
     } else {
-        res.send(result);
+        res.json(result);
     }
 });
 
@@ -372,6 +286,7 @@ app.post("/controller", async (req: Request, res: Response) => {
     let error = ""
     switch(func) {
         case "addFolder":
+            //string
             const addFolderID = req.body.UserID;
             if (!checkID(addFolderID)) {
                 error = "Wrong type for User ID";
@@ -401,6 +316,7 @@ app.post("/controller", async (req: Request, res: Response) => {
             }
             break;
         case "setFolder":
+            //string
             const setFolderID = req.body.UserID;
             if (!checkID(setFolderID)) {
                 error = "Wrong type for User ID";
