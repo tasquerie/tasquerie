@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Auth from "../Context/Auth"
 // import { useAuth, AuthContext } from "../Context/AuthContext";
 import AuthContext from '../Context/AuthContext';
+import { AlertBox } from '../Components/AlertBox';
 
 // hard code (kind of) disallowed input characters
 // could move this up a layer if we want to share with signup
@@ -14,11 +15,11 @@ let legalKeys: string[] = [
 interface LoginState {
     email: string;
     password: string;
+    showingAlertBox: boolean
 }
 
 interface LoginProps {
     updateState(selected: string): void;
-    setUserID(id: string): void;
 }
 
 class Login extends Component<LoginProps, LoginState> {
@@ -31,8 +32,21 @@ class Login extends Component<LoginProps, LoginState> {
         super(props);
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            showingAlertBox: false
         }
+    }
+
+    showAlert() {
+        this.setState({
+          showingAlertBox: true
+        });
+    }
+    
+      hideAlert() {
+        this.setState({
+          showingAlertBox: false
+        });
     }
 
     async validate(): Promise<boolean> {
@@ -40,14 +54,12 @@ class Login extends Component<LoginProps, LoginState> {
         // returns true if entered username + password is a valid login
         // otherwise returns false
         // let user = await this.props.auth.signIn(this.state.email, this.state.password);
-        let user = await this.context.signIn(this.state.email, this.state.password);
+        await this.context.signIn(this.state.email, this.state.password);
 
-        if (user == null) {
+        if (this.context.getUser() === '') {
             // do something ig
             return false;
         }
-
-        this.props.setUserID(user);
 
         return true;
     }
@@ -63,6 +75,7 @@ class Login extends Component<LoginProps, LoginState> {
         } else {
             // tell user they're wrong
             console.log('login failed');
+            this.showAlert();
         }
     }
 
@@ -79,8 +92,20 @@ class Login extends Component<LoginProps, LoginState> {
     }
 
     render() {
+        let alert;
+        if (this.state.showingAlertBox) {
+            alert = <AlertBox
+                close={() => {
+                    this.hideAlert();
+                }}
+                title="Log In Failed"
+                message="Check to make sure email and password are correct."/>;
+        } else {
+            alert = '';
+        }
         return (
             <div className="content flex-v align-content-center">
+                {alert}
                 <div id="loginBox">
                     <div id="loginTitle">LOG IN</div>
                     <input id="emailInput" className="loginInput" placeholder="Email"
@@ -114,13 +139,6 @@ class Login extends Component<LoginProps, LoginState> {
                             this.props.updateState('signup');
                         }}
                     >Sign Up</button>
-                    <button
-                        onClick = {() => {
-                            this.context.googleSignIn();
-                        }}
-                    >
-                        Placeholder for Google Auth or whatever 3rd party thing we're using
-                    </button>
                 </div>
             </div>
         )

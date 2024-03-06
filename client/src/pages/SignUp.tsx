@@ -18,7 +18,6 @@ interface SignUpState {
 
 interface SignUpProps {
     updateState(selected: string): void;
-    setUserID(id: string): void;
 }
 
 class SignUp extends Component<SignUpProps, SignUpState> {
@@ -37,14 +36,12 @@ class SignUp extends Component<SignUpProps, SignUpState> {
         // do validation stuff ig
         // returns true if entered username + password is a valid login
         // otherwise returns false
-        let user = await this.context.signUp(this.state.email, this.state.password);
+        await this.context.signUp(this.state.email, this.state.password);
 
-        if (user == null) {
+        if (this.context.getUser() === '') {
             // do something ig
             return false;
         }
-
-        this.props.setUserID(user);
 
         return true;
     }
@@ -84,7 +81,7 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                             this.props.updateState('login');
                         }}
                     >Back</button>
-                    <div id="signUpTitle">LOG IN</div>
+                    <div id="signUpTitle">SIGN UP</div>
                     <input id="emailInput" className="signUpInput" placeholder="Email"
                         onChange={(e) => {
                             this.setState({
@@ -111,9 +108,6 @@ class SignUp extends Component<SignUpProps, SignUpState> {
                         onClick={() => {
                             this.submit();
                         }}>Sign Up</button>
-                    <button>
-                        Placeholder for Google Auth or whatever 3rd party thing we're using
-                    </button>
                 </div>
             </div>
         )
