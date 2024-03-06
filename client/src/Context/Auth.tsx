@@ -46,6 +46,8 @@ class Auth{
             if (this.user === null) {
                 throw Error;
             }
+            // debug
+            console.log('signup successful user ' + this.user);
             console.log('signup successful');
         } catch (e) {
             console.log("Failure to sign in");
