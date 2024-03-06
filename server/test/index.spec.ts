@@ -11,7 +11,7 @@ import {getIDMan, getContr, getViewer} from '../src/server/index';
 //       clear it up so that it could be discussed in the meeting
 // supertest:
 // res.json(): res.body()
-// res.send(): res.text for strings
+// res.send(): res.body for strings
 const contr = getContr();
 
 function loginUser() {
@@ -22,6 +22,15 @@ function loginUser() {
 function logoutUser() {
     contr.logout();
     assert.strictEqual(contr.isLoggedIn(), false);
+}
+
+function getUserID(): UserID {
+    const user = contr.getCurrentUser();
+    const id = user?.getID();
+    if (id === undefined) {
+        throw new Error('userid is undefined');
+    }
+    return id;
 }
 
 // Check: Don't need login
@@ -49,7 +58,7 @@ describe('Route /login', () => {
             const user = contr.getCurrentUser();
             const checkID = user?.getID().id;
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, checkID);
+            assert.strictEqual(res4.body, checkID);
         });
 
         it ('existing username case', async() => {
@@ -83,13 +92,13 @@ describe('Route /login', () => {
         it('wrong password', async() => {
             const res4:Response = await request(app).post('/login').send({func:'login', username:'USERNAME', password:'WRONG'});
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, 'false');
+            assert.strictEqual(res4.body, 'false');
         });
 
         it('correct login', async() => {
             const res5:Response = await request(app).post('/login').send({func:'login', username:'USERNAME', password:'PASSWORD'});
             assert.strictEqual(res5.statusCode, 200);
-            assert.strictEqual(res5.text, 'true');
+            assert.strictEqual(res5.body, 'true');
         });
     });
     // Current Contr State:
@@ -583,16 +592,14 @@ describe('Route /controller', () => {
 
         it('folderName doesn\'t exist case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'deleteTask', UserID:userID, folderName:"wrongFolder", TaskID:id});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
 
         it('taskID doesn\'t exist case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res7:Response = await request(app).post('/controller').send({func:'deleteTask', UserID:userID, folderName:"folderName1", TaskID:id});
             assert.strictEqual(res7.statusCode, 400);
             assert.strictEqual(res7.body, 'The taskID does not exist in this folder');
@@ -737,9 +744,8 @@ describe('Route /controller', () => {
         });
 
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folder = user?.getTaskFolders().get("folderName1")
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get("folderName1")
             const beforeCred = folder?.getEggCredits();
             if (beforeCred === undefined) {
                 throw new Error('UnivCredit is undefined');
@@ -775,24 +781,21 @@ describe('Route /controller', () => {
         });
         it('negative credit case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res5:Response = await request(app).post('/controller').send({func:'removeEggCredits', UserID:userID, amount:-10, folderName:"folderName1"});
             assert.strictEqual(res5.statusCode, 400);
             assert.strictEqual(res5.body, 'Illegal operation: negative credit value');
         });
         it('folderName doesn\'t exist case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'removeEggCredits', UserID:userID, amount:10, folderName:"wrongFolder"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
         //CHECK: Shouldn't we consider the case when EggCredits goes to negative?
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folder = user?.getTaskFolders().get("folderName1")
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get("folderName1")
             const beforeCred = folder?.getEggCredits();
             if (beforeCred === undefined) {
                 throw new Error('UnivCredit is undefined');
@@ -828,8 +831,7 @@ describe('Route /controller', () => {
         });
         it('folderName doesn\'t exist case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyAccessory', UserID:userID, folderName:"wrongFolder", accessoryType:"accessType1"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
@@ -846,23 +848,20 @@ describe('Route /controller', () => {
             assert.strictEqual(res6.body, 'Impossible: undefined eggType');
         });
         it('not allowed accessory', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyAccessory', UserID:userID, folderName:"folderName1", accessoryType:"acc3"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'not allowed to buy this accessory');
         });
-        it('not enought credits', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+        it('emtpy case', async() => {
+        const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyAccessory', UserID:userID, folderName:"folderName1", accessoryType:'acc1'});
             assert.strictEqual(res6.statusCode, 200);
             assert.strictEqual(res6.body, 'false');
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const folder = user?.getTaskFolders().get("folderName1");
-            const userID = user?.getID();
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get("folderName1");
             if (userID === undefined) {
                 throw new Error('userID is undefined');
             }
@@ -873,8 +872,7 @@ describe('Route /controller', () => {
             assert.strictEqual(folder?.getEggCredits(), 5);
         });
         it('already puchased', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyAccessory', UserID:userID, folderName:"folderName1", accessoryType:'acc1'});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'you already purchased this accessory');
@@ -904,37 +902,32 @@ describe('Route /controller', () => {
         });
         it('folderName doesn\'t exist case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyInteraction', UserID:userID, folderName:"wrongFolder", interactionType:"accessType1"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
         it('undefined eggType', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyInteraction', UserID:userID, folderName:"folderName2", interactionType:"interType1"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'Impossible: undefined eggType');
         });
         it('not allowed interaction', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyInteraction', UserID:userID, folderName:"folderName1", interactionType:"inter3"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'not allowed to buy this interaction');
         });
         it('not enough credits', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'buyInteraction', UserID:userID, folderName:"folderName1", interactionType:'inter1'});
             assert.strictEqual(res6.statusCode, 200);
             assert.strictEqual(res6.body, 'false');
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const folder = user?.getTaskFolders().get("folderName1");
-            const userID = user?.getID();
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get("folderName1");
             if (userID === undefined) {
                 throw new Error('userID is undefined');
             }
@@ -969,29 +962,25 @@ describe('Route /controller', () => {
         });
         it('negative credit case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res5:Response = await request(app).post('/controller').send({func:'gainExp', UserID:userID, amount:-10, folderName:"folderName1"});
             assert.strictEqual(res5.statusCode, 400);
             assert.strictEqual(res5.body, 'Illegal operation: negative credit value');
         });
         it('folderName doesn\'t exist case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'gainExp', UserID:userID, amount:10, folderName:"wrongFolder"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
         it('undefined eggType', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'gainExp', UserID:userID, amount:10, folderName:"folderName2"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'Impossible: undefined eggType');
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'gainExp', UserID:userID, amount:10, folderName:"folderName1"});
             assert.strictEqual(res6.statusCode, 200);
             assert.strictEqual(res6.body, 'gainExp');
@@ -1021,16 +1010,14 @@ describe('Route /controller', () => {
         });
         it('folderName doesn\'t exist case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
+            const userID = getUserID();
             const res6:Response = await request(app).post('/controller').send({func:'equipAccessory', UserID:userID, folderName:"wrongFolder", accessory:"accessType1"});
             assert.strictEqual(res6.statusCode, 400);
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folder = user?.getTaskFolders().get('folderName1');
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get('folderName1');
             // CHECK: Do we need to know if the equip actually worked? Returning boolean
             //Not owned
             const res6:Response = await request(app).post('/controller').send({func:'equipAccessory', UserID:userID, folderName:"folderName1", accessory:"acc2"});
@@ -1078,9 +1065,8 @@ describe('Route /controller', () => {
             assert.strictEqual(res6.body, 'The folder name does not exist');
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folder = user?.getTaskFolders().get('folderName1');
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get('folderName1');
             const res6:Response = await request(app).post('/controller').send({func:'unequipAccessory', UserID:userID, folderName:"folderName1", accessory:"acc2"});
             assert.strictEqual(res6.statusCode, 200);
             assert.strictEqual(res6.body, 'unequipAccessory');
@@ -1091,32 +1077,26 @@ describe('Route /view', () => {
     it('no function case', async() => {
         const res1:Response = await request(app).get('/view');
         assert.strictEqual(res1.statusCode, 400);
-        assert.strictEqual(res1.text, 'The function of the request is not defined');
+        assert.strictEqual(res1.body, 'The function of the request is not defined');
     });
     describe('getUserInfo', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getUserInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
-        });
-        it('not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getUserInfo&UserID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('empty string', async () => {
             const str = "id";
-            const res3:Response = await request(app).get('/view?func=getUserInfo&UserID=' + JSON.stringify(str));
+            const res3:Response = await request(app).get('/view?func=getUserInfo&UserID=' + "id");
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const res4:Response = await request(app).get('/view?func=getUserInfo&UserID=' + JSON.stringify(userID));
+            const userID = getUserID();
+            const res4:Response = await request(app).get('/view?func=getUserInfo&UserID=' + userID.id);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, user?.getJSON());
+            assert.strictEqual(res4.body, contr.getCurrentUser()?.getJSON());
             logoutUser();
         });
     });
@@ -1124,28 +1104,18 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getTaskInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('no task id', async() => {
-            const res2:Response = await request(app).get('/view?func=getTaskInfo&UserID=id');
+            const res2:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + 5);
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'TaskID is not defined or is not a string');
-        });
-        it('user id not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getTaskInfo&UserID=id&TaskID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
-        });
-        it('task id not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + JSON.stringify("id") + '&TaskID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "TaskID is not a JSON string");
+            assert.strictEqual(res2.body, 'TaskID is not defined or is not a string');
         });
         it('empty string', async () => {
             const str = "id";
-            const res3:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + JSON.stringify(str) + '&TaskID=' + JSON.stringify(str));
+            const res3:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + 5 + '&TaskID=' + 5);
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             const whoId1:UserID = {id:'changedid1'};
@@ -1153,16 +1123,12 @@ describe('Route /view', () => {
             const whoIDArr = [whoId1, whoID2];
 
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            if (userID === undefined) {
-                throw new Error("userID is undefined");
-            }
+            const userID = getUserID();
             const taskID = await contr.addTask(userID, "folderName1", "tempTask", "tempDesc", ['tag1', 'tag2'], whoIDArr);
-            const task = user?.getTaskFolders().get('folderName1')?.getTasks().get(taskID);
-            const res4:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + JSON.stringify(userID) + '&TaskID=' + JSON.stringify(taskID));
+            const task = contr.getCurrentUser()?.getTaskFolders().get('folderName1')?.getTasks().get(taskID);
+            const res4:Response = await request(app).get('/view?func=getTaskInfo&UserID=' + userID.id + '&TaskID=' + taskID.id);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, task?.getJSON());
+            assert.strictEqual(res4.body, task?.getJSON());
             logoutUser();
         });
     });
@@ -1170,45 +1136,36 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getTaskFolderInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('no folderName', async() => {
             const res2:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=id');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'folderName is not defined or is not a string');
-        });
-        it('user id not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=id&folderName=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
-        });
-        const str = "id";
-        it('folderName not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + JSON.stringify(str) + '&folderName=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "folderName is not a JSON string");
+            assert.strictEqual(res2.body, 'folderName is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + JSON.stringify(str) + '&folderName=' + JSON.stringify("folderName1"));
+            const res3:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + 5 + '&folderName=folderName1');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
 
             // taskFolder = undefined
             loginUser();
             const user = contr.getCurrentUser();
             const userID = user?.getID();
-            const res4:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + JSON.stringify(userID) + '&folderName=' + JSON.stringify(str));
+            if (userID === undefined) {
+                throw new Error('userID is undefined');
+            }
+            const res4:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + userID.id + '&folderName=WrongName');
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, "");
+            assert.strictEqual(res4.body, "");
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folder = user?.getTaskFolders().get("folderName1");
-            const res4:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + JSON.stringify(userID) + '&folderName=' + JSON.stringify("folderName1"));
+            const userID = getUserID();
+            const folder = contr.getCurrentUser()?.getTaskFolders().get("folderName1");
+            const res4:Response = await request(app).get('/view?func=getTaskFolderInfo&UserID=' + userID.id + '&folderName=folderName1');
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, folder?.getJSON());
+            assert.strictEqual(res4.body, folder?.getJSON());
             logoutUser();
         });
     });
@@ -1216,45 +1173,32 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getEggInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('no folderName', async() => {
             const res2:Response = await request(app).get('/view?func=getEggInfo&UserID=id');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'folderName is not defined or is not a string');
-        });
-        it('user id not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getEggInfo&UserID=id&folderName=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
-        });
-        const str = "id";
-        it('folderName not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getEggInfo&UserID=' + JSON.stringify(str) + '&folderName=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "folderName is not a JSON string");
+            assert.strictEqual(res2.body, 'folderName is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getEggInfo&UserID=' + JSON.stringify(str) + '&folderName=' + JSON.stringify("folderName1"));
+            const res3:Response = await request(app).get('/view?func=getEggInfo&UserID=' + 5 + '&folderName=folderName1');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
 
             // taskFolder = undefined
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const res4:Response = await request(app).get('/view?func=getEggInfo&UserID=' + JSON.stringify(userID) + '&folderName=' + JSON.stringify(str));
+            const userID = getUserID();
+            const res4:Response = await request(app).get('/view?func=getEggInfo&UserID=' +  userID.id + '&folderName=' + 5);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, "");
+            assert.strictEqual(res4.body, "");
         });
         it('correct case', async() => {
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const egg = user?.getTaskFolders().get("folderName1")?.getEgg();
-            const res4:Response = await request(app).get('/view?func=getEggInfo&UserID=' + JSON.stringify(userID) + '&folderName=' + JSON.stringify("folderName1"));
+            const userID = getUserID();
+            const egg = contr.getCurrentUser()?.getTaskFolders().get("folderName1")?.getEgg();
+            const res4:Response = await request(app).get('/view?func=getEggInfo&UserID=' + userID.id + '&folderName=folderName1');
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, egg?.getJSON());
+            assert.strictEqual(res4.body, egg?.getJSON());
             logoutUser();
         });
     });
@@ -1262,32 +1206,26 @@ describe('Route /view', () => {
         it('no name', async() => {
             const res2:Response = await request(app).get('/view?func=getEggType');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'name is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getEggType&name=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "name is not a JSON string");
+            assert.strictEqual(res2.body, 'name is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getEggType&name=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getEggType&name=id');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const eggTypeName = user?.getTaskFolders().get("folderName1")?.getEgg().getEggType();
+            const userID = getUserID()
+            const eggTypeName = contr.getCurrentUser()?.getTaskFolders().get("folderName1")?.getEgg().getEggType();
             if (eggTypeName === undefined) {
                 throw new Error('eggType name is undefined');
             }
             const eggMan = contr.getEggManager();
-            const res4:Response = await request(app).get('/view?func=getEggType&name=' + JSON.stringify(eggTypeName));
+            const res4:Response = await request(app).get('/view?func=getEggType&name=' + eggTypeName);
             assert.strictEqual(res4.statusCode, 200);
             const eggTypeJson = await eggMan.getEggTypeJSON(eggTypeName)
-            assert.strictEqual(res4.text, eggTypeJson);
+            assert.strictEqual(res4.body, eggTypeJson);
             logoutUser();
         });
     });
@@ -1295,28 +1233,21 @@ describe('Route /view', () => {
         it('no name', async() => {
             const res2:Response = await request(app).get('/view?func=getInteraction');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'name is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getInteraction&name=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "name is not a JSON string");
+            assert.strictEqual(res2.body, 'name is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getInteraction&name=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getInteraction&name=id');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
             const eggMan = contr.getEggManager();
-            const res4:Response = await request(app).get('/view?func=getInteraction&name=' + JSON.stringify("inter2"));
+            const res4:Response = await request(app).get('/view?func=getInteraction&name=inter2');
             assert.strictEqual(res4.statusCode, 200);
             const interTypeJson = await eggMan.getInteractionJSON("inter2")
-            assert.strictEqual(res4.text, interTypeJson);
+            assert.strictEqual(res4.body, interTypeJson);
             logoutUser();
         });
     });
@@ -1324,28 +1255,21 @@ describe('Route /view', () => {
         it('no name', async() => {
             const res2:Response = await request(app).get('/view?func=getAccessory');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'name is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getAccessory&name=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "name is not a JSON string");
+            assert.strictEqual(res2.body, 'name is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getAccessory&name=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getAccessory&name=id');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
             const eggMan = contr.getEggManager();
-            const res4:Response = await request(app).get('/view?func=getAccessory&name=' + JSON.stringify("acc2"));
+            const res4:Response = await request(app).get('/view?func=getAccessory&name=acc2');
             assert.strictEqual(res4.statusCode, 200);
             const interTypeJson = await eggMan.getAccessoryJSON("acc2")
-            assert.strictEqual(res4.text, interTypeJson);
+            assert.strictEqual(res4.body, interTypeJson);
             logoutUser();
         });
     });
@@ -1353,26 +1277,20 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getUsername');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getUsername&UserID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getUsername&UserID=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getUsername&UserID=id');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const res4:Response = await request(app).get('/view?func=getUsername&UserID=' + JSON.stringify(userID));
+            const userID = getUserID();
+            const res4:Response = await request(app).get('/view?func=getUsername&UserID=' + userID.id);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, user?.getUsername());
+            assert.strictEqual(res4.body, contr.getCurrentUser()?.getUsername());
             logoutUser();
         });
     });
@@ -1380,24 +1298,18 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getAllEggInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getAllEggInfo&UserID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getAllEggInfo&UserID=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getAllEggInfo&UserID=id');
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folders = user?.getTaskFolders();
+            const userID = getUserID();
+            const folders = contr.getCurrentUser()?.getTaskFolders();
             if (folders === undefined) {
                 throw new Error('folderMap is undefined');
             }
@@ -1405,9 +1317,9 @@ describe('Route /view', () => {
             folders.forEach(element => {
                 allEggs.push(element.getEgg().getJSON());
             });
-            const res4:Response = await request(app).get('/view?func=getAllEggInfo&UserID=' + JSON.stringify(userID));
+            const res4:Response = await request(app).get('/view?func=getAllEggInfo&UserID=' + userID.id);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, JSON.stringify(allEggs));
+            assert.strictEqual(res4.body, JSON.stringify(allEggs));
             logoutUser();
         });
     });
@@ -1415,34 +1327,24 @@ describe('Route /view', () => {
         it('no user id', async() => {
             const res2:Response = await request(app).get('/view?func=getAllTaskFolderInfo');
             assert.strictEqual(res2.statusCode, 400);
-            assert.strictEqual(res2.text, 'UserID is not defined or is not a string');
-        });
-        it('name not Json string', async() => {
-            const res3:Response = await request(app).get('/view?func=getAllTaskFolderInfo&UserID=id');
-            assert.strictEqual(res3.statusCode, 400);
-            assert.strictEqual(res3.text, "UserID is not a JSON string");
+            assert.strictEqual(res2.body, 'UserID is not defined or is not a string');
         });
         it('empty string', async () => {
             // user = undefined
-            const res3:Response = await request(app).get('/view?func=getAllTaskFolderInfo&UserID=' + JSON.stringify("id"));
+            const res3:Response = await request(app).get('/view?func=getAllTaskFolderInfo&UserID=' + "id");
             assert.strictEqual(res3.statusCode, 200);
-            assert.strictEqual(res3.text, "");
+            assert.strictEqual(res3.body, "");
         });
         it('correct case', async() => {
             loginUser();
-            const user = contr.getCurrentUser();
-            const userID = user?.getID();
-            const folders = user?.getTaskFolders();
+            const userID = getUserID();
+            const folders = contr.getCurrentUser()?.getTaskFolders();
             if (folders === undefined) {
                 throw new Error('folderMap is undefined');
             }
-            let allFolders:string[] = [];
-            folders.forEach(element => {
-                allFolders.push(element.getJSON());
-            });
-            const res4:Response = await request(app).get('/view?func=getAllTaskFolderInfo&UserID=' + JSON.stringify(userID));
+            const res4:Response = await request(app).get('/view?func=getAllTaskFolderInfo&UserID=' + userID.id);
             assert.strictEqual(res4.statusCode, 200);
-            assert.strictEqual(res4.text, JSON.stringify(allFolders));
+            assert.strictEqual(res4.body, JSON.stringify(Array.from(folders.values())));
             logoutUser();
         });
     });
