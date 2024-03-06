@@ -38,9 +38,12 @@ export class ModelController {
     this.currentUser = undefined;
   }
 
-  login(username: string, password: string): boolean {
+  login(username: string, password: string): string {
     this.currentUser = this.userManager.getUserFromLogin(username, password);
-    return this.currentUser !== undefined;
+    if (this.currentUser === undefined) {
+      return "";
+    }
+    return this.currentUser.getID().id;
   }
 
   // TODO: implement this (may need DB call?)
