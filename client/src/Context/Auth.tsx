@@ -24,7 +24,7 @@ class Auth{
         args.set("password", password);
 
         try {
-            this.user = await BackendWrapper.controller("login", args);
+            this.user = await BackendWrapper.login("login", args);
             if (this.user === null) {
                 throw Error;
             }
@@ -42,7 +42,7 @@ class Auth{
         args.set("password", password);
 
         try {
-            this.user = await BackendWrapper.controller("signup", args);
+            this.user = await BackendWrapper.login("signup", args);
             if (this.user === null) {
                 throw Error;
             }
@@ -54,6 +54,11 @@ class Auth{
     }
 
     async signOut() {
+        try {
+            await BackendWrapper.login("logout", new Map());
+        } catch (e) {
+            console.log("Failure to log out");
+        }
         this.user = '';
     }
 

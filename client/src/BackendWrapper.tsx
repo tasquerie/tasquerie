@@ -23,12 +23,20 @@ export class BackendWrapper {
     }
 
     static controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        let requestString: string = `http://localhost:${PORT_NUMBER}/controller?func=${func}`;
+        let requestBody: {[key:string]: any;} = {
+            'func': func
+        }
         args.forEach((value: any, key: string) => {
-            requestString += `&${key}=${value}`;
+            requestBody[key] = value;
         });
         try {
-            let response = await fetch(requestString, {method: 'POST'});
+            let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestBody)
+            });
             return BackendWrapper.getJson(response);
         } catch (e) {
             console.log(e);
@@ -37,14 +45,27 @@ export class BackendWrapper {
     }
 
     static login = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({func: func, arg: args })
+        let requestBody: {[key:string]: any;} = {
+            'func': func
+        }
+        args.forEach((value: any, key: string) => {
+            requestBody[key] = value;
         });
-        return BackendWrapper.getJson(response);
+        try {
+            let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                // body: requestBody
+                // body: JSON.stringify({func: func, username: args.get("username"), password: args.get("password")})
+                body: JSON.stringify(requestBody)
+            });
+            return BackendWrapper.getJson(response);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
     static getJson = async (response: Response) => {

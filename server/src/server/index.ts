@@ -84,6 +84,13 @@ function checkID(input:any):boolean {
     return (typeof(input) === "object" && input !== null && "id" in input && typeof(input.id) === "string");
 }
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', "GET, PUT, POST, DELETE, HEAD, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+})
+
 app.get("/", (req: Request, res: Response) => {
     res.send("all my fellas");
 });
