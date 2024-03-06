@@ -28,7 +28,7 @@ export class BackendWrapper {
             requestString += `&${key}=${value}`;
         });
         try {
-            let response = await fetch(requestString);
+            let response = await fetch(requestString, {method: 'POST'});
             return BackendWrapper.getJson(response);
         } catch (e) {
             console.log(e);
