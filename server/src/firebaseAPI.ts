@@ -62,7 +62,7 @@ export const FirebaseUserAPI = {
             await documentRef.set(user.toFirestoreObject());
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 
@@ -134,7 +134,7 @@ export const FirebaseTaskAPI =  {
 
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code };
+            return { status: false, content: err };
         }
     },
 
@@ -166,7 +166,7 @@ export const FirebaseTaskAPI =  {
 
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code };
+            return { status: false, content: err };
         }
     },
 
@@ -203,7 +203,7 @@ export const FirebaseTaskAPI =  {
                 return { status: false, content: undefined }
             }
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 }
@@ -248,7 +248,7 @@ export const FirebaseDataAPI = {
                 return { status: false, content: undefined };
             }
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 }
