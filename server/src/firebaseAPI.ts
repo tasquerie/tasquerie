@@ -56,7 +56,7 @@ export const FirebaseUserAPI = {
             const snapshot = await documentRef.get();
 
             if (snapshot.exists) {
-                return { status: false, content: undefined };
+                return { status: false, content: "Error! User already exists" };
             }
 
             await documentRef.set(user.toFirestoreObject());
