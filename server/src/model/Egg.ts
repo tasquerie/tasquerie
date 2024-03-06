@@ -4,7 +4,7 @@ export class Egg {
   private exp: number;
   private equippedAccessories: Set<string>;
   private ownedAccessories: Set<string>;
- 
+
   constructor(eggType: string) {
     this.eggType = eggType;
     this.eggStage = 0;
@@ -56,5 +56,15 @@ export class Egg {
       ownedAccessories:Array.from(this.ownedAccessories)
     };
     return JSON.stringify(jsonEgg);
+  }
+
+  toFirestoreObject(): object {
+    return {
+      eggType: this.eggType,
+      eggStage: this.eggStage,
+      exp: this.exp,
+      equippedAccessories: [...this.equippedAccessories],
+      ownedAccessories: [...this.ownedAccessories],
+    };
   }
 }

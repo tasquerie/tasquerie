@@ -33,7 +33,7 @@ export class User {
   }
 
   setID(id: UserID) {
-    this.uniqueID = id; 
+    this.uniqueID = id;
   }
 
   getUnivCredits(): number {
@@ -67,5 +67,21 @@ export class User {
       streak:this.streak
     };
     return JSON.stringify(jsonUser);
+  }
+
+  toFirestoreObject(): object {
+    return {
+      uniqueID: this.uniqueID.id,
+      username: this.username,
+      password: this.password,
+      taskFolders: Object.fromEntries(
+        Array.from(this.taskFolders.entries()).map(([folderName, folder]) => [
+          folderName,
+          folder.toFirestoreObject(),
+        ])
+      ),
+      univCredits: this.univCredits,
+      streak: this.streak,
+    };
   }
 }
