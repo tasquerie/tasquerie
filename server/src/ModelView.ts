@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { EggManager } from "./model/EggManager";
 import { IDManager } from "./model/IDManager";
 import { Task } from "./model/Task";
@@ -18,7 +19,7 @@ export class ModelView {
   /**
    * Grabs the user info associated with the given userID.
    * Returns the string representation of the User object.
-   * Returns undefined if user does not exist.
+   * Returns an empty string if user does not exist.
    *
    * @param id The userID you want to search for
    * @returns The string representation of the User object
@@ -52,7 +53,6 @@ export class ModelView {
     return task.getJSON();
   }
 
-
   /**
    * Grabs the info about a taskFolder given UserID and taskFolder name.
    * Returns the string representation of the taskFolder information.
@@ -73,7 +73,6 @@ export class ModelView {
     }
     return taskFolder.getJSON();
   }
-
 
   /**
    * Grabs the info about the egg given UserID and the name of the taskFolder
@@ -101,8 +100,8 @@ export class ModelView {
    * @param name name of the eggType you want to query
    * @returns The string representation of the eggType object
    */
-  getEggType(name: string): string {
-    return this.eggManager.getEggTypeJSON(name);
+  async getEggType(name: string): Promise<string> {
+    return await this.eggManager.getEggTypeJSON(name);
   }
 
 
@@ -111,8 +110,8 @@ export class ModelView {
    * @param name name of the interaction you want to query
    * @returns The string representation of the Interaction object
    */
-  getInteraction(name: string): string {
-    return this.eggManager.getInteractionJSON(name);
+  async getInteraction(name: string): Promise<string> {
+    return await this.eggManager.getInteractionJSON(name);
   }
 
 
@@ -121,7 +120,123 @@ export class ModelView {
    * @param name name of the accessory you want to query
    * @returns The string representation of the Accessory object
    */
-  getAccessory(name: string): string {
-    return this.eggManager.getAccessoryJSON(name);
+  async getAccessory(name: string): Promise<string> {
+    return await this.eggManager.getAccessoryJSON(name);
+  }
+
+  async getUsername(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    return user.getUsername();
+  }
+
+  async getAllEggInfo(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    let folderMap = user.getTaskFolders();
+    let eggInfos:string[] = [];
+    folderMap.forEach((value: TaskFolder, key: string) => {
+      eggInfos.push(value.getEgg().getJSON());
+    });
+    return JSON.stringify(eggInfos);
+  }
+
+  
+  async getAllTaskFolderInfo(id: UserID): Promise<string> {
+    let user = (await this.idManager.getUserByID(id)).content;
+    if (user === undefined) {
+      return "";
+    }
+    user = user as User;
+    let folderMap = user.getTaskFolders();
+    return JSON.stringify(Array.from(folderMap.values()));
+  }
+
+  async getAllTaskIDs(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let taskMap = taskFolder.getTasks();
+    return JSON.stringify(Array.from(taskMap.values()));
+  }
+
+  async getAllowedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let eggType = taskFolder.getEgg().getEggType();
+    let eggMan = new EggManager();
+    let allowedAcc = (await eggMan.getEggType(eggType))?.allowedAccessories;
+    assert(allowedAcc !== undefined);
+
+    return JSON.stringify(Array.from(allowedAcc));
+  }
+
+  async getAllowedInteractions(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let eggType = taskFolder.getEgg().getEggType();
+    let eggMan = new EggManager();
+    let allowedInt = (await eggMan.getEggType(eggType))?.allowedInteractions;
+    assert(allowedInt !== undefined);
+    return JSON.stringify(Array.from(allowedInt));
+  }
+
+  async getOwnedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let ownedAcc = taskFolder.getEgg().getOwnedAccessories();
+    return JSON.stringify(Array.from(ownedAcc));
+  }
+
+  async getEquippedAccessories(uid: UserID, folderName: string): Promise<string> {
+    let user = (await this.idManager.getUserByID(uid)).content;
+    if (user === undefined) {
+      return "";
+    }
+
+    user = user as User;
+    const taskFolder =  user.getTaskFolders().get(folderName);
+    if (taskFolder === undefined) {
+      return "";
+    }
+    let equipAcc = taskFolder.getEgg().getEquippedAccessories();
+    return JSON.stringify(Array.from(equipAcc));
   }
 }

@@ -3,12 +3,14 @@ export class Egg {
   private eggStage: number;
   private exp: number;
   private equippedAccessories: Set<string>;
+  private ownedAccessories: Set<string>;
 
   constructor(eggType: string) {
     this.eggType = eggType;
     this.eggStage = 0;
     this.exp = 0;
     this.equippedAccessories = new Set<string>();
+    this.ownedAccessories = new Set<string>();
   }
 
   getEggType(): string {
@@ -39,6 +41,10 @@ export class Egg {
     return this.equippedAccessories;
   }
 
+  getOwnedAccessories(): Set<string> {
+    return this.ownedAccessories;
+  }
+
   // TODO: implement this
   // CHECK: frontend will parse the JSON String or if it should be given after travesered.
   getJSON(): string {
@@ -46,7 +52,8 @@ export class Egg {
       eggType: this.eggType,
       eggStage:this.eggStage,
       exp:this.exp,
-      equippedAccessories:this.equippedAccessories
+      equippedAccessories:Array.from(this.equippedAccessories),
+      ownedAccessories:Array.from(this.ownedAccessories)
     };
     return JSON.stringify(jsonEgg);
   }
@@ -57,6 +64,7 @@ export class Egg {
       eggStage: this.eggStage,
       exp: this.exp,
       equippedAccessories: [...this.equippedAccessories],
+      ownedAccessories: [...this.ownedAccessories],
     };
   }
 }
