@@ -27,7 +27,7 @@ Unfortunately, due to difficulties with integration and finding time to implemen
 
 ## How to Run the Server (Backend)
 0. Build the server via instructions above
-1. From the server directory run `ts-node src/server/index.ts` to start the server
+1. From the server directory run `npm start` to start the server
 
 ## React Server (Frontend) Setup
 0. Open a terminal under the root directory. (You might need to `git checkout frontend` branch for most updated version).
