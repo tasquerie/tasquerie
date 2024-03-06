@@ -123,11 +123,27 @@ export class Task {
       tags:this.tags,
       owner:this.owner,
       whoSharedWith: this.whoSharedWith,
-      startDate: this.startDate, 
-      cycleDuration: this.cycleDuration, 
-      deadline: this.deadline 
+      startDate: this.startDate,
+      cycleDuration: this.cycleDuration,
+      deadline: this.deadline
     };
     return JSON.stringify(jsonTask);
+  }
+
+  toFirestoreObject(): object {
+    return {
+      uniqueID: this.uniqueID,
+      name: this.name,
+      isComplete: this.isComplete,
+      description: this.description,
+      tags: this.tags,
+      owner: this.owner,
+      whoSharedWith: this.whoSharedWith.map((userID) => userID.id),
+      startDate: this.startDate,
+      cycleDuration: this.cycleDuration,
+      deadline: this.deadline,
+    }
+
   }
 }
 

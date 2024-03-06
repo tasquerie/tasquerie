@@ -6,6 +6,10 @@ export class WriteManager {
   // ALL FIELDS FOR TESTING ONLY!!
   private USE_DB: boolean = false;
 
+  public useDB(flag: boolean) {
+    this.USE_DB = flag;
+  }
+
   // TODO: integrate with database
   public async writeUser(user: User): Promise<string | undefined> {
     if (this.USE_DB) {

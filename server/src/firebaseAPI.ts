@@ -9,6 +9,35 @@ import { EggType } from "./types/EggType";
 import { Interaction } from "./types/Interaction";
 import { Accessory } from "./types/Accessory";
 
+const toJsonObject = (document: FirebaseFirestore.DocumentData):any =>  {
+    if (document === null || document === undefined) {
+        return document;
+    }
+
+    if (typeof document !== "object") {
+        return document;
+    }
+
+    if (Array.isArray(document)) {
+        return document.map(toJsonObject)
+    }
+
+    if (document instanceof Map) {
+        const plainObject: { [key: string]: any } = {};
+        document.forEach((value, key) => {
+            plainObject[key] = toJsonObject(value);
+        });
+        return plainObject;
+    }
+
+    const plainObject: { [key: string]: any } = {};
+    Object.keys(document).forEach((key) => {
+        const value = document[key];
+        plainObject[key] = toJsonObject(value);
+    });
+    return plainObject;
+}
+
 export const FirebaseUserAPI = {
     /**
      * Adds user to db. Status indicates if operation was successful.
@@ -27,14 +56,13 @@ export const FirebaseUserAPI = {
             const snapshot = await documentRef.get();
 
             if (snapshot.exists) {
-                return { status: false, content: undefined };
+                return { status: false, content: "Error! User already exists" };
             }
 
-            await documentRef.set(user);
-
+            await documentRef.set(user.toFirestoreObject());
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 
@@ -59,10 +87,18 @@ export const FirebaseUserAPI = {
             if (!snapshot.exists) {
                 return { status: false, content: undefined };
             }
-            const data = snapshot.data() as User;
-            return {status: true, content: data }
+            const data = snapshot.data();
+
+            if (data == undefined) {
+                return { status: false, content: undefined}
+            }
+
+            // Convert any map fields to plain objects
+            const jsonData = toJsonObject(data);
+
+            return {status: true, content: JSON.stringify(jsonData) }
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 }
@@ -93,12 +129,12 @@ export const FirebaseTaskAPI =  {
             }
 
             await documentRef.update({
-                TID: task
+                TID: task.toFirestoreObject()
             });
 
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code };
+            return { status: false, content: err };
         }
     },
 
@@ -130,7 +166,7 @@ export const FirebaseTaskAPI =  {
 
             return { status: true, content: "success" };
         } catch (err: any) {
-            return { status: false, content: err.code };
+            return { status: false, content: err };
         }
     },
 
@@ -160,13 +196,14 @@ export const FirebaseTaskAPI =  {
 
             const task = snapshot.data()?.[TID];
             if (task !== undefined) {
-                const data = task as Task;
-                return { status: true, content: data };
+                const data = toJsonObject(task);
+
+                return { status: true, content: JSON.stringify(data) };
             } else {
                 return { status: false, content: undefined }
             }
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 }
@@ -211,7 +248,7 @@ export const FirebaseDataAPI = {
                 return { status: false, content: undefined };
             }
         } catch (err: any) {
-            return { status: false, content: err.code }
+            return { status: false, content: err }
         }
     },
 }
