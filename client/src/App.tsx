@@ -50,9 +50,8 @@ class App extends Component<{}, AppState> {
 
   render() {
     let page;
-    let targetPage = (this.context.getUser() === '')? 'login' : this.state.currentPage;
 
-    switch (targetPage) {
+    switch (this.state.currentPage) {
       case 'login':
         page = <div>
         <Login updateState={

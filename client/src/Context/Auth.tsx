@@ -28,6 +28,7 @@ class Auth{
             if (this.user === null) {
                 throw Error;
             }
+            console.log('login successful');
         } catch (e) {
             console.log("Failure to sign in");
             this.user = '';
@@ -35,6 +36,7 @@ class Auth{
     }
 
     async signUp(email: string, password: string) {
+        console.log('signup called');
         let args: Map<string, any> = new Map();
         args.set("username", email);
         args.set("password", password);
@@ -44,6 +46,7 @@ class Auth{
             if (this.user === null) {
                 throw Error;
             }
+            console.log('signup successful');
         } catch (e) {
             console.log("Failure to sign in");
             this.user = '';
