@@ -28,8 +28,6 @@ export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowSt
         args.set("folderName", this.props.folderName);
         args.set("taskName", this.state.taskName);
         args.set("description", this.state.taskDescription);
-        args.set("tags", []);
-        args.set("whoSharedWith", []);
 
         try {
             await BackendWrapper.controller("addTask", args);

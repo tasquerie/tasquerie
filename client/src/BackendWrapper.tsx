@@ -48,7 +48,8 @@ export class BackendWrapper {
     }
 
     static getJson = async (response: Response) => {
-        // console.log('getJson called');
+        console.log(response);
+        let responseBody;
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
             if(!response.ok) {
@@ -59,7 +60,7 @@ export class BackendWrapper {
             // console.log('attempting to extract json');
             // console.log(response);
             // let responseBody = await response.json();
-            const responseBody = await response.text(); // temp cuz responses are strings
+            responseBody = await response.text(); // temp cuz responses are strings
             // const responseBody = await response.body;
             // responseBody = responseBody.data;
             // console.log('json extracted');
@@ -78,8 +79,9 @@ export class BackendWrapper {
         } catch (e) {
             // alert("There was an error contacting the server.");
             // console.log("AAAAAAAAAA");
+            console.log(responseBody);
             console.log(e);
-            // throw new Error("Connection lost");
+            throw new Error("Connection lost");
             // console.log("error contacting server");
         }
     }

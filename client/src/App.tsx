@@ -37,11 +37,11 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  displayTaskFolder(eggId: number) {
+  displayTaskFolder(folderName: string) {
     // if id >= 0, display a page
     // id = -1 means no egg is being displayed
     this.setState({
-      displayingFolder: '',
+      displayingFolder: folderName,
       currentPage : "taskFolder"
     });
   }
@@ -92,8 +92,8 @@ class App extends Component<{}, AppState> {
         <div>
           <Home
           displaytaskFolder={
-            (eggId: number) => {
-              this.displayTaskFolder(eggId);
+            (folderName: string) => {
+              this.displayTaskFolder(folderName);
             }
           }
           updateState={

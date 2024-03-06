@@ -65,7 +65,7 @@ export class Task extends Component<TaskProps, TaskState> {
     }
 
     async componentDidMount() {
-        // load all of current task's info before rendering
+        // load all of current task's info
         await this.loadTaskInfo(this.props.taskID);
     }
 
@@ -73,15 +73,19 @@ export class Task extends Component<TaskProps, TaskState> {
         let args: Map<string, any> = new Map();
         args.set("UserID", this.context.getUser());
         args.set("TaskID", taskID);
-        let task = await BackendWrapper.view("getTaskInfo", args);
-        // maybe error handling
-        this.setState({
-            name: task.name,
-            isComplete: task.isComplete,
-            description: task.description
-            // ignoring tags, owner, and shares rn
-        });
-        // check if optional fields exist and handle those
+        try{
+            let task = await BackendWrapper.view("getTaskInfo", args);
+            // maybe error handling
+            this.setState({
+                name: task.name,
+                isComplete: task.isComplete,
+                description: task.description
+                // ignoring tags, owner, and shares rn
+            });
+            // check if optional fields exist and handle those
+        } catch (e) {
+            console.log("Failure to load task");
+        }
     }
 
     async handleCheck(event: any) {

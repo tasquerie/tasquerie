@@ -35,11 +35,12 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
   }
 
   async componentDidMount() {
-      // console.log('EggCollection componentdidmount');
-      await this.loadTaskFolders();
+    // await this.loadTaskFolders();
+    await this.loadTaskFoldersConvoluted();
   }
 
   async loadTaskFolders() {
+    console.log('loading task folders');
     let args: Map<string, any> = new Map();
     args.set("UserID", this.context.getUser());
 
@@ -48,6 +49,33 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
       // assumes this gets back a list of folder OBJECTS
       // if not - TODO: change this to a loop where each folderName then
       // gets getTaskFolderInfo'd
+      if (folders === null) {
+        throw Error("STOP");
+      }
+      this.setState({
+        folders: folders
+      })
+      // console.log('loaded task folders');
+    } catch (e) {
+      console.log("Failure to load task folders");
+    }
+  }
+
+  // backup for if the regular loadTaskFolders() doesn't work
+  async loadTaskFoldersConvoluted() {
+    console.log('loading task folders');
+    let args: Map<string, any> = new Map();
+    args.set("UserID", this.context.getUser());
+
+    try{
+      let user = await BackendWrapper.view("getUserInfo", args);
+      let folder;
+      let folders = [];
+      for (let i = 0; i < user.taskFolders.length; i++) {
+        args.set("folderName", user.taskFolders[i]);
+        folder = await BackendWrapper.view("getTaskFolderInfo", args);
+        folders.push(folder);
+      }
       this.setState({
         folders: folders
       })
@@ -64,8 +92,12 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     this.setState({showingAddEggWindow: false});
   }
 
+  forceReload() {
+    this.forceUpdate();
+  }
+
   render() {
-    // refactor to use this.state.eggs later
+
     let eggs = [];
     for(let i = 0; i < this.state.folders.length; i++){
       eggs.push(
@@ -81,6 +113,7 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     let addEggWindow;
     if (this.state.showingAddEggWindow) {
       addEggWindow = <AddEggWindow
+      forceReload={() => this.forceReload()}
       closeBox = {() => this.hideAddEggWindow()}
     />
     } else {

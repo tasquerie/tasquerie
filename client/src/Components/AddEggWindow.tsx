@@ -1,49 +1,85 @@
 import React, { Component } from 'react';
-import { Task, TaskType } from './Task';
-import { Egg } from './Egg';
 import * as mocks from '../Mocks'
+import AuthContext from '../Context/AuthContext';
+import { BackendWrapper } from '../BackendWrapper';
+
+// hard-coded list of egg types
+let eggTypes: string[] = [];
 
 interface AddEggWindowProps {
+    forceReload(): void;
     closeBox(): void;
 }
 
 interface AddEggWindowState {
-    selectedEggId: number;
+    selectedEgg: number;
     folderName: string;
+    eggImages: string[];
 }
 
-/** 
- * TODO: fix this whole gosh darn thing
- * rn the copy stuff doesn't really work when creating a new egg
- * so. fix that
- */
-
 export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState> {
+    static contextType = AuthContext;
+    context!: React.ContextType<typeof AuthContext>;
+
     constructor(props: AddEggWindowProps) {
         super(props);
         this.state = {
-            selectedEggId: 0,
-            folderName: ''
+            selectedEgg: 0, // 0 for default choosing first egg, -1 for no egg but
+                            // then some error handling needs to be done
+            folderName: '',
+            eggImages: []
         }
     }
 
-    addEgg(eggType: number) {
-        // TODO: change this to a backend call
-        // mocks.folderNames.push(this.state.folderName);
-        // let newEgg: EggType = {...mocks.allEggs[eggType]};
-        // mocks.eggCollection.push(newEgg);
-        // mocks.tasksList.push([]);
-        // mocks.interactionsList.push([]);
-        // mocks.specificCredits.push(0);
+    async componentDidMount() {
+        await this.loadEggImages();
+    }
+
+    async loadEggImages() {
+        console.log("loading egg images");
+        let args: Map<string, any> = new Map();
+        
+        try{
+            let eggType;
+            let eggImgUrls = [];
+            for (let i = 0; i < eggTypes.length; i++) {
+                args.set("name", eggTypes[i]);
+                eggType = await BackendWrapper.view("getEggType", args);
+                eggImgUrls.push(eggType.graphicLinks[0]);
+            }
+            this.setState({
+                eggImages: eggImgUrls
+            })
+        } catch (e) {
+            console.log("Failure to get egg images");
+        }
+    }
+
+    async addEgg(eggType: string) {
+        if (eggType === undefined) {
+            eggType = '';
+        }
+
+        let args: Map<string, any> = new Map();
+        args.set("UserID", this.context.getUser());
+        args.set("name", this.state.folderName);
+        args.set("eggType", eggType);
+
+        try {
+            await BackendWrapper.controller("addFolder", args);
+            this.props.forceReload();
+        } catch (e) {
+            console.log("Failure to add new task folder");
+        }
     }
 
     render() {
         let eggs = [];
         let highlightState; // 'selectedEgg' | ''
         let eggImgUrl;
-        for(let i = 0; i < mocks.allEggs.length; i++){
-            eggImgUrl = 'url(' + mocks.allEggs[i].imgUrls[0] + ')';
-            if (this.state.selectedEggId == i) {
+        for(let i = 0; i < this.state.eggImages.length; i++){
+            eggImgUrl = 'url(' + this.state.eggImages[i] + ')';
+            if (this.state.selectedEgg == i) {
                 highlightState = 'selectedEgg';
             } else {
                 highlightState = '';
@@ -51,7 +87,7 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
             eggs.push(
                 <button
                     className={"eggOption " + highlightState}
-                    onClick={() => this.setState({selectedEggId: i})}
+                    onClick={() => this.setState({selectedEgg: i})}
                 >
                     <div
                         style={
@@ -90,8 +126,8 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
                 </div>
                 <button
                     onClick={() => {
-                        this.addEgg(this.state.selectedEggId);
-                        this.setState({selectedEggId: -1, folderName: "Egg Name"});
+                        this.addEgg(eggTypes[this.state.selectedEgg]);
+                        this.setState({selectedEgg: -1, folderName: "Egg Name"});
                         this.props.closeBox();
                     }}
                 >Confirm</button>

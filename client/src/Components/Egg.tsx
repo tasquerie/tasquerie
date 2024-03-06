@@ -19,6 +19,7 @@ interface EggProps {
 
 interface EggState {
     accessories: any[];
+    eggImgUrl: string;
 }
 
 export class Egg extends Component<EggProps, EggState> {
@@ -28,12 +29,14 @@ export class Egg extends Component<EggProps, EggState> {
     constructor(props: any){
         super(props);
         this.state = {
-            accessories: []
+            accessories: [],
+            eggImgUrl: ''
         }
     }
 
     async componentDidMount() {
         await this.loadAccessories();
+        await this.loadEggImgUrl();
     }
 
     async loadAccessories() {
@@ -63,6 +66,20 @@ export class Egg extends Component<EggProps, EggState> {
         }
     }
 
+    async loadEggImgUrl() {
+        let eggStage = this.props.egg.eggStage;
+        let args: Map<string, any> = new Map();
+        args.set("name", this.props.egg.eggType);
+        try{
+            let eggType = await BackendWrapper.view("getEggType", args);
+            this.setState({
+                eggImgUrl: eggType.graphicLinks[eggStage]
+            });
+        } catch (e) {
+            console.log("Failure to get egg img url");
+        }
+    }
+
     dressEgg(): JSX.Element[] {
         let accessories = [];
         for (let i = 0; i < this.state.accessories.length; i++) {
@@ -82,11 +99,6 @@ export class Egg extends Component<EggProps, EggState> {
         return accessories;
     }
 
-    getEggImgUrl(): string {
-        let eggStage = this.props.egg.eggStage;
-        return this.props.egg.eggType.graphicLinks[eggStage];
-    }
-
     render() {
 
         let accessories = this.dressEgg();
@@ -96,7 +108,7 @@ export class Egg extends Component<EggProps, EggState> {
                 <img
                 className="eggImg"
                 key={Math.random().toString(36).substring(2,12)} // random string for key
-                src={this.getEggImgUrl()}></img>
+                src={this.state.eggImgUrl}></img>
                 {accessories}
             </div>
         )

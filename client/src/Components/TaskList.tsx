@@ -25,7 +25,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
       showingAddTaskWindow: false
     }
   }
-
+  
   showAddTaskWindow() {
       this.setState({
           showingAddTaskWindow: true

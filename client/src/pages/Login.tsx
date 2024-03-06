@@ -79,7 +79,6 @@ class Login extends Component<LoginProps, LoginState> {
     }
 
     render() {
-        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
         return (
             <div className="content flex-v align-content-center">
                 <div id="loginBox">
@@ -128,4 +127,4 @@ class Login extends Component<LoginProps, LoginState> {
     }
 }
 
-export default withAuth(Login);
+export default Login;
