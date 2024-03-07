@@ -6,9 +6,8 @@ import {AppState} from '../App';
 import { Task, TaskType } from '../Components/Task'
 import * as mocks from '../Mocks';
 
-interface HowToProps {
+export interface HowToProps {
     updateState(selected: string): void;
-    stepNumber: number;
     title: string;
     description: string;
     showButton?: boolean;
@@ -25,7 +24,6 @@ class Howto extends Component<HowToProps> {
         return (
             <div 
             className="step-box">
-                <div className="step-number">{this.props.stepNumber}</div>
                 <div className="step-content">
                     <h2>{this.props.title}</h2>
                     <p>{this.props.description}</p>

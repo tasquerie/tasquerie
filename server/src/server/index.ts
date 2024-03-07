@@ -6,13 +6,13 @@ import { IDManager } from "../model/IDManager";
 import { UserManager } from "../model/UserManager";
 import { EggManager } from "../model/EggManager";
 import { WriteManager } from "../model/WriteManager";
-import { ModelController } from "../ModelController";
 import { ModelView } from "../ModelView";
 import { logEvent } from "firebase/analytics";
 
 import userRoutes from './routes/firebase/userRoutes';
 import taskRoutes from './routes/firebase/taskRoutes';
 import { Task } from "../model/Task";
+import { ModelController } from "../ModelController";
 dotenv.config();
 
 const app : Express = express();
@@ -27,8 +27,12 @@ const idMan     = new IDManager();
 const userMan   = new UserManager(idMan);
 const eggMan    = new EggManager();
 const writeMan  = new WriteManager();
-const contr     = new ModelController(userMan, idMan, eggMan, writeMan);
+const contr:ModelController     = new ModelController(userMan, idMan, eggMan, writeMan);
 const viewer    = new ModelView(idMan, eggMan);
+
+
+// debug
+// console.log("debug top: " + contr.login("username", "password"))
 
 // Security Issue
 var RateLimit = require('express-rate-limit');
@@ -84,6 +88,13 @@ function checkID(input:any):boolean {
     return (typeof(input) === "object" && input !== null && "id" in input && typeof(input.id) === "string");
 }
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', "GET, PUT, POST, DELETE, HEAD, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+})
+
 app.get("/", (req: Request, res: Response) => {
     res.send("all my fellas");
 });
@@ -91,7 +102,9 @@ app.get("/", (req: Request, res: Response) => {
 // for view methods
 app.get("/view", async (req: Request, res: Response) => {
     // url: http://localhost:3000/view?func=getUserInfo&id="temporaryId"
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    console.log('--- view called ---');
+    console.log(req.query);
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let request = req.query;
     let result = "";
     let error = "";
@@ -228,8 +241,10 @@ app.use(express.json());
 
 // for login methods
 app.post("/login", async (req: Request, res: Response) => {
+    console.log('--- login called ---');
+    console.log(req.body);
     // url: http://localhost:3000/login
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let result = "";
     let error = "";
     let func = req.body.func;
@@ -245,7 +260,9 @@ app.post("/login", async (req: Request, res: Response) => {
                 error = ("password is not defined or is not a string");
                 break;
             }
-            result = "" + contr.login(loginUserName, loginPassword);
+            result = contr.login(loginUserName, loginPassword);
+            // DEBUG
+            // console.log("debug result: " + result)
             break;
         case "logout":
             contr.logout();
@@ -279,8 +296,10 @@ app.post("/login", async (req: Request, res: Response) => {
 
 // for controller methods
 app.post("/controller", async (req: Request, res: Response) => {
+    console.log('--- controller called ---');
+    console.log(req.body);
     // url: http://localhost:3000/controller
-    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3232');
     let func = req.body.func;
     let result;
     let error = ""
@@ -289,6 +308,8 @@ app.post("/controller", async (req: Request, res: Response) => {
             //string
             const addFolderID = req.body.UserID;
             if (!checkID(addFolderID)) {
+                // debug
+                console.log("debug addFolderID: " + addFolderID);
                 error = "Wrong type for User ID";
                 break;
             }
@@ -720,8 +741,12 @@ app.post("/controller", async (req: Request, res: Response) => {
     }
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
+});
+
+server.on('connection', () => {
+    console.log('connection detected');
 });
 
 // Only for testing purpose

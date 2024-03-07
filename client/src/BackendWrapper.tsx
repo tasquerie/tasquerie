@@ -1,45 +1,90 @@
 import e from "express";
 
-export {}
+const PORT_NUMBER: number = 3000;
 
-const PORT_NUMBER: number = 3232;
+export class BackendWrapper {
 
-class BackendWrapper {
-
-    view = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/view?start=${func}&destination=${args}`);
-        return await this.requestPath(response);
-    }
-
-    controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ func: func, arg: args })
+    static view = async (func: string, args: Map<string, any>): Promise<any> => {
+        let requestString: string = `http://localhost:${PORT_NUMBER}/view?func=${func}`;
+        args.forEach((value: any, key: string) => {
+            requestString += `&${key}=${value}`;
         });
-        return this.requestPath(response);
+        // console.log('attempting view backend call');
+        // console.log(requestString);
+        try{
+            let response = await fetch(requestString);
+            // console.log("after fetch");
+            // console.log(response.status);
+            return await BackendWrapper.getJson(response);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
-    login = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({func: func, arg: args })
+    static controller = async (func: string, args: Map<string, any>): Promise<any> => {
+        let requestBody: {[key:string]: any;} = {
+            'func': func
+        }
+        args.forEach((value: any, key: string) => {
+            requestBody[key] = value;
         });
-        return this.requestPath(response);
+        try {
+            let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestBody)
+            });
+            return BackendWrapper.getJson(response);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
-    requestPath = async (response: Response) => {
+    static login = async (func: string, args: Map<string, any>): Promise<any> => {
+        let requestBody: {[key:string]: any;} = {
+            'func': func
+        }
+        args.forEach((value: any, key: string) => {
+            requestBody[key] = value;
+        });
+        try {
+            let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                // body: requestBody
+                // body: JSON.stringify({func: func, username: args.get("username"), password: args.get("password")})
+                body: JSON.stringify(requestBody)
+            });
+            return BackendWrapper.getJson(response);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+    }
+
+    static getJson = async (response: Response) => {
+        console.log(response);
+        let responseBody;
         try{
             // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
             if(!response.ok) {
-                alert(`Status is wrong, expected 200, was ${response.status}`);
+                // alert(`Status is wrong, expected 200, was ${response.status}`);
+                // console.log("not 200 status");
+                // console.log(response.status);
             }
-            const responseBody = await response.json();
+            // console.log('attempting to extract json');
+            // console.log(response);
+            // let responseBody = await response.json();
+            responseBody = await response.text(); // temp cuz responses are strings
+            // const responseBody = await response.body;
+            // responseBody = responseBody.data;
+            // console.log('json extracted');
             // Error Case
             if (responseBody === "") {
                 throw new Error("Invalid output");
@@ -50,12 +95,15 @@ class BackendWrapper {
             }
             // JSON case 
             else {
-                return responseBody;
+                return JSON.parse(responseBody);
             }
         } catch (e) {
-            alert("There was an error contacting the server.");
+            // alert("There was an error contacting the server.");
+            // console.log("AAAAAAAAAA");
+            console.log(responseBody);
             console.log(e);
             throw new Error("Connection lost");
+            // console.log("error contacting server");
         }
     }
 }

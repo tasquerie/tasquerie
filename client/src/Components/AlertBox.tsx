@@ -4,7 +4,6 @@ interface AlertBoxProps {
     close(): void;
     title: string;
     message: string;
-    visible: string; // 'shown' | 'hidden'
 }
 
 export class AlertBox extends Component<AlertBoxProps> {
@@ -15,7 +14,7 @@ export class AlertBox extends Component<AlertBoxProps> {
 
     render() {
         return(
-            <div id="alertBox" className={this.props.visible}>
+            <div id="alertBox">
                 <div className="alertTitle">{this.props.title}</div>
                 <div className='alertMessage'>{this.props.message}</div>
                 <button onClick={() => this.props.close()}>Close</button>

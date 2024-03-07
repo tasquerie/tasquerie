@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Egg, EggType } from './Egg';
+import { Egg } from './Egg';
 
 interface AddEggCardProps {
 }

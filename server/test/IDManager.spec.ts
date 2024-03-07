@@ -97,6 +97,9 @@ describe('getTaskByID Function', function () {
     it('should not get tasks that do not exist', async function () {
       let man = new IDManager();
       let id_num = 0;
+      const userID1: UserID = {
+        id:"1"
+      }
       let taskID: TaskID = {
         id: id_num.toString()
       }

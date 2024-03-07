@@ -2,70 +2,64 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task'
 import { AddTaskWindow } from '../Components/AddTaskWindow';
 import * as mocks from '../Mocks'
+import AuthContext from '../Context/AuthContext';
+import { BackendWrapper } from '../BackendWrapper';
 
 interface TaskListProps {
-  updateCredits(newAmount: number): void;
-  eggId: number;
+  refreshFolder(): void;
+  folderName: string;
+  taskList: string[] // list of taskIDs from backend
 }
 
 interface TaskListState {
-  addTaskWindowState: string // 'hidden' or 'shown'
+  showingAddTaskWindow: boolean;
 }
 
 export class TaskList extends Component<TaskListProps, TaskListState> {
+  static contextType = AuthContext;
+  context!: React.ContextType<typeof AuthContext>;
+
   constructor(props: TaskListProps){
     super(props);
     this.state = {
-      addTaskWindowState: 'hidden',
+      showingAddTaskWindow: false
     }
   }
-
-  toggleCompletion(taskId: number, rewardCredits: number) {
-      mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
-      mocks.specificCredits[this.props.eggId] += rewardCredits;
-      this.props.updateCredits(mocks.specificCredits[this.props.eggId]);
-      // this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
-      // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
-  }
-
+  
   showAddTaskWindow() {
       this.setState({
-          addTaskWindowState: 'shown'
+          showingAddTaskWindow: true
       });
   }
 
   hideAddTaskWindow() {
       this.setState({
-          addTaskWindowState: 'hidden'
+          showingAddTaskWindow: false
       })
   }
 
-  addTask(task: TaskType) {
-      mocks.tasksList[this.props.eggId].push(task);
-  }
-
   render() {
+    // refactor to use this.state.tasks
     let tasks = [];
-    for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
-      let task: TaskType = mocks.tasksList[this.props.eggId][i];
+    for(let i = 0; i < this.props.taskList.length; i++) {
       tasks.push(
         <Task
-          toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
-          task={task}
+          folderName={this.props.folderName}
+          taskID={this.props.taskList[i]}
+          refreshFolder={() => {
+            this.props.refreshFolder();
+          }}
         />
       );
     }
 
     let addTaskWindow;
-    if (this.state.addTaskWindowState == 'shown') {
+    if (this.state.showingAddTaskWindow) {
       addTaskWindow = <AddTaskWindow
-      addTask = {(task: TaskType) => {
-        this.addTask(task);
-      }}
+      folderName={this.props.folderName}
       closeBox = {() => {
         this.hideAddTaskWindow();
       }}
-      visible={this.state.addTaskWindowState}
     />;
     } else {
       addTaskWindow = '';
@@ -74,8 +68,13 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
 
     return (
       <div id="taskList">
-        {addTaskWindow}
-        <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        <div id="taskListHeader">
+          <div id="taskListTitle">
+            TASKS
+          </div>
+          {addTaskWindow}
+          <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        </div>
         {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
       </div>
     )

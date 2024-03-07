@@ -51,7 +51,10 @@ describe('login', function () {
         let username = "user " + i;
         let password = "password " + i;
         await contr.signup(username, password);
-        assert(contr.login(username, password));
+        let res = contr.login(username, password);
+        // debug
+        // console.log("DEBUG TEST res: " + res);
+        assert(res);
       }
     });
   });
@@ -470,6 +473,7 @@ describe('addUnivCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       // 0 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 0);
@@ -478,6 +482,7 @@ describe('addUnivCredits', function () {
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
       // 1 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 1);
@@ -486,6 +491,7 @@ describe('addUnivCredits', function () {
         assert.strictEqual(userBefore.univCredits + 1, userAfter.univCredits);
       }
       // 10000 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 10000);
@@ -505,6 +511,7 @@ describe('addUnivCredits', function () {
         assert.rejects(async () => await contr.addUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         assert.rejects(async () => await contr.addUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
@@ -525,6 +532,7 @@ describe('removeUnivCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       // 0 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 0);
@@ -533,6 +541,7 @@ describe('removeUnivCredits', function () {
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
       // 1 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 1);
@@ -541,6 +550,7 @@ describe('removeUnivCredits', function () {
         assert.strictEqual(userBefore.univCredits - 1, userAfter.univCredits);
       }
       // 10000 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 10000);
@@ -560,6 +570,7 @@ describe('removeUnivCredits', function () {
         assert.rejects(async () => await contr.removeUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
       }
       // -10000 case
+      //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         assert.rejects(async () => await contr.removeUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');

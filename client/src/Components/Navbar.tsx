@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from "../Context/AuthContext"
+import { useAuth } from "../Context/OldAuthContext"
 const Navbar: React.FC = () => {
 
   const { getUser, googleSignIn, signIn, signUp, signOut } = useAuth();

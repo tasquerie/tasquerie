@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Egg, EggType } from './Egg';
+import { Egg } from './Egg';
 
 interface EggCardProps {
-    cardName: string;
-    egg: EggType;
+    folder: any; // TaskFolder object - might change to take folderName
+                // in the future and then call some kind of loadEgg
+                // but there's no point for repeated API calls...
 }
 
 interface EggCardState {
@@ -19,8 +20,11 @@ export class EggCard extends Component<EggCardProps, EggCardState> {
     render() {
         return(
             <div className="card">
-                <div className="cardName">{this.props.cardName}</div>
-                <Egg egg={this.props.egg}/>
+                <div className="cardName">{this.props.folder.name}</div>
+                <Egg 
+                    folderName={this.props.folder.name}
+                    egg={this.props.folder.egg}
+                />
             </div>
         )
     }
