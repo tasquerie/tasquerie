@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task'
 import { AddTaskCard } from './AddTaskCard';
 import { AddTaskWindow } from '../Components/AddTaskWindow';
+//import { BackendWrapper } from '../BackendWrapper';
 import * as mocks from '../Mocks'
 
 interface TaskListProps {
@@ -18,6 +19,18 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
     super(props);
     this.state = {
       addTaskWindowState: 'hidden',
+    }
+  }
+
+  async componentDidMount() {
+      await this.loadTaskList();
+  }
+
+  async loadTaskList() {
+    try {
+      //let list = await BackendWrapper;
+    } catch {
+
     }
   }
 

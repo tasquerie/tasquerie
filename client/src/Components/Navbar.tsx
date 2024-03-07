@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
       console.log("HER");
       const username = "tasquerie@gmail.com";
       const password = "supertask";
-      // await signIn(username, password);
+      await signIn(username, password);
       const us = await signIn(username, password);
       console.log(us)
     } catch (err) {

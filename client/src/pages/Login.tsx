@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { withAuth } from './../Context/AuthContext';
-import Navbar from "./../Components/Navbar";
+//import Navbar from "./../Components/Navbar";
 // hard code (kind of) disallowed input characters
 // could move this up a layer if we want to share with signup
+
 let legalInputs: string = "abcdefghijklmnopqrstuvwxyz._-1234567890";
 let legalKeys: string[] = [
     'Enter',
@@ -18,26 +19,66 @@ interface LoginProps {
     updateState(selected: string): void;
 }
 
+// interface AuthProps {
+//     getUser: any,
+//     googleSignIn: any,
+//     signIn: any,
+//     signUp: any,
+//     signOut: any
+//   }
 
-interface AuthProps {
-    getUser: any,
-    googleSignIn: any,
-    signIn: any,
-    signUp: any,
-    signOut: any
-  }
-
-interface MyComponentProps {
-    auth: AuthProps;
-  }
+// interface MyComponentProps {
+//     auth: AuthProps;
+//   }
 
 // class Login extends Component<LoginProps, LoginState> {
-    class Login extends React.Component<MyComponentProps, LoginState> {
+    class Login extends React.Component<LoginProps, LoginState> {
     constructor(props: any) {
         super(props);
         this.state = {
             username: '',
             password: ''
+        }
+    }
+
+    handleSignIn = async (username:string, password:string) => {
+        try {
+          // console.log("HER");
+          // const username = "tasquerie@gmail.com";
+          // const password = "supertask";
+          // await signIn(username, password);
+          const us = await signIn(username, password);
+          console.log(us)
+        } catch (err) {
+          console.error(err);
+        }
+    };
+    
+    handleSignOut = async () => {
+        try {
+          console.log(getUser());
+          await signOut();
+        } catch (err) {
+          console.error(err);
+        }
+    };
+    
+    handleSignUp = async (username:string, password:string) => {
+        try {
+            // const username = "tasquerie@gmail.com";
+            // const password = "supertask";
+            await signUp(username, password);
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+    handleGoogleSignUp = async () => {
+        try {
+            await googleSignIn();
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -63,10 +104,8 @@ interface MyComponentProps {
     }
 
     render() {
-        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
         return (
             <div className="content flex-v align-content-center">
-                <Navbar />
                 <div id="loginBox">
                     <div id="loginTitle">LOG IN</div>
                     <input id="usernameInput" className="loginInput" placeholder="Username"
@@ -90,18 +129,22 @@ interface MyComponentProps {
                     <button id="loginButton" className="loginButton"
                         onClick={(e) => {
                             // googleSignIn();
-                            signIn(this.state.username, this.state.password);
+                            
+                            this.handleSignIn(this.state.username, this.state.password);
                             // this.props.updateState('home');
                         }}>Log In</button>
                     <button id="signupButton" className="loginButton"
-                    >Sign Up</button>
-                    <button>
-                        Placeholder for Google Auth or whatever 3rd party thing we're using
-                    </button>
+                    onClick={(e) => {
+                        console.log("sign")
+                        this.handleSignUp(this.state.username, this.state.password);
+                        // this.props.updateState('home');
+                    }}>Sign Up</button>
+                    <button id="googlesignupButton" className="loginButton"
+                    onClick={this.handleGoogleSignUp}>Google login</button>
                 </div>
             </div>
         )
     }
 }
 
-export default withAuth(Login);
+export default Login;
