@@ -31,7 +31,8 @@ const FirebaseUserController = {
     */
     getUser: async (req: Request, res: Response) => {
         try {
-            const { userID } = req.body;
+            const userID = req.query.userID as string;
+            // const { userID } = req.body;
             if (!userID) {
                 res.status(400).json({ error: "Missing fields "})
             }
