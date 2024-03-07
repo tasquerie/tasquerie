@@ -6,7 +6,6 @@
 // There should be a component that when clicked shows the Egg Library.
 
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import {AppState} from '../App';
 
 interface SettingsProps {

@@ -11,15 +11,11 @@
 
 import React, { Component } from 'react';
 import UpcomingTasks from '../Components/UpcomingTasks';
-import '../Components/EggCollection';
-import TaskCollection from '../Components/EggCollection';
-import EggCollection from '../Components/EggCollection';
-import * as mocks from '../Mocks'
-import { AddEggWindow } from '../Components/AddEggWindow';
+// import '../Components/EggCollection';
+// import * as mocks from '../Mocks'
 
 
 interface HomeProps {
-    displaytaskFolder(eggId: number): void;
     updateState(selected: string): void;
 }
 
@@ -33,7 +29,7 @@ class Home extends Component<HomeProps> {
         return (
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
-                <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div>
+                {/* <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div> */}
                 {/* <p>A brief description of Tasquerie goes here...</p> */}
                 {/* <UpcomingTasks tasks={this.state.tasks} /> */}
                 {/* <TaskCollection tasks={this.state.tasks} /> */}
@@ -52,7 +48,6 @@ class Home extends Component<HomeProps> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
-                <EggCollection displayTaskFolder={this.props.displaytaskFolder} eggs={[]}/>
             </div>
         );
     }
