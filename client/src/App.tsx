@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { stringify } from 'querystring';
 import Home from './pages/Home';
@@ -7,9 +6,8 @@ import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
 import Navbar from './Components/Navbar';
-import * as mocks from './Mocks'
+//import * as mocks from './Mocks'
 import { TaskType } from './Components/Task'
-import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
 import Howto from './Components/Howto';
 import Login from './pages/Login';
@@ -17,7 +15,6 @@ import Login from './pages/Login';
 export interface AppState {
   currentPage: string;
   userID: number;
-  displayingEggId: number;
 }
 
 class App extends Component<{}, AppState> {
@@ -27,8 +24,7 @@ class App extends Component<{}, AppState> {
     super(props);
     this.state = {
       currentPage: 'login',
-      userID: 0, // You can set this to an initial value as needed
-      displayingEggId: -1
+      userID: 0
     };
     // Bind switchState method to the class instance
     this.switchState = this.switchState.bind(this);
@@ -36,16 +32,12 @@ class App extends Component<{}, AppState> {
 
   switchState(page: string) {
     this.setState({ currentPage: page });
-    if(page != "taskFolder") {
-      this.setState({displayingEggId : -1});
-    }
   }
 
   displayTaskFolder(eggId: number) {
     // if id >= 0, display a page
     // id = -1 means no egg is being displayed
     this.setState({
-      displayingEggId : eggId,
       currentPage : "taskFolder"
     });
   }
@@ -66,11 +58,6 @@ class App extends Component<{}, AppState> {
       return (
         <div>
           <Home
-          displaytaskFolder={
-            (eggId: number) => {
-              this.displayTaskFolder(eggId);
-            }
-          }
           updateState={
             (selected: string) => {
               console.log(`switch page to ${selected}`);
@@ -110,19 +97,16 @@ class App extends Component<{}, AppState> {
           }/>
         </div>
       );
-    } else if (this.state.currentPage === 'taskFolder') {
-      return (
-        <div>
-          <TaskFolder
-          updateState = {
-            (selected: string) => this.setState({currentPage : selected})
-          }
-          eggId = {
-            this.state.displayingEggId
-          }
-          />
-        </div>
-      )
+    // } else if (this.state.currentPage === 'taskFolder') {
+    //   return (
+    //     <div>
+    //       <TaskFolder
+    //       updateState = {
+    //         (selected: string) => this.setState({currentPage : selected})
+    //       }
+    //       />
+    //     </div>
+    //   )
     } else if (this.state.currentPage === 'about') {
       return (
         <div>
