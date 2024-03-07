@@ -27,14 +27,11 @@ const FirebaseUserController = {
     },
 
     /*
-    GET https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get
-    {
-        "userID": "sam_shin"
-    }
+    GET https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=sam_shin
     */
     getUser: async (req: Request, res: Response) => {
         try {
-            const { userID } = req.body;
+            const userID = req.query.userID as string;
             if (!userID) {
                 res.status(400).json({ error: "Missing fields "});
             }
