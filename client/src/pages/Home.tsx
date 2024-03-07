@@ -11,6 +11,7 @@
 
 import React, { Component } from 'react';
 import UpcomingTasks from '../Components/UpcomingTasks';
+import {TaskList} from '../Components/TaskList'
 // import '../Components/EggCollection';
 // import * as mocks from '../Mocks'
 
@@ -30,10 +31,10 @@ class Home extends Component<HomeProps> {
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
                 {/* <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div> */}
-                {/* <p>A brief description of Tasquerie goes here...</p> */}
+                <p>A brief description of Tasquerie goes here...</p>
                 {/* <UpcomingTasks tasks={this.state.tasks} /> */}
                 {/* <TaskCollection tasks={this.state.tasks} /> */}
-                {/* <p>This is the home page</p> */}
+                <p>This is the home page</p>
                 {/* Button to switch to profile page */}
                 <div id='homeSidebar'>
                     <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('profile')}>
@@ -48,7 +49,9 @@ class Home extends Component<HomeProps> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
+                <TaskList tasks={[]}/>
             </div>
+
         );
     }
 }

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Task, TaskType } from './Task'
+import { AddTaskCard } from './AddTaskCard';
 import { AddTaskWindow } from '../Components/AddTaskWindow';
 import * as mocks from '../Mocks'
 
 interface TaskListProps {
-  updateCredits(newAmount: number): void;
-  eggId: number;
+  //updateCredits(newAmount: number): void;
+  tasks:TaskType[];
 }
 
 interface TaskListState {
@@ -45,7 +46,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   }
 
   render() {
-    let tasks:Task[] = [];
+    // let tasks = [];
     // for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
     //   let task: TaskType = mocks.tasksList[this.props.eggId][i];
     //   tasks.push(
@@ -75,7 +76,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
     return (
       <div id="taskList">
         {addTaskWindow}
-        <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
+        <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}><AddTaskCard/>Add New Task</button>
         {/* {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks} */}
       </div>
     )

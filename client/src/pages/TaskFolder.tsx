@@ -7,12 +7,10 @@ import React, {Component} from 'react';
 
 // interface TaskFolderProps {
 //     updateState(selected: string): void;
-//     eggId: number;
 // }
 
 // interface TaskFolderState {
 //     addTaskWindowState: string // 'hidden' | 'shown'
-//    // eggFunctionTab: string // 'tasks' | 'interactions' | 'accessories'
 // }
 
 // class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
@@ -20,8 +18,7 @@ import React, {Component} from 'react';
 //     constructor(props: any){
 //         super(props);
 //         this.state = {
-//             addTaskWindowState: 'hidden',
-//             //eggFunctionTab: 'tasks',
+//             addTaskWindowState: 'hidden'
 //         }
 //     }
 
@@ -37,11 +34,11 @@ import React, {Component} from 'react';
 //         })
 //     }
 
-//     updateCredits(newAmount: number) {
-//     }
+// //     updateCredits(newAmount: number) {
+// //     }
 
 //     addTask(task: TaskType) {
-//         mocks.tasksList[this.props.eggId].push(task);
+        
 //     }
 
 //     render() {
@@ -61,8 +58,6 @@ import React, {Component} from 'react';
 //         // }
 //         return (
 //             <div id="taskFolder">
-//                 <h1>Task Folder: EGG {this.props.eggId}</h1>
-//                 <p>You have: <span>{mocks.specificCredits[this.props.eggId]}</span> credits for this egg</p>
 //                 {/* TODO: EXP here needs to be engineered to show next threshold, or show
 //                 nothing at all if the egg is already at the last stage */}
 //                 <button className="invisibleButton" onClick={() => this.props.updateState('home')}>Back to Home</button>
