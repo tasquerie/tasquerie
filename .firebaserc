@@ -1,6 +1,7 @@
 {
   "projects": {
-    "task": "tasquerie-9e335"
+    "task": "tasquerie-9e335",
+    "default": "tasquerie-9e335"
   },
   "targets": {},
   "etags": {}

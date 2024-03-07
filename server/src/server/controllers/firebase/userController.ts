@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { db } from "../../../../firebase/firebase"
-import FirebasetaskController from "../firebase/taskController";
 const collectionName = "userInfo";
 const FirebaseUserController = {
 
