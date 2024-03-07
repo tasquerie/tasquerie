@@ -3,31 +3,34 @@ import { db } from "../../../../firebase/firebase"
 
 const collectionName = "taskInfo";
 const FirebaseTaskController = {
-    addUser: async (req: Request, res: Response) => {
-        try {
-            const { userID } = req.body;
+    // addUser: async (req: Request, res: Response) => {
+    //     try {
+    //         const { user } = req.body;
 
-            if (!userID) {
-                res.status(400).json({ error: "Missing fields " });
-                return;
-            }
+    //         const userID: string = user.uniqueID;
+    //         delete user.uniqueID;
 
-            const documentRef = db.collection(collectionName).doc(userID);
-            const snapshot = await documentRef.get();
+    //         if (!userID) {
+    //             res.status(400).json({ error: "Missing fields " });
+    //             return;
+    //         }
 
-            if (snapshot.exists) {
-                res.status(404).json({ error: 'User already exists' });
-                return;
-              }
+    //         const documentRef = db.collection("taskInfo").doc(userID);
+    //         const snapshot = await documentRef.get();
 
-            await documentRef.set({});
+    //         if (snapshot.exists) {
+    //             res.status(404).json({ error: 'User already exists' });
+    //             return;
+    //           }
 
-            res.json({ success: true });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: "Internal Server Error" });
-        }
-    },
+    //           await documentRef.set(user);
+
+    //         res.json({ success: true });
+    //     } catch (err) {
+    //         console.error(err);
+    //         res.status(500).json({ error: "Internal Server Error" });
+    //     }
+    // },
 
     getAllTask: async (req: Request, res: Response) => {
         try {
@@ -83,11 +86,28 @@ const FirebaseTaskController = {
         }
     },
 
+
+    /*
+    POST http://localhost:3000/api/firebase/task/updateField
+    {
+    "userID": "sam_shin",
+    "taskData": {
+        "12321312": {
+            "uniqueID": "email",
+            "name": "CSE 142",
+            "isComplete": false,
+            "description": "HW1 due tomorrow",
+            "startDate": "12321312",
+            "endDate": "13123123121"
+            }
+        }
+    }
+    */
     updateField: async (req: Request, res: Response) => {
         try {
-            const { userID, taskID, fieldName, fieldValue } = req.body;
+            const { userID, fieldName, fieldValue } = req.body;
 
-            if (!userID || !taskID || !fieldName || !fieldValue) {
+            if (!userID || !fieldName || !fieldValue) {
                 res.status(400).json({ error: "Missing fields" });
                 return;
             }
@@ -109,11 +129,28 @@ const FirebaseTaskController = {
         }
     },
 
+
+    /*
+    POST http://localhost:3000/api/firebase/task/addTask
+    {
+    "userID": "sam_shin",
+    "taskData": {
+        "12321312": {
+            "uniqueID": "email",
+            "name": "CSE 142",
+            "isComplete": false,
+            "description": "HW1 due tomorrow",
+            "startDate": "12321312",
+            "endDate": "13123123121"
+            }
+        }
+    }
+    */
     addTask: async (req: Request, res: Response) => {
         try {
-            const { userID, taskID, taskData } = req.body;
+            const { userID, taskData } = req.body;
 
-            if (!userID || !taskID || !taskData) {
+            if (!userID || !taskData) {
                 res.status(400).json({ error: "Missing field" });
                 return;
             }

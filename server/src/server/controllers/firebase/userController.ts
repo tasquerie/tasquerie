@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from "../../../../firebase/firebase"
-
+import FirebasetaskController from "../firebase/taskController";
 const collectionName = "userInfo";
 const FirebaseUserController = {
 
@@ -10,7 +10,6 @@ const FirebaseUserController = {
         try {
             const collectionRef = db.collection(collectionName);
             const documents = await collectionRef.listDocuments();
-
             const usersMap: Record<string, any> = {};
             await Promise.all(
             documents.map(async (document: { get: () => any; id: string | number; }) => {
@@ -29,7 +28,6 @@ const FirebaseUserController = {
     getUser: async (req: Request, res: Response) => {
         try {
             const { userID } = req.body;
-
             if (!userID) {
                 res.status(400).json({ error: "Missing fields "})
             }
@@ -70,8 +68,11 @@ const FirebaseUserController = {
                 return;
             }
 
-            const documentRef = db.collection(collectionName).doc(userID);
-            await documentRef.set(userData);
+            const userDocumentRef = db.collection("userInfo").doc(userID);
+            await userDocumentRef.set(userData);
+
+            const taskDocumentRef = db.collection("taskInfo").doc(userID);
+            await taskDocumentRef.set({});
 
             res.json({ success: true });
         } catch (err) {
