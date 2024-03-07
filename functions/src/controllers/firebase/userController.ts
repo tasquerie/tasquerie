@@ -19,6 +19,9 @@ const FirebaseUserController = {
                 usersMap[document.id] = snapshot.data();
             })
             );
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,HEAD,PUT,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.json(usersMap);
         } catch (err) {
             console.error(err);
@@ -43,7 +46,9 @@ const FirebaseUserController = {
                 res.status(404).json({ error: "User not found" });
                 return;
               }
-
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,HEAD,PUT,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.json( snapshot.data() );
         } catch (err) {
             console.error(err);
@@ -76,6 +81,9 @@ const FirebaseUserController = {
             const taskDocumentRef = db.collection("taskInfo").doc(userID);
             await taskDocumentRef.set({});
 
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,HEAD,PUT,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.json({ success: true });
         } catch (err) {
             console.error(err);
@@ -105,7 +113,9 @@ const FirebaseUserController = {
             await documentRef.update({
                 [fieldName]: fieldValue,
             });
-
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,HEAD,PUT,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.json({ success: true });
         } catch (err) {
             console.error(err);
@@ -138,6 +148,9 @@ const FirebaseUserController = {
                 res.status(404).json({ error: "Field not found" });
                 return;
             }
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,HEAD,PUT,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             res.json({ [fieldName]: fieldValue });
         } catch (err) {
             console.error(err);

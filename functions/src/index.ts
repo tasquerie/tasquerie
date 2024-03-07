@@ -27,9 +27,12 @@ import * as functions from "firebase-functions";
 import * as express from "express";
 import userRoutes from "./routes/firebase/userRoutes";
 import taskRoutes from "./routes/firebase/taskRoutes";
-
+import * as cors from "cors";
+// const corsHandler = cors({origin: true});
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 
 app.use("/firebase/user", userRoutes);
 app.use("/firebase/task", taskRoutes);
