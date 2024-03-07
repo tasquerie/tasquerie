@@ -1,44 +1,35 @@
 import { TaskID } from "../types/TaskID";
 import { UserID } from "../types/UserID";
-import { IDManager } from "./IDManager";
 
 export class Task {
+  private userID: UserID;
   private uniqueID: TaskID;
   private name: string;
   private isComplete: boolean;
   private description: string;
-  private tags: string[];
-  private owner: UserID;
-  private whoSharedWith: UserID[];
+  // private tags: string[];
 
   private startDate?: string;
-  private cycleDuration?: string;
-  private deadline?: string;
+  // private cycleDuration?: string;
+  private endDate?: string;
 
-  constructor(taskID: TaskID,
-              name: string, description: string, tags: string[],
-              owner: UserID, whoSharedWith: UserID[],
-              startDate?: string, cycleDuration?: string, deadline?: string,
+  constructor(userID: UserID, taskID: TaskID,
+              name: string, description: string, //tags: string[],
+              startDate?: string, endDate?: string,
               ) {
+    this.userID = userID;
     this.uniqueID = taskID;
     this.name = name;
     this.isComplete = false;
     this.description = description;
-    this.tags = tags;
-    this.owner = owner;
-    this.whoSharedWith = whoSharedWith;
+    // this.tags = tags;
 
     this.startDate = startDate;
-    this.cycleDuration = cycleDuration;
-    this.deadline = deadline;
+    this.endDate = endDate;
   }
 
   getID(): TaskID {
     return this.uniqueID;
-  }
-
-  setID(id: TaskID) {
-    this.uniqueID = id;
   }
 
   getName(): string {
@@ -65,29 +56,13 @@ export class Task {
     this.description = description;
   }
 
-  getTags(): string[] {
-    return this.tags;
-  }
+  // getTags(): string[] {
+  //   return this.tags;
+  // }
 
-  setTags(tags: string[]) {
-    this.tags = tags;
-  }
-
-  getOwner(): UserID {
-    return this.owner;
-  }
-
-  setOwner(owner: UserID) {
-    this.owner = owner;
-  }
-
-  getWhoSharedWith(): UserID[] {
-    return this.whoSharedWith;
-  }
-
-  setWhoSharedWith(sharedWith: UserID[]) {
-    this.whoSharedWith = sharedWith;
-  }
+  // setTags(tags: string[]) {
+  //   this.tags = tags;
+  // }
 
   getStartDate(): string | undefined {
     return this.startDate;
@@ -97,20 +72,12 @@ export class Task {
     this.startDate = startDate;
   }
 
-  getCycleDuration(): string | undefined {
-    return this.cycleDuration;
+  getendDate(): string | undefined {
+    return this.endDate;
   }
 
-  setCycleDuration(cycleDuration: string) {
-    this.cycleDuration = cycleDuration;
-  }
-
-  getDeadline(): string | undefined {
-    return this.deadline;
-  }
-
-  setDeadline(deadline: string) {
-    this.deadline = deadline;
+  setendDate(endDate: string) {
+    this.endDate = endDate;
   }
 
   // TODO: implement this
@@ -120,12 +87,9 @@ export class Task {
       name:this.name,
       isComplete: this.isComplete,
       description: this.description,
-      tags:this.tags,
-      owner:this.owner,
-      whoSharedWith: this.whoSharedWith,
+      // tags:this.tags,
       startDate: this.startDate,
-      cycleDuration: this.cycleDuration,
-      deadline: this.deadline
+      endDate: this.endDate
     };
     return JSON.stringify(jsonTask);
   }
@@ -136,18 +100,10 @@ export class Task {
       name: this.name,
       isComplete: this.isComplete,
       description: this.description,
-      tags: this.tags,
-      owner: this.owner,
-      whoSharedWith: this.whoSharedWith.map((userID) => userID.id),
+      // tags: this.tags,
       startDate: this.startDate,
-      cycleDuration: this.cycleDuration,
-      deadline: this.deadline,
+      endDate: this.endDate,
     }
 
   }
-}
-
-// Dummy function for testing
-export function add(a: number, b: number): number {
-  return a + b;
 }

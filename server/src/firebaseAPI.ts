@@ -5,9 +5,6 @@ import { UserID } from "./types/UserID";
 import { TaskID } from "./types/TaskID";
 import { Result } from "./types/FirebaseResult"
 import { Task } from "./model/Task";
-import { EggType } from "./types/EggType";
-import { Interaction } from "./types/Interaction";
-import { Accessory } from "./types/Accessory";
 
 const toJsonObject = (document: FirebaseFirestore.DocumentData):any =>  {
     if (document === null || document === undefined) {
@@ -116,9 +113,9 @@ export const FirebaseTaskAPI =  {
      * @param task Task object to add to db
      * @returns Promise \<Result\> { status: boolean, content: string | undefined }
      */
-    addTask: async (task: Task): Promise<Result> => {
+    addTask: async (userID: UserID, task: Task): Promise<Result> => {
         try {
-            const UID = task.getOwner().id;
+            const UID = userID.id;
             const TID = task.getID().id;
 
             const documentRef = db.collection("taskInfo").doc(UID);
@@ -148,10 +145,10 @@ export const FirebaseTaskAPI =  {
      * @param task  Task object to delete
      * @returns Promise \<Result\> { status: boolean, content: string | undefined }
      */
-    removeTask: async (task: Task): Promise<Result> => {
+    removeTask: async (userID: UserID, taskID: TaskID): Promise<Result> => {
         try {
-            const UID = task.getOwner().id;
-            const TID = task.getID().id;
+            const UID = userID.id;
+            const TID = taskID.id;
 
             const documentRef = db.collection("taskInfo").doc(UID);
             const snapshot = await documentRef.get();
@@ -210,45 +207,45 @@ export const FirebaseTaskAPI =  {
 
 
 
-export const FirebaseDataAPI = {
-    /**
-     * Given a document to query and name to fetch, return the read-only data associated with
-     * the given parameters.
-     *
-     * If something is read from the db after this function call, status is true.
-     * Otherwise, if nothing is read from db or there is server error, status is false.
-     *
-     * If the given document does not exist, content is undefined.
-     * If server error, content is error code
-     * @param document document name to query in db
-     * @param name specific item to fetch
-     * @returns Promise \<Result\> { status: boolean, content: EggType | Interaction | Accessory | string | undefined }
-     */
-    getType: async (document: string, name: string): Promise<Result> => {
-        try {
-            const documentRef = db.collection("Data").doc(document);
-            const snapshot = await documentRef.get();
+// export const FirebaseDataAPI = {
+//     /**
+//      * Given a document to query and name to fetch, return the read-only data associated with
+//      * the given parameters.
+//      *
+//      * If something is read from the db after this function call, status is true.
+//      * Otherwise, if nothing is read from db or there is server error, status is false.
+//      *
+//      * If the given document does not exist, content is undefined.
+//      * If server error, content is error code
+//      * @param document document name to query in db
+//      * @param name specific item to fetch
+//      * @returns Promise \<Result\> { status: boolean, content: EggType | Interaction | Accessory | string | undefined }
+//      */
+//     getType: async (document: string, name: string): Promise<Result> => {
+//         try {
+//             const documentRef = db.collection("Data").doc(document);
+//             const snapshot = await documentRef.get();
 
-            if (!snapshot.exists) {
-                return { status: false, content: undefined };
-            }
+//             if (!snapshot.exists) {
+//                 return { status: false, content: undefined };
+//             }
 
-            const type = snapshot.data()?.[name];
-            if (type !== undefined) {
-                let data = undefined
-                if (document === "egg") {
-                    data = type as EggType;
-                } else if (document == "interaction") {
-                    data = type as Interaction;
-                } else {
-                    data = type as Accessory;
-                }
-                return { status: true, content: data };
-            } else {
-                return { status: false, content: undefined };
-            }
-        } catch (err: any) {
-            return { status: false, content: err }
-        }
-    },
-}
+//             const type = snapshot.data()?.[name];
+//             if (type !== undefined) {
+//                 let data = undefined
+//                 if (document === "egg") {
+//                     data = type as EggType;
+//                 } else if (document == "interaction") {
+//                     data = type as Interaction;
+//                 } else {
+//                     data = type as Accessory;
+//                 }
+//                 return { status: true, content: data };
+//             } else {
+//                 return { status: false, content: undefined };
+//             }
+//         } catch (err: any) {
+//             return { status: false, content: err }
+//         }
+//     },
+// }
