@@ -7,8 +7,15 @@ The web app presents itself as a website interface that the user can log in to a
 
 The game element is that every large task at the top level is associated with an egg, which the user can nurture and grow, and eventually hatch. Tasquerie offers a wide variety of eggs with various designs that require different amounts of effort; this, combined with the introduction of streaks and additional achievement rewards, incentivises users to keep on track and on time with the tasks they have set themselves. Users complete tasks to gain tokens, which they can use to purchase interactions or accessories for their creatures.
 
-## Github Layout Explanation
-We've decided to use one repository holding two folders for code: one for frontend (client), and one for backend (server). There is a third folder that is supposed to hold shared data types that dictate the structure of API requests and responses so that these things are easily synchronised across frontend and backend.
+## Layout of directory structures
+Our repository holds two folder for code: one for frontend (client), and one for backend (server). Here are the main directories:
+- `client`
+    - `src`: contains the source files for the frontend application
+    - `public`: contains images
+- `server`
+    - `src`: contains the interface (types), api endpoints(server) and data models(model)
+    - `test`: contains the test files
+    - `firebase`: contains the database-related files
 
 ## Current State of Project
 Unfortunately, due to difficulties with integration and finding time to implement everything, there is no possible use case that correctly integrates Frontend, Backend and the Database.
@@ -37,9 +44,16 @@ Unfortunately, due to difficulties with integration and finding time to implemen
 3. Run `npm run start:windows` to start server for windows and `npm run start:nix` to start server for Linux & Mac
 
 ## Testing - How to add a new test to the code base.
+
+### Tutorial
 See https://www.testim.io/blog/mocha-for-typescript-testing/ for a tutorial
 
-See server\test\User.spec.ts for an example test
+### Naming
+Test files should be named after the module they are testing, followed by '.spec.ts'
+Ex: If we are writing tests for a module, 'User', then the test should be named 'User.spec.ts'
 
+ ### Testing
 By using assertions, each test can compare expected output to actual output.
 Assertions can be imported via “  import { assert } from "chai";  “ and called via “  assert.equal(actual, expected);  “
+
+See server\test\User.spec.ts for an example test
