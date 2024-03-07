@@ -41,6 +41,7 @@ export const AuthContextProvider = ({ children }) => {
       console.log(response.data);
       return response.data;
     } catch (err) {
+      return false;
       // If incorrect password is given for an existing email
       if (err.code === "auth/invalid-credential") {
         // TODO: Logic for invalid credential
