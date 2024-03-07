@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
 import { EditTaskWindow } from './EditTaskWindow';
+import Axios from 'axios';
 
 // NOTE: egg image sizes are strictly 256x256. Otherwise things break
 
@@ -66,13 +67,14 @@ export class Task extends Component<TaskProps, TaskState> {
 
     async componentDidMount() {
         // load all of current task's info
-        await this.loadTaskInfo(this.props.taskID);
+        // await this.loadTaskInfo();
+        await this.loadTaskInfoTest();
     }
 
-    async loadTaskInfo(taskID: string) {
+    async loadTaskInfo() {
         let args: Map<string, any> = new Map();
         args.set("UserID", this.context.getUser());
-        args.set("TaskID", taskID);
+        args.set("TaskID", this.props.taskID);
         try{
             let task = await BackendWrapper.view("getTaskInfo", args);
             // maybe error handling
@@ -88,6 +90,16 @@ export class Task extends Component<TaskProps, TaskState> {
         }
     }
 
+    async loadTaskInfoTest() {
+        let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/get?userID=${this.context.getUser()}&taskID=${this.props.taskID}`);
+        let task = response.data;
+        this.setState({
+            name: task.name,
+            isComplete: task.isComplete,
+            description: task.description
+        })
+    }
+
     async handleCheck(event: any) {
         if(this.state.isComplete){
             // disallow unchecking
@@ -98,7 +110,8 @@ export class Task extends Component<TaskProps, TaskState> {
             // two single click events. tragic
         }
         else{
-            await this.toggleCompletion();
+            // await this.toggleCompletion();
+            await this.toggleCompletionTest();
         }
     }
 
@@ -126,6 +139,10 @@ export class Task extends Component<TaskProps, TaskState> {
         }
 
         this.props.refreshFolder();
+    }
+
+    async toggleCompletionTest() {
+        await Axios.patch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/updateField?userID=${this.context.getUser()}&taskID=${this.props.taskID}&fieldName=isComplete&fieldValue=${true}}`)
     }
 
     toggleDetail() {

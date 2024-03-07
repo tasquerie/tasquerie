@@ -199,9 +199,8 @@ html {
 
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   justify-content: center;
-  align-content: center;
+  align-items: center;
 
   height: 200px;
   width: 140px;
@@ -212,11 +211,18 @@ html {
   justify-content: center;
 }
 
-#addEgg {
-  font-size: 60px;
+/* ----- EGG ----- */
+
+.eggImg {
+  height: 100%;
+  width: 100%;
 }
 
 /* ----- ADD EGG WINDOW ----- */
+
+#addEgg {
+  font-size: 60px;
+}
 
 #addEggWindow {
   z-index: 4;
@@ -353,18 +359,6 @@ html {
 
   height: 250px;
   width: 200px;
-}
-
-/* ----- EGG ----- */
-
-.egg {
-  position: relative;
-}
-
-.eggImg {
-  position: absolute;
-  top: 0%;
-  left: 0%;
 }
 
 /* ----- ALERT BOX ----- */

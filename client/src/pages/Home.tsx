@@ -3,6 +3,8 @@ import '../Components/EggCollection';
 import EggCollection from '../Components/EggCollection';
 import { BackendWrapper } from '../BackendWrapper';
 import AuthContext from '../Context/AuthContext';
+import Axios from 'axios';
+import { universalCredits } from '../Mocks';
 
 
 interface HomeProps {
@@ -26,7 +28,8 @@ class Home extends Component<HomeProps, HomeState> {
     }
 
     async componentDidMount() {
-        await this.loadUniversalCredits();
+        // await this.loadUniversalCredits();
+        await this.loadUniversalCreditsTest();
     }
 
     async loadUniversalCredits() {
@@ -42,6 +45,16 @@ class Home extends Component<HomeProps, HomeState> {
         } catch (e) {
             console.log("Failure to get universal credits");
         }
+    }
+
+    async loadUniversalCreditsTest() {
+        console.log('loading universal credits');
+        let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${this.context.getUser()}`);
+        let user = response.data;
+        this.setState({
+            universalCredits: user.univCredits
+        });
+        console.log('univCredits loaded');
     }
 
     render() {

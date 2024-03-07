@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
+import Axios from 'axios';
 
 // NOTE: egg image sizes are strictly 256x256. Otherwise things break
 
@@ -35,8 +36,9 @@ export class Egg extends Component<EggProps, EggState> {
     }
 
     async componentDidMount() {
-        await this.loadAccessories();
-        await this.loadEggImgUrl();
+        // await this.loadAccessories();
+        // await this.loadEggImgUrl();
+        await this.loadEggImgUrlTest();
     }
 
     async loadAccessories() {
@@ -80,6 +82,19 @@ export class Egg extends Component<EggProps, EggState> {
         }
     }
 
+    async loadEggImgUrlTest() {
+        console.log("loading egg img");
+        // this.setState({
+        //     eggImgUrl: "https://cdn.discordapp.com/attachments/1022596073170157669/1215145325900341329/Untitled_Artwork_2.png?ex=65fbaf46&is=65e93a46&hm=c7d373589ae44059ca5feb074092c98088c1aa0924dc41428e473ecb4e2f1a8e&"
+        // });
+        let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=eggType`);
+        let eggTypes = response.data;
+        this.setState({
+            eggImgUrl: eggTypes[this.props.egg.eggType].graphicLinks[this.props.egg.eggStage]
+        })
+        console.log("eggimg loaded");
+    }
+
     dressEgg(): JSX.Element[] {
         let accessories = [];
         for (let i = 0; i < this.state.accessories.length; i++) {
@@ -101,7 +116,7 @@ export class Egg extends Component<EggProps, EggState> {
 
     render() {
 
-        let accessories = this.dressEgg();
+        // let accessories = this.dressEgg();
 
         return(
             <div className="egg">
@@ -109,7 +124,7 @@ export class Egg extends Component<EggProps, EggState> {
                 className="eggImg"
                 key={Math.random().toString(36).substring(2,12)} // random string for key
                 src={this.state.eggImgUrl}></img>
-                {accessories}
+                {/* {accessories} */}
             </div>
         )
     }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task';
 import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
+import Axios from 'axios';
 
 interface AddTaskWindowProps {
     folderName: string;
@@ -34,6 +35,33 @@ export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowSt
         } catch (e) {
             console.log("Unable to add task");
         }
+    }
+
+    async addTasktest() {
+        // generate new task id
+        // create new task object
+        // addtask
+        // get tasklist from user obj
+        // append id to tasklist
+        // user updatefield
+        let taskID = Math.random().toString(36).slice(2, 12);
+        let taskData = {
+            taskID: {
+                uniqueID: taskID,
+                name: this.state.taskName,
+                description: this.state.taskDescription,
+                isComplete: false
+            }
+        }
+        await Axios.post(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/addTask?userID=${this.context.getUser()}&taskData=${taskData}`);
+
+        let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${this.context.getUser()}`);
+        let user = response.data;
+        let taskFolders = user.taskFolders;
+        taskFolders[this.props.folderName].taskIDtoTasks[taskID] = taskData;
+
+        await Axios.patch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/updateField?userID=${this.context.getUser()}&fieldName=taskFolders&fieldValue=${taskFolders}`)
+
     }
 
     render() {

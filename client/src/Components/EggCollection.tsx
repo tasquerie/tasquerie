@@ -12,6 +12,7 @@ import { AddEggCard } from './AddEggCard';
 import { AddEggWindow } from './AddEggWindow';
 import { BackendWrapper } from '../BackendWrapper';
 import AuthContext from '../Context/AuthContext';
+import Axios from 'axios';
 
 interface EggCollectionProps {
   displayTaskFolder(folderName: string): void;
@@ -36,7 +37,8 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
 
   async componentDidMount() {
     // await this.loadTaskFolders();
-    await this.loadTaskFoldersConvoluted();
+    // await this.loadTaskFoldersConvoluted();
+    await this.loadTaskFoldersTest();
   }
 
   async loadTaskFolders() {
@@ -82,6 +84,21 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     } catch (e) {
       console.log("Failure to load task folders");
     }
+  }
+
+  async loadTaskFoldersTest() {
+    console.log('loading task folders');
+    let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${this.context.getUser()}`);
+    let user = response.data;
+    let taskFolders = user.taskFolders;
+    let folders = [];
+    for (let key in taskFolders) {
+      folders.push(taskFolders[key]);
+    }
+    this.setState({
+      folders: folders
+    });
+    console.log('loading task folders complete');
   }
 
   showAddEggWindow() {

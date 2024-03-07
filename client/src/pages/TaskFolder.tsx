@@ -8,6 +8,7 @@ import { InteractionList } from '../Components/InteractionList'
 import { Interaction } from '../Components/Interaction';
 import AuthContext from '../Context/AuthContext';
 import { BackendWrapper } from '../BackendWrapper';
+import Axios from 'axios';
 
 interface TaskFolderProps {
     folderName: string;
@@ -16,7 +17,7 @@ interface TaskFolderProps {
 
 interface TaskFolderState {
     folderName: string;
-    egg: any; // backend Egg object
+    egg: any;
     eggFunctionTab: string; // 'tasks' | 'interactions' | 'accessories'
     eggCredits: number;
     taskList: string[];
@@ -31,8 +32,12 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     constructor(props: any){
         super(props);
         this.state = {
-            folderName: "yee",
-            egg: null,
+            folderName: this.props.folderName,
+            egg: {
+                eggStage: 0,
+                eggType: 'blue',
+                exp: 0
+            },
             eggFunctionTab: 'tasks',
             eggCredits: 0,
             taskList: [],
@@ -41,8 +46,10 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         }
     }
 
-    async componentDidMount() {
-        await this.loadFolderInfo();
+    async UNSAFE_componentWillMount() {
+        // await this.loadFolderInfo();
+        await this.loadFolderInfoTest();
+        // await this.getTasks();
     }
 
     async loadFolderInfo() {
@@ -83,6 +90,20 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         }
 
         // maybe load accessories list at some point
+    }
+
+    async loadFolderInfoTest() {
+        console.log('loadfolderinfotest');
+        let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${this.context.getUser()}`);
+        let user = response.data;
+        let folder = user.taskFolders[this.props.folderName];
+        // folder.egg.eggStage = parseInt(folder.egg.eggStage);
+        // folder.egg.exp = parseInt(folder.egg.exp);
+        this.setState({
+            eggCredits: folder.eggCredits,
+            taskList: folder.taskIDtoTasks,
+            egg: folder.egg
+        })
     }
 
     async getTasks() {
@@ -150,8 +171,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
             showingTab = <div>Come Back Later</div>;
         }
         let nextExpBound: string;
-        if (this.state.egg.stage < 2) {
-            nextExpBound = String(this.state.egg.eggType.levelBoundaries[this.state.egg.stage + 1]);
+        if (parseInt(this.state.egg.eggStage) < 2) {
+            nextExpBound = String(this.state.egg.eggType.levelBoundaries[parseInt(this.state.egg.eggStage) + 1]);
         } else {
             nextExpBound = 'inf';
         }
