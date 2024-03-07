@@ -34,13 +34,13 @@ class App extends Component<{}, AppState> {
     this.setState({ currentPage: page });
   }
 
-  displayTaskFolder(eggId: number) {
-    // if id >= 0, display a page
-    // id = -1 means no egg is being displayed
-    this.setState({
-      currentPage : "taskFolder"
-    });
-  }
+  // displayTaskList(userID: string) {
+  //   // if id >= 0, display a page
+  //   // id = -1 means no egg is being displayed
+  //   this.setState({
+  //     currentPage : "taskFolder"
+  //   });
+  // }
 
   render() {
     // Use this.state.currentPage to check the current page
