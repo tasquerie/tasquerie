@@ -1,6 +1,6 @@
-import { Task } from "./Task";
+
 import { UserID } from "../types/UserID";
-import { TaskID } from "../types/TaskID";
+
 
 export class User {
   private uniqueID: UserID;
