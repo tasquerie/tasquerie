@@ -99,9 +99,14 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         let folder = user.taskFolders[this.props.folderName];
         // folder.egg.eggStage = parseInt(folder.egg.eggStage);
         // folder.egg.exp = parseInt(folder.egg.exp);
+        let tasks = folder.taskIDtoTasks;
+        let taskList: string[] = [];
+        if (tasks !== undefined) {
+            taskList = Object.keys(tasks);
+        }
         this.setState({
             eggCredits: folder.eggCredits,
-            taskList: folder.taskIDtoTasks,
+            taskList: taskList,
             egg: folder.egg
         })
     }
@@ -171,11 +176,14 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
             showingTab = <div>Come Back Later</div>;
         }
         let nextExpBound: string;
-        if (parseInt(this.state.egg.eggStage) < 2) {
-            nextExpBound = String(this.state.egg.eggType.levelBoundaries[parseInt(this.state.egg.eggStage) + 1]);
-        } else {
-            nextExpBound = 'inf';
-        }
+        // if (parseInt(this.state.egg.eggStage) < 2) {
+        //     nextExpBound = String(this.state.egg.eggType.levelBoundaries[parseInt(this.state.egg.eggStage) + 1]);
+        // } else {
+        //     nextExpBound = 'inf';
+        // }
+        nextExpBound = 'inf';
+        console.log(this.state.egg);
+        console.log(this.state.taskList);
         return (
             // TODO: somehow get taskfolder & taskfolder name - as of now there is no way for
             // a taskfolder to be uniquely identified, which is concerning
