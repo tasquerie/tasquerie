@@ -25,6 +25,7 @@ class Auth{
 
         try {
             this.user = await BackendWrapper.login("login", args);
+            console.log(JSON.stringify(this.user));
             if (this.user === null) {
                 throw Error;
             }
@@ -43,6 +44,7 @@ class Auth{
 
         try {
             this.user = await BackendWrapper.login("signup", args);
+            console.log(JSON.stringify(this.user));
             if (this.user === null) {
                 throw Error;
             }

@@ -79,8 +79,8 @@ export class EditTaskWindow extends Component<EditTaskWindowProps, EditTaskWindo
                     id="editTaskDescription"
                     defaultValue={this.state.description}
                 ></textarea>
-                <button onClick={() => {
-                    this.editTask();
+                <button onClick={async () => {
+                    await this.editTask();
                 }}>
                     Edit Task
                 </button>
