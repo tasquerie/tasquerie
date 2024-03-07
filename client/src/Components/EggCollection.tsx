@@ -76,7 +76,7 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
       let folderNames:string[] = user.taskFolderKeys;
       // debug
       // console.log("debug task folder user After: " + JSON.stringify(folderNames));
-      for (let folderName in folderNames) {
+      for (let folderName of folderNames) {
         // debug
         // console.log("debug task folder start: ")
         args.set("folderName", folderName);
