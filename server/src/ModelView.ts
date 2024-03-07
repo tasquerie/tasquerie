@@ -64,13 +64,20 @@ export class ModelView {
   async getTaskFolderInfo(uid: UserID, folderName: string): Promise<string> {
     let user = (await this.idManager.getUserByID(uid)).content;
     if (user === undefined) {
+      // debug
+      console.log("debug: getTaskFolderInfo undefined user " + uid);
       return "";
     }
     user = user as User;
     const taskFolder = user.getTaskFolders().get(folderName);
     if (taskFolder === undefined) {
+      // debug
+      console.log("debug: getTaskFolderInfo undefined folderName " + folderName);
+      console.log("debug: getTaskFolderInfo folderNames " + Array.from(user.getTaskFolders().keys()));
       return "";
     }
+    // debug
+    console.log("debug: getTaskFolderInfo " + taskFolder.getJSON());
     return taskFolder.getJSON();
   }
 

@@ -39,6 +39,8 @@ export class Interaction extends Component<InteractionProps, InteractionState> {
         args.set("name", this.props.interactionName);
         try {
             let interaction = await BackendWrapper.view("getInteraction", args);
+            // debug
+            console.log("debug interaction: " + interaction);
             this.setState({
                 name: interaction.name,
                 cost: interaction.cost,

@@ -148,6 +148,8 @@ app.get("/view", async (req: Request, res: Response) => {
                 break;
             }
             let tfUserID:UserID = {id:tfUserIdStr};
+            // debug
+            console.log("debug getTaskFolderInfo called");
             result = await viewer.getTaskFolderInfo(tfUserID, tfFolderNameStr);
             break;
         case "getEggInfo":

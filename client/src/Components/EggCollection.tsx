@@ -44,8 +44,12 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     let args: Map<string, any> = new Map();
     args.set("UserID", this.context.getUser());
 
+    // debug
+    console.log("debug folders: start");
     try{
       let folders = await BackendWrapper.view("getAllTaskFolderInfo", args);
+      // debug
+      console.log("debug folders: " + folders);
       // assumes this gets back a list of folder OBJECTS
       // if not - TODO: change this to a loop where each folderName then
       // gets getTaskFolderInfo'd
@@ -57,6 +61,8 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
       })
       // console.log('loaded task folders');
     } catch (e) {
+      // debug
+      console.log("debug folders: failed");
       console.log("Failure to load task folders");
     }
   }
@@ -68,21 +74,23 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
     args.set("UserID", this.context.getUser());
 
     try{
-      let user = await BackendWrapper.view("getUserInfo", args);
+      let userStr = await BackendWrapper.view("getUserInfo", args);
+      let user = JSON.parse(userStr)
       // debug
-      // console.log("debug task folder user: " + user)
+      console.log("debug task folder user: " + JSON.stringify(user))
       let folder;
       let folders = [];
-      let folderNames:string[] = user.taskFolderKeys;
+      let folderStr = user.taskFolderKeys;
       // debug
-      // console.log("debug task folder user After: " + JSON.stringify(folderNames));
+      console.log("debug task folder user After: " + folderStr);
+      let folderNames:string[] = JSON.parse(folderStr);
       for (let folderName of folderNames) {
         // debug
-        // console.log("debug task folder start: ")
+        console.log("debug task folder start: ")
         args.set("folderName", folderName);
         folder = await BackendWrapper.view("getTaskFolderInfo", args);
         // debug
-        // console.log("debug task folder folder: " + folder)
+        console.log("debug task folder folder: " + folder)
         folders.push(folder);
       }
       // debug
@@ -93,6 +101,7 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
       // debug
       // console.log("debug task folder after set state: " + user)
     } catch (e) {
+      console.log("debug task folder user: failed")
       console.log("Failure to load task folders");
     }
   }
@@ -110,9 +119,11 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
   }
 
   render() {
+    console.log("debug eggCol render")
 
     let eggs = [];
     for(let i = 0; i < this.state.folders.length; i++){
+      console.log("debug eggCol render " + i)
       eggs.push(
         <button className="invisibleButton" key={this.state.folders[i].name}
           onClick={() => this.props.displayTaskFolder(this.state.folders[i].name)}>
@@ -125,11 +136,15 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
 
     let addEggWindow;
     if (this.state.showingAddEggWindow) {
+      // debug
+      console.log("debug: state is true");
       addEggWindow = <AddEggWindow
       forceReload={() => this.forceReload()}
       closeBox = {() => this.hideAddEggWindow()}
     />
     } else {
+      // debug
+      console.log("debug: state is false");
       addEggWindow = '';
     }
 

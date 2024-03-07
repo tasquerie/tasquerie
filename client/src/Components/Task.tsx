@@ -75,6 +75,8 @@ export class Task extends Component<TaskProps, TaskState> {
         args.set("TaskID", taskID);
         try{
             let task = await BackendWrapper.view("getTaskInfo", args);
+            // debug
+            console.log("debug task: " + task);
             // maybe error handling
             this.setState({
                 name: task.name,

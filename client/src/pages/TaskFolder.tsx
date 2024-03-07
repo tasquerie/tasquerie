@@ -17,6 +17,7 @@ interface TaskFolderProps {
 interface TaskFolderState {
     folderName: string;
     egg: any; // backend Egg object
+    eggType: any; // backend EggType
     eggFunctionTab: string; // 'tasks' | 'interactions' | 'accessories'
     eggCredits: number;
     taskList: string[];
@@ -29,10 +30,20 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     context!: React.ContextType<typeof AuthContext>;
 
     constructor(props: any){
+        // debug
+        console.log("debug taskfolder constructed");
+        let fakeEgg = {
+            eggStage: 0,
+            exp: 0
+        }
+        let fakeEggType = {
+            levelBoundaries: [0, 100, 200]
+        }
         super(props);
         this.state = {
             folderName: "yee",
-            egg: null,
+            egg: fakeEgg,
+            eggType: fakeEggType,
             eggFunctionTab: 'tasks',
             eggCredits: 0,
             taskList: [],
@@ -42,19 +53,28 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     }
 
     async componentDidMount() {
+        // debug
+        console.log("debug taskfolder mounted");
         await this.loadFolderInfo();
     }
 
     async loadFolderInfo() {
+        // debug
+        console.log("debug loadFolderInfo()");
         // sequential loading, which means that if something breaks along the way it will impact
         // the rest of the load, but this is more resource efficient... opportunity cost
         let args: Map<string, any> = new Map();
         args.set("UserID", this.context.getUser());
         args.set("folderName", this.props.folderName);
 
+        // debug
+        console.log("debug foldername taskfolder khai " + this.props.folderName);
+
         // load task list & credits
         try{
             let taskFolderInfo = await BackendWrapper.view("getTaskInfo", args);
+            // debug
+            console.log("debug taskFolderInfo: " + taskFolderInfo);
             // check if response is "empty"
             // TODO: right now taskIDtoTasks is a Map which is bad news
             // tomorrow changes will be made to get a list, so assume that right now
@@ -70,6 +90,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
         // load interactions list & egg
         try{
             let folderEgg = await BackendWrapper.view("getEggInfo", args);
+            // debug
+            console.log("debug folderegg: " + folderEgg);
             let interactions: string[] = folderEgg.eggType.allowedInteractions;
             // TODO: verify line above - might not cast properly, and might work better if it were just a list
             // currently allowedInteractions exists as a Set<string> but might become string[] if i'm lucky
@@ -79,6 +101,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
                 egg: folderEgg
             });
         } catch (e) {
+            // debug
+            console.log("debug folderegg: failed");
             console.log("Failure to retrieve interactions of this egg");
         }
 
@@ -86,12 +110,16 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     }
 
     async getTasks() {
+        // debug
+        console.log("debug getTasks()");
         let args: Map<string, any> = new Map();
         args.set("UserID", this.context.getUser());
         args.set("folderName", this.props.folderName);
 
         try{
             let taskFolderInfo = await BackendWrapper.view("getTaskInfo", args);
+            // debug
+            console.log("debug taskFolderInfo 2: " + taskFolderInfo);
             // check if response is "empty"
             let taskIDs: string[] = taskFolderInfo.taskIDs;
             // TODO: right now taskIDtoTasks is a Map which is bad news
@@ -112,6 +140,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
 
         try{
             let folderEgg = await BackendWrapper.view("getEggInfo", args);
+            // debug
+            console.log("debug folderEgg 2: " + folderEgg);
             let interactions: string[] = folderEgg.eggType.allowedInteractions;
             // TODO: verify line above - might not cast properly, and might work better if it were just a list
             // currently allowedInteractions exists as a Set<string> but might become string[] if i'm lucky
@@ -120,6 +150,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
                 interactionList: interactions
             });
         } catch (e) {
+            // debug
+            console.log("debug folderEgg 2: failed");
             console.log("Failure to retrieve interactions of this egg");
         }
     }
@@ -131,6 +163,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
     }
 
     render() {
+        // debug
+        console.log("debug egg: " + this.state.egg)
         let showingTab;
         if(this.state.eggFunctionTab === 'tasks'){
             showingTab = <TaskList
@@ -150,8 +184,8 @@ class TaskFolder extends Component<TaskFolderProps, TaskFolderState> {
             showingTab = <div>Come Back Later</div>;
         }
         let nextExpBound: string;
-        if (this.state.egg.stage < 2) {
-            nextExpBound = String(this.state.egg.eggType.levelBoundaries[this.state.egg.stage + 1]);
+        if (this.state.egg.eggStage < 2) {
+            nextExpBound = String(this.state.eggType.levelBoundaries[this.state.egg.eggStage + 1]);
         } else {
             nextExpBound = 'inf';
         }

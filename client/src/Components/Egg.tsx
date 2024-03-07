@@ -27,6 +27,8 @@ export class Egg extends Component<EggProps, EggState> {
     context!: React.ContextType<typeof AuthContext>;
 
     constructor(props: any){
+        // debug
+        console.log("debug: egg constructed")
         super(props);
         this.state = {
             accessories: [],
@@ -44,10 +46,16 @@ export class Egg extends Component<EggProps, EggState> {
         args.set("UserID", this.context.getUser());
         args.set("folderName", this.props.folderName);
 
+        // debug
+        console.log("debug khai folderName: " + this.props.folderName);
+
         try {
             // get list of accessory strings
-            let accessList = await BackendWrapper.view("getEquippedAccessories", args);
-
+            // let accessList = await BackendWrapper.view("getEquippedAccessories", args);
+            // temporary hardcode
+            let accessList:string[] = ["acc1", "acc2"];
+            // debug
+            console.log("debug accessList: " + accessList);
             // get each accessory, retrieve their imgUrl
             let access;
             let accessories = [];
@@ -56,6 +64,8 @@ export class Egg extends Component<EggProps, EggState> {
                 args.set("name", accessList[i]);
                 // TODO: error handling for empty string return (should not happen)
                 access = await BackendWrapper.view("getAccessory", args);
+                // debug
+                console.log("debug access: " + access);
                 accessories.push(access.graphicLink);
             }
             this.setState({
@@ -72,6 +82,8 @@ export class Egg extends Component<EggProps, EggState> {
         args.set("name", this.props.egg.eggType);
         try{
             let eggType = await BackendWrapper.view("getEggType", args);
+            // debug
+            console.log("debug eggType egg: " + eggType);
             this.setState({
                 eggImgUrl: eggType.graphicLinks[eggStage]
             });

@@ -3,6 +3,7 @@ import '../Components/EggCollection';
 import EggCollection from '../Components/EggCollection';
 import { BackendWrapper } from '../BackendWrapper';
 import AuthContext from '../Context/AuthContext';
+import TaskFolder from './TaskFolder';
 
 
 interface HomeProps {
@@ -36,6 +37,8 @@ class Home extends Component<HomeProps, HomeState> {
 
         try {
             let user = await BackendWrapper.view("getUserInfo", args);
+            // debug
+            console.log("debug user home: " + user);
             this.setState({
                 universalCredits: user.univCredits
             });
@@ -62,6 +65,9 @@ class Home extends Component<HomeProps, HomeState> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
+                <TaskFolder folderName={'A'} updateState={function (selected: string): void {
+                    throw new Error('Function not implemented.');
+                } }></TaskFolder>
                 <EggCollection displayTaskFolder={this.props.displaytaskFolder}/>
             </div>
         );

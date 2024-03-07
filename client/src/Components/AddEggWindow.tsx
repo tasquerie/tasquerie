@@ -45,6 +45,8 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
             for (let i = 0; i < eggTypes.length; i++) {
                 args.set("name", eggTypes[i]);
                 eggType = await BackendWrapper.view("getEggType", args);
+                // debug
+                console.log("debug eggType: " + eggType);
                 eggImgUrls.push(eggType.graphicLinks[0]);
             }
             this.setState({
@@ -64,7 +66,8 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
         args.set("UserID", {id: this.context.getUser()});
         args.set("name", this.state.folderName);
         args.set("description", "TEMPORARY DESCRIPTION");
-        args.set("eggType", eggType);
+        // args.set("eggType", eggType);
+        args.set("eggType", "egg1");
 
         try {
             await BackendWrapper.controller("addFolder", args);
