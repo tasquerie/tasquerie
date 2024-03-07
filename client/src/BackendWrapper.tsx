@@ -5,43 +5,93 @@ export {}
 const PORT_NUMBER: number = 3232;
 
 class BackendWrapper {
-
+    // taskController:
     getAllTask = async(userID:string): Promise<any> => {
-        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/getAllTask/${userID}`);
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/getAll?userID=${userID}`);
+        const data = await this.checkData(response);
+        return data.tasks
+    }
+
+    // Check if the data is a Json or an task
+    getTask = async(userID:string, taskID:string): Promise<any> => {
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/get?userID=${userID}&taskID=${taskID}`);
+        return await this.checkData(response);
+    }
+
+    // updateField function in taskController
+    updateTask = async(userID:string, taskID:string, name:string, value:string): Promise<any> => {
+        const args = {userID:userID, taskID:taskID, fieldName:name, fieldValue:value}
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/updateField`, {
+            method: 'PATCH',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(args)
+        });
+        const data = await this.checkData(response);
+        return data.success;
+    }
+
+    // taskData needs to be a Json. Use the getJson function in Task.ts
+    addTask = async(userID:string, taskData:string): Promise<any> => {
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/addTask`, {
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: taskData
+        });
+        const data = await this.checkData(response);
+        return data.success;
+    }
+
+    //userController:
+
+    // returns a map of the users where the userid is the key
+    getAllUsers = async(): Promise<any> => {
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/getAll`);
+        return await this.checkData(response);
+    }
+
+    // returns the json of the user
+    getUser = async(userID:string): Promise<any> => {
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${userID}`);
+        return await this.checkData(response);
+    }
+
+    // userData needs to be a Json. Use the getJson function in User.ts
+    addUser = async(userID:string, userData:string): Promise<any> => {
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/add`, {
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: userData
+        });
+        return await this.checkData(response);
+    }
+
+    updateUser = async(userID:string, name:string, value:string): Promise<any> => {
+        const args = {userID:userID, fieldName:name, fieldValue:value};
+        let response = await fetch(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/updateField`, {
+            method: 'PATCH',
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body: JSON.stringify(args)
+        });
+        const data = await this.checkData(response)
+        return data.success;
+    }
+
+    checkData = async(res:Response) => {
         let data;
         try {
-            data = await this.requestPath(response);
+            data = await this.requestPath(res);
         } catch (err:any) {
             alert(err.message);
         }
-        return data.tasks;
-    }
-
-    view = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/view?start=${func}&destination=${args}`);
-        return await this.requestPath(response);
-    }
-
-    controller = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/controller`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ func: func, arg: args })
-        });
-        return this.requestPath(response);
-    }
-
-    login = async (func: string, args: Map<string, any>): Promise<any> => {
-        let response = await fetch(`http://localhost:${PORT_NUMBER}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({func: func, arg: args })
-        });
-        return this.requestPath(response);
+        return data;
     }
 
     requestPath = async (res: Response) => {
