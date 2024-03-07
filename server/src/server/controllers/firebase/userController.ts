@@ -24,17 +24,18 @@ const FirebaseUserController = {
         }
     },
 
-    // Get user info on a given user UUID
+    /*
+    GET http://localhost:3000/api/firebase/user/get
+    {
+        "userID": "sam_shin"
+    }
+    */
     getUser: async (req: Request, res: Response) => {
         try {
             const { userID } = req.body;
             if (!userID) {
                 res.status(400).json({ error: "Missing fields "})
             }
-            // if (typeof targetUser !== 'string') {
-            //     res.status(400).json({ error: 'Invalid user ID' });
-            //     return;
-            //   }
 
             const documentRef = db.collection(collectionName).doc(userID);
             const snapshot = await documentRef.get();
@@ -44,21 +45,23 @@ const FirebaseUserController = {
                 return;
               }
 
-            res.json({ userID: snapshot.id, userData: snapshot.data() });
+            res.json( snapshot.data() );
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
 
-    // NOTE: Example req body
-    // {
-    //     "userID": "sam_shin",
-    //     "userData": {
-    //       "name": "John Doe",
-    //       "email": "john@example.com"
-    //     }
-    //   }
+    /*
+    POST http://localhost:3000/api/firebase/user/add
+    {
+    "userID": "sam_shin",
+    "userData": {
+        "name": "John Doe",
+        "email": "samshin0714@gmail.com"
+        }
+    }
+    */
     addUser: async (req: Request, res: Response) => {
         try {
             const { userID, userData } = req.body;
@@ -81,6 +84,15 @@ const FirebaseUserController = {
         }
     },
 
+
+    /*
+    PATCH http://localhost:3000/api/firebase/user/updateField
+    {
+    "userID": "sam_shin",
+    "fieldName": "name",
+    "fieldValue": "Sam Shin"
+    }
+    */
     updateField: async (req: Request, res: Response) => {
         try {
             const { userID, fieldName, fieldValue } = req.body;
@@ -102,6 +114,8 @@ const FirebaseUserController = {
         }
     },
 
+
+    // NOTE: Not necessary, use getUser and query the JSON
     getField: async (req: Request, res: Response) => {
         try {
             const { userID, fieldName } = req.body;
