@@ -20,11 +20,22 @@ class Settings extends Component<SettingsProps, AppState> {
     }
 
     render() {
+
+        const divStyle: React.CSSProperties = {
+            position: 'absolute',
+            top: '50%',
+            left: '45%',
+            // transform: 'translate(-50%, -50%)',
+            // border: '1px solid black',
+            padding: '20px',
+            // backgroundColor: 'lightgray'
+          };
+
         return (
-            <div id="settings-general">
+            <div id="settings-general" style={divStyle}>
                 <h1>General Settings</h1>
-                <button className='home-button invisibleButton fa fa-angle-left' onClick={() => this.props.updateState('home')}> Back to Home</button>
                 <button className="settings-button invisibleButton "  onClick={() => this.props.updateState('about')}>About</button>
+                <button className='home-button invisibleButton fa fa-angle-left' onClick={() => this.props.updateState('home')}> Back to Home</button>
                 <button className=" settings-button invisibleButton" onClick={() => this.props.updateState('howto')}>
                     <i className="fa fa-question-circle-o" aria-hidden="true"></i> How To
                 </button>

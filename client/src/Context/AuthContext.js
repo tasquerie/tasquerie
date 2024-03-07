@@ -36,7 +36,7 @@ export const AuthContextProvider = ({ children }) => {
       console.log(password);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+      console.log(user);
       const response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${user.uid}`);
       console.log(response.data);
       return response.data;

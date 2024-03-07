@@ -1,14 +1,25 @@
 import React, { Component } from 'react';
 import '../Components/EggCollection';
+import { withAuth } from './../Context/AuthContext';
+
 // import EggCollection from '../Components/EggCollection';
 // import { BackendWrapper } from '../BackendWrapper';
 // import AuthContext from '../Context/AuthContext';
 
 
 interface HomeProps {
-    displaytaskFolder(folderName: string): void;
+    auth: AuthProps;
+    // displaytaskFolder(folderName: string): void;
     updateState(selected: string): void;
 }
+
+interface AuthProps {
+    getUser: any,
+    googleSignIn: any,
+    signIn: any,
+    signUp: any,
+    signOut: any
+  }
 
 interface HomeState {
     universalCredits: number;
@@ -23,6 +34,12 @@ class Home extends Component<HomeProps, HomeState> {
         this.state = {
             universalCredits: 0
         }
+    }
+
+    async handleSignOut() {
+        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
+        signOut();
+        this.props.updateState('login');
     }
 
     async componentDidMount() {
@@ -44,10 +61,25 @@ class Home extends Component<HomeProps, HomeState> {
         }
     }
 
+    disableEvent(e: any) {
+        e.preventDefault();
+    }
+
     render() {
+
+
         return (
+
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
+                {/* <button onClick={() => {
+                    this.handleSignOut();
+                })}>Sign Out</button> */}
+                <div>
+                    <button onClick={() => {
+                        this.handleSignOut();
+                    }}>Sign Out</button>
+                </div>
                 <div id='universalCredits'>You have <span>{this.state.universalCredits}</span> universal credits</div>
                 <div id='homeSidebar'>
                     <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('profile')}>
@@ -68,4 +100,4 @@ class Home extends Component<HomeProps, HomeState> {
     }
 }
 
-export default Home;
+export default withAuth(Home);

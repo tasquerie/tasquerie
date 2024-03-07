@@ -85,6 +85,17 @@ interface MyComponentProps {
 
     }
 
+    async googleValidate() {
+        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
+        const result = await googleSignIn();
+        if (result) {
+            this.props.updateState('home');
+    } else {
+        console.log('login failed');
+        this.showAlert();
+    }
+    }
+
     keyPress(e: any) {
         if(!legalInputs.includes(e.key) && !legalKeys.includes(e.key)) {
             console.log(`illegal input detected ${e.key}`);
@@ -145,10 +156,14 @@ interface MyComponentProps {
                             this.props.updateState('signup');
                         }}
                     >Sign Up</button>
+                    <button onClick={() => {
+                        this.googleValidate();
+                    }}>Google Sign in</button>
                 </div>
             </div>
         )
     }
+
 }
 
 export default withAuth(Login);
