@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, getAdditionalUserInfo, getAuth, Unsubscribe   } from 'firebase/auth';
 import { auth } from '../firebase/firebase'
+const axios = require('axios');
 
 export const AuthContext = createContext();
 
@@ -56,6 +57,16 @@ export const AuthContextProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const test = getAdditionalUserInfo(result);
+
+      if (test.isNewUser) {
+        try {
+
+          const reqBody = 3;
+          const response = await axios.post("http://localhost:3000/api/firebase/user/add", reqBody);
+        } catch (err) {
+          console.error("googleSignIn:", err);
+        }
+      }
       console.log(user);
       console.log(test);
     } catch (err) {

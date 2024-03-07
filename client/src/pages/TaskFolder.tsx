@@ -1,6 +1,5 @@
 
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import {AppState} from '../App';
 import { Task, TaskType } from '../Components/Task'
 import * as mocks from '../Mocks';

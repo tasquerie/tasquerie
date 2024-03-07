@@ -1,7 +1,6 @@
 
 import React, {Component} from 'react';
 import '../pages/Settings'
-import logo from './logo.svg';
 import {AppState} from '../App';
 import { Task, TaskType } from '../Components/Task'
 import * as mocks from '../Mocks';
@@ -23,7 +22,7 @@ class Howto extends Component<HowToProps> {
 
     render() {
         return (
-            <div 
+            <div
             className="step-box">
                 <div className="step-number">{this.props.stepNumber}</div>
                 <div className="step-content">
@@ -33,7 +32,7 @@ class Howto extends Component<HowToProps> {
             </div>
         );
     }
-    
+
 }
 
 export default Howto;

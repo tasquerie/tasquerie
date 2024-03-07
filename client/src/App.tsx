@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { stringify } from 'querystring';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
 import Navbar from './Components/Navbar';
-import * as mocks from './Mocks'
-import { TaskType } from './Components/Task'
 import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
 import Howto from './Components/Howto';
@@ -65,6 +61,7 @@ class App extends Component<{}, AppState> {
     } else if (this.state.currentPage === 'home') {
       return (
         <div>
+          <Navbar />
           <Home
           displaytaskFolder={
             (eggId: number) => {

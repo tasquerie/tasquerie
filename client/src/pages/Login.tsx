@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withAuth } from './../Context/AuthContext';
-
+import Navbar from "./../Components/Navbar";
 // hard code (kind of) disallowed input characters
 // could move this up a layer if we want to share with signup
 let legalInputs: string = "abcdefghijklmnopqrstuvwxyz._-1234567890";
@@ -66,6 +66,7 @@ interface MyComponentProps {
         const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
         return (
             <div className="content flex-v align-content-center">
+                <Navbar />
                 <div id="loginBox">
                     <div id="loginTitle">LOG IN</div>
                     <input id="usernameInput" className="loginInput" placeholder="Username"
