@@ -4,12 +4,13 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Archive from './pages/Archive';
 import Settings from './pages/Settings';
-import Navbar from './Components/Navbar';
+// import TaskFolder from './pages/TaskFolder'
 import About from './Components/About';
-// import HowtoPg from "./pages/HowTopg";
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import { withAuth } from "./Context/AuthContext"
+// import HowtoPg from './pages/HowtoPg';
+// import AuthContext from './Context/AuthContext';
+
 export interface AppState {
   currentPage: string;
   userID: string;
@@ -17,6 +18,8 @@ export interface AppState {
 }
 
 class App extends Component<{}, AppState> {
+  // static contextType = AuthContext;
+  // context!: React.ContextType<typeof AuthContext>;
 
   constructor(props: {}) {
     super(props);
@@ -67,22 +70,22 @@ class App extends Component<{}, AppState> {
             />
         </div>;
         break;
-      // case 'home':
-      //   page = <div>
-      //   <Home
-      //   displaytaskFolder={
-      //     (folderName: string) => {
-      //       this.displayTaskFolder(folderName);
-      //     }
-      //   }
-      //   updateState={
-      //     (selected: string) => {
-      //       console.log(`switch page to ${selected}`);
-      //       this.switchState(selected);
-      //     }
-      //   }/>
-      // </div>;
-      //   break;
+      case 'home':
+        page = <div>
+        <Home
+        displaytaskFolder={
+          (folderName: string) => {
+            this.displayTaskFolder(folderName);
+          }
+        }
+        updateState={
+          (selected: string) => {
+            console.log(`switch page to ${selected}`);
+            this.switchState(selected);
+          }
+        }/>
+      </div>;
+        break;
       case 'profile':
         page = <div>
         <Profile updateState={(selected: string) => {
@@ -111,6 +114,16 @@ class App extends Component<{}, AppState> {
         }/>
       </div>;
         break;
+      // case 'taskFolder':
+      //   page = <div>
+      //   <TaskFolder
+      //   folderName={this.state.displayingFolder}
+      //   updateState = {
+      //     (selected: string) => this.setState({currentPage : selected})
+      //   }
+      //   />
+      // </div>;
+      //   break;
       case 'about':
         page = <div>
         <About updateState={
@@ -139,6 +152,131 @@ class App extends Component<{}, AppState> {
     }
 
     return page;
+
+    // if (this.state.currentPage === 'login') {
+    //   return (
+    //     <div>
+    //       <Login updateState={
+    //         (selected: string) => {
+    //           this.switchState(selected);
+    //         }}
+    //         />
+    //     </div>
+    //   )
+    // } else if (this.state.currentPage === 'signup') {
+    //   return (
+    //     <div>
+    //       <SignUp updateState={
+    //         (selected: string) => {
+    //           this.switchState(selected);
+    //         }}
+    //         />
+    //     </div>
+    //   )
+    // } else if (this.state.currentPage === 'home') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <Home
+    //       displaytaskFolder={
+    //         (folderName: string) => {
+    //           this.displayTaskFolder(folderName);
+    //         }
+    //       }
+    //       updateState={
+    //         (selected: string) => {
+    //           console.log(`switch page to ${selected}`);
+    //           this.switchState(selected);
+    //         }
+    //       }/>
+    //     </div>
+    //   );
+    // } else if (this.state.currentPage === 'profile') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <Profile updateState={(selected: string) => {
+    //         console.log(`switch page to ${selected}`);
+    //         this.setState({ currentPage: selected });
+    //       } } name={''} id={0}/>
+    //     </div>
+    //   );
+    // } else if (this.state.currentPage === 'archive') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <Archive updateState={
+    //         (selected: string) => {
+    //           console.log(`switch page to ${selected}`);
+    //           this.setState({currentPage: selected});
+    //         }
+    //       }/>
+    //     </div>
+    //   );
+    // } else if (this.state.currentPage === 'settings') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <Settings updateState={
+    //         (selected: string) => {
+    //           console.log(`switch page to ${selected}`);
+    //           this.setState({currentPage: selected});
+    //         }
+    //       }/>
+    //     </div>
+    //   );
+    // } else if (this.state.currentPage === 'taskFolder') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <TaskFolder
+    //       folderName={this.state.displayingFolder}
+    //       updateState = {
+    //         (selected: string) => this.setState({currentPage : selected})
+    //       }
+    //       />
+    //     </div>
+    //   )
+    // } else if (this.state.currentPage === 'about') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <About updateState={
+    //         (selected: string) => {
+    //           console.log(`switch page to ${selected}`);
+    //           this.setState({currentPage: selected});
+    //         }
+    //       }/>
+    //     </div>
+    //   );
+    // }else if (this.state.currentPage === 'howto') {
+    //   if (this.state.userID === '') {
+    //     this.switchState('home');
+    //   }
+    //   return (
+    //     <div>
+    //       <HowtoPg updateState={
+    //         (selected: string) => {
+    //           console.log(`switch page to ${selected}`);
+    //           this.setState({currentPage: selected});
+    //         }
+    //       }/>
+    //     </div>
+    //   );
+    // }
   }
 }
-export default withAuth(App);
+
+export default App;
