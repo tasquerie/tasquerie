@@ -14,13 +14,17 @@ export class AddTaskCard extends Component<AddTaskCardProps, AddTaskCardState> {
         // no state for now
     }
 
-    render() {
-        return(
+    renderCard() {
+        return (
             <div className="card">
                 <div id="addTask">
                     +
                 </div>
             </div>
-        )
+        );
+    }
+
+    render() {
+        return this.renderCard();
     }
 }

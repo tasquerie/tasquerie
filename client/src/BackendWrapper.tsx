@@ -9,14 +9,17 @@ export class BackendWrapper {
     // taskController:
     static getAllTask = async(userID:string): Promise<any> => {
         const response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/getAll?userID=${userID}`);
-        const data = await this.checkData(response.data);
-        return data.tasks
+        //const data = await this.checkData(response.data);
+        //console.log(data);
+        //console.log(data.tasks);
+        return response.data.tasks
     }
 
     // Check if the data is a Json or an task
     static getTask = async(userID:string, taskID:string): Promise<any> => {
         let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/get?userID=${userID}&taskID=${taskID}`);
-        return await this.checkData(response.data);
+        //return await this.checkData(response.data);
+        return response.data;
     }
 
     // updateField function in taskController
@@ -30,13 +33,14 @@ export class BackendWrapper {
         //     },
         //     body: JSON.stringify(args)
         // }
-        const data = await this.checkData(response.data);
-        return data.success;
+        //const data = await this.checkData(response.data);
+        return response.data.success;
     }
 
     // taskData needs to be a Json object.
     static addTask = async(userID:string, taskData:any): Promise<any> => {
-        let response = await Axios.post(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/addTask`, taskData);
+        const args = {userID:userID, taskData:taskData}
+        let response = await Axios.post(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/addTask`, args);
         // {
         //     method: 'POST',
         //     headers:{
@@ -44,8 +48,8 @@ export class BackendWrapper {
         //     },
         //     body: taskData
         // }
-        const data = await this.checkData(response.data);
-        return data.success;
+        //const data = await this.checkData(response.data);
+        return response.data.success;
     }
 
     //userController:
@@ -53,13 +57,15 @@ export class BackendWrapper {
     // returns a map of the users where the userid is the key
     static getAllUsers = async(): Promise<any> => {
         let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/getAll`);
-        return await this.checkData(response.data);
+        //return await this.checkData(response.data);
+        return response.data;
     }
 
     // returns the json of the user
     static getUser = async(userID:string): Promise<any> => {
         let response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${userID}`);
-        return await this.checkData(response.data);
+        //return await this.checkData(response.data);
+        return response.data;
     }
 
     // userData needs to be a Json object.
@@ -72,7 +78,8 @@ export class BackendWrapper {
         //     },
         //     body: userData
         // });
-        return await this.checkData(response.data);
+        //return await this.checkData(response.data);
+        return response.data;
     }
 
     static updateUser = async(userID:string, name:string, value:string): Promise<any> => {
@@ -85,49 +92,49 @@ export class BackendWrapper {
         //     },
         //     body: JSON.stringify(args)
         // });
-        const data = await this.checkData(response.data)
-        return data.success;
+        //const data = await this.checkData(response.data)
+        return response.data.success;
     }
 
-    static checkData = async(res:Response) => {
-        let data;
-        try {
-            data = await this.requestPath(res);
-        } catch (err:any) {
-            alert(err.message);
-        }
-        return data;
-    }
+//     static checkData = async(res:Response) => {
+//         let data;
+//         try {
+//             data = await this.requestPath(res);
+//         } catch (err:any) {
+//             alert(err.message);
+//         }
+//         return data;
+//     }
 
-    static requestPath = async (res: Response) => {
-        if (res.status !== 200) {
-            const errorJson = await res.json();
-            throw new Error(`Error: ${res.status} \n ${errorJson.error}`)
-        }
-        const data = await res.json();
-        return data;
-        // try{
-        //     // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
-        //     if(!response.ok) {
-        //         alert(`Status is wrong, expected 200, was ${response.status}`);
-        //     }
-        //     const responseBody = await response.json();
-        //     // Error Case
-        //     if (responseBody === "") {
-        //         throw new Error("Invalid output");
-        //     }
-        //     // boolean caser
-        //     else if (responseBody === "true" || responseBody === "false") {
-        //         return responseBody === "true";
-        //     }
-        //     // JSON case 
-        //     else {
-        //         return responseBody;
-        //     }
-        // } catch (e) {
-        //     alert("There was an error contacting the server.");
-        //     console.log(e);
-        //     throw new Error("Connection lost");
-        // }
-    }
+//     static requestPath = async (res: Response) => {
+//         if (res.status !== 200) {
+//             const errorJson = await res.json();
+//             throw new Error(`Error: ${res.status} \n ${errorJson.error}`)
+//         }
+//         const data = res.json();
+//         return data;
+//         // try{
+//         //     // let response = await fetch(`http://localhost:${PORT_NUMBER}/${area}?start=${func}&destination=${arg}`);
+//         //     if(!response.ok) {
+//         //         alert(`Status is wrong, expected 200, was ${response.status}`);
+//         //     }
+//         //     const responseBody = await response.json();
+//         //     // Error Case
+//         //     if (responseBody === "") {
+//         //         throw new Error("Invalid output");
+//         //     }
+//         //     // boolean caser
+//         //     else if (responseBody === "true" || responseBody === "false") {
+//         //         return responseBody === "true";
+//         //     }
+//         //     // JSON case 
+//         //     else {
+//         //         return responseBody;
+//         //     }
+//         // } catch (e) {
+//         //     alert("There was an error contacting the server.");
+//         //     console.log(e);
+//         //     throw new Error("Connection lost");
+//         // }
+//     }
 }
