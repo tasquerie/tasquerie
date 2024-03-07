@@ -31,15 +31,12 @@ const FirebaseTaskController = {
 
 
     /*
-    GET https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/get
-    {
-    "userID": "sam_shin",
-    "taskID": "12321312"
-    }
+    GET https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/task/get?userID=sam_shin&taskID=12321312
     */
     getTask: async (req: Request, res: Response) => {
         try {
-            const { userID, taskID } = req.body;
+            const userID = req.query.userID as string;
+            const taskID = req.query.taskID as string;
 
             if (!userID || !taskID) {
                 res.status(400).json({ error: "Missing fields" });
