@@ -51,7 +51,10 @@ describe('login', function () {
         let username = "user " + i;
         let password = "password " + i;
         await contr.signup(username, password);
-        assert(contr.login(username, password));
+        let res = contr.login(username, password);
+        // debug
+        // console.log("DEBUG TEST res: " + res);
+        assert(res);
       }
     });
   });
@@ -311,12 +314,7 @@ describe('addTask', function () {
   describe('normal correct case → correct task data', function () {
     it('should have correct task data', async function () {
       let contr = getContr();
-<<<<<<< HEAD
-      let user = getDefaultUser(contr);
-      const userID = user.getID();
-=======
       let user = await getDefaultUser(contr);
->>>>>>> origin/main
       let viewer = getViewer(contr);
       let folderName = "folderName";
       await contr.addFolder(user.getID(), folderName, "desc", "eggType");
@@ -326,14 +324,7 @@ describe('addTask', function () {
         expectedTask.setID(contr.getIDManager().nextTaskID(expectedTask));
 
         // test here
-<<<<<<< HEAD
-        //Check: if this works
-        const taskInfoStr = await viewer.getTaskInfo(userID, taskID);
-        let actualTask = JSON.parse(taskInfoStr);
-
-=======
         let actualTask = JSON.parse(await viewer.getTaskInfo(user.getID(), taskID));
->>>>>>> origin/main
         assert.strictEqual(expectedTask.getName(), actualTask.name);
         assert.strictEqual(expectedTask.getDescription(), actualTask.description);
       }
@@ -358,12 +349,7 @@ describe('setTask', function () {
   describe('normal correct case → correct task data', function () {
     it('should have correct task data', async function () {
       let contr = getContr();
-<<<<<<< HEAD
-      let user = getDefaultUser(contr);
-      const userID = user.getID();
-=======
       let user = await getDefaultUser(contr);
->>>>>>> origin/main
       let viewer = getViewer(contr);
       let folderName = "folderName";
       await contr.addFolder(user.getID(), folderName, "desc", "eggType");
@@ -377,14 +363,7 @@ describe('setTask', function () {
         // console.log(user.getTaskFolders().get(folderName)?.getJSON());
 
         // test here
-<<<<<<< HEAD
-        // Check: if this works
-        const taskInfoStr = await viewer.getTaskInfo(userID, taskID)
-        let actualTask = JSON.parse(taskInfoStr);
-
-=======
         let actualTask = JSON.parse(await viewer.getTaskInfo(user.getID(), taskID));
->>>>>>> origin/main
         assert.strictEqual(expectedTask.getName(), actualTask.name);
         assert.strictEqual(expectedTask.getDescription(), actualTask.description);
       }
@@ -431,12 +410,7 @@ describe('deleteTask', function () {
   describe('normal correct case → task is gone from folder and view', function () {
     it('should have task gone from folder and view', async function () {
       let contr = getContr();
-<<<<<<< HEAD
-      let user = getDefaultUser(contr);
-      const userID = user.getID();
-=======
       let user = await getDefaultUser(contr);
->>>>>>> origin/main
       let viewer = getViewer(contr);
       let folderName = "folderName";
       await contr.addFolder(user.getID(), folderName, "desc", "eggType");
@@ -446,12 +420,7 @@ describe('deleteTask', function () {
         let expected = "";
 
         // test here -- deleted from view
-<<<<<<< HEAD
-        // Check: if this await works
-        let actual = await viewer.getTaskInfo(userID, taskID);
-=======
         let actual = await viewer.getTaskInfo(user.getID(), taskID);
->>>>>>> origin/main
         assert.strictEqual(expected, actual);
 
         // deleted from folder
@@ -506,51 +475,27 @@ describe('addUnivCredits', function () {
       // 0 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.addUnivCredits(0);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 0);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
       // 1 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.addUnivCredits(1);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 1);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits + 1, userAfter.univCredits);
       }
       // 10000 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.addUnivCredits(10000);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.addUnivCredits(user.getID(), 10000);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits + 10000, userAfter.univCredits);
       }
@@ -568,17 +513,9 @@ describe('addUnivCredits', function () {
       // -10000 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        assert.throws(() => contr.addUnivCredits(-1), Error, 'Illegal operation: negative credit value');
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         assert.rejects(async () => await contr.addUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
@@ -597,51 +534,27 @@ describe('removeUnivCredits', function () {
       // 0 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.removeUnivCredits(0);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 0);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
       // 1 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.removeUnivCredits(1);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 1);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits - 1, userAfter.univCredits);
       }
       // 10000 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        contr.removeUnivCredits(10000);
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         await contr.removeUnivCredits(user.getID(), 10000);
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits - 10000, userAfter.univCredits);
       }
@@ -659,17 +572,9 @@ describe('removeUnivCredits', function () {
       // -10000 case
       //CHECK: userInfoStr
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        let userInfoStr = await viewer.getUserInfo(user.getID());
-        let userBefore = JSON.parse(userInfoStr);
-        assert.throws(() => contr.removeUnivCredits(-1), Error, 'Illegal operation: negative credit value');
-        userInfoStr = await viewer.getUserInfo(user.getID());
-        let userAfter = JSON.parse(userInfoStr);
-=======
         let userBefore = JSON.parse(await viewer.getUserInfo(user.getID()));
         assert.rejects(async () => await contr.removeUnivCredits(user.getID(), -1), Error, 'Illegal operation: negative credit value');
         let userAfter = JSON.parse(await viewer.getUserInfo(user.getID()));
->>>>>>> origin/main
 
         assert.strictEqual(userBefore.univCredits, userAfter.univCredits);
       }
@@ -687,24 +592,12 @@ describe('addEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-<<<<<<< HEAD
-      contr.addFolder(folderName, "desc", "eggType");
-      // CHECK: taskFolderInfoStr
-      async function checker(num: number): Promise<void> {
-        for (let i = 0; i < MAX_CASES; i++) {
-          let taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderBefore = JSON.parse(taskFolderInfoStr);
-          contr.addEggCredits(num, folderName);
-          taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderAfter = JSON.parse(taskFolderInfoStr);
-=======
       await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
           await contr.addEggCredits(user.getID(), num, folderName);
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
->>>>>>> origin/main
   
           assert.strictEqual(folderBefore.eggCredits + num, folderAfter.eggCredits);
         }
@@ -721,24 +614,12 @@ describe('addEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-<<<<<<< HEAD
-      contr.addFolder(folderName, "desc", "eggType")
-      // Check: taskFolderInfoStr / Promise return
-      async function checker(num: number): Promise<void> {
-        for (let i = 0; i < MAX_CASES; i++) {
-          let taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderBefore = JSON.parse(taskFolderInfoStr);
-          assert.throws(() => contr.addEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
-          taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderAfter = JSON.parse(taskFolderInfoStr);
-=======
       await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
           assert.rejects(async () => await contr.addEggCredits(user.getID(), num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
->>>>>>> origin/main
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
         }
@@ -758,24 +639,12 @@ describe('removeEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-<<<<<<< HEAD
-      contr.addFolder(folderName, "desc", "eggType")
-      // Check: taskFolderInfoStr / return Promise<void>
-      async function checker(num: number): Promise<void> {
-        for (let i = 0; i < MAX_CASES; i++) {
-          let taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderBefore = JSON.parse(taskFolderInfoStr);
-          contr.removeEggCredits(num, folderName);
-          taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderAfter = JSON.parse(taskFolderInfoStr);
-=======
       await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
           await contr.removeEggCredits(user.getID(), num, folderName);
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
->>>>>>> origin/main
   
           assert.strictEqual(folderBefore.eggCredits - num, folderAfter.eggCredits);
         }
@@ -792,24 +661,12 @@ describe('removeEggCredits', function () {
       let user = await getDefaultUser(contr);
       let viewer = getViewer(contr);
       let folderName = "name";
-<<<<<<< HEAD
-      contr.addFolder(folderName, "desc", "eggType")
-      // Check: taskFolderInfoStr / return Promise<void>
-      async function checker(num: number): Promise<void> {
-        for (let i = 0; i < MAX_CASES; i++) {
-          let taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderBefore = JSON.parse(taskFolderInfoStr);
-          assert.throws(() => contr.removeEggCredits(num, folderName), Error, 'Illegal operation: negative credit value');
-          taskFolderInfoStr = await viewer.getTaskFolderInfo(user.getID(), folderName);
-          let folderAfter = JSON.parse(taskFolderInfoStr);
-=======
       await contr.addFolder(user.getID(), folderName, "desc", "eggType")
       async function checker(num: number): Promise<void> {
         for (let i = 0; i < MAX_CASES; i++) {
           let folderBefore = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
           assert.rejects(async () => await contr.removeEggCredits(user.getID(), num, folderName), Error, 'Illegal operation: negative credit value');
           let folderAfter = JSON.parse(await viewer.getTaskFolderInfo(user.getID(), folderName));
->>>>>>> origin/main
   
           assert.strictEqual(folderBefore.eggCredits, folderAfter.eggCredits);
         }

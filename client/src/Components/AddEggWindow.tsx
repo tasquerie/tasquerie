@@ -61,8 +61,9 @@ export class AddEggWindow extends Component<AddEggWindowProps, AddEggWindowState
         }
 
         let args: Map<string, any> = new Map();
-        args.set("UserID", this.context.getUser());
+        args.set("UserID", {id: this.context.getUser()});
         args.set("name", this.state.folderName);
+        args.set("description", "TEMPORARY DESCRIPTION");
         args.set("eggType", eggType);
 
         try {

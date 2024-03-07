@@ -6,13 +6,13 @@ import { IDManager } from "../model/IDManager";
 import { UserManager } from "../model/UserManager";
 import { EggManager } from "../model/EggManager";
 import { WriteManager } from "../model/WriteManager";
-import { ModelController } from "../ModelController";
 import { ModelView } from "../ModelView";
 import { logEvent } from "firebase/analytics";
 
 import userRoutes from './routes/firebase/userRoutes';
 import taskRoutes from './routes/firebase/taskRoutes';
 import { Task } from "../model/Task";
+import { ModelController } from "../ModelController";
 dotenv.config();
 
 const app : Express = express();
@@ -27,8 +27,12 @@ const idMan     = new IDManager();
 const userMan   = new UserManager(idMan);
 const eggMan    = new EggManager();
 const writeMan  = new WriteManager();
-const contr     = new ModelController(userMan, idMan, eggMan, writeMan);
+const contr:ModelController     = new ModelController(userMan, idMan, eggMan, writeMan);
 const viewer    = new ModelView(idMan, eggMan);
+
+
+// debug
+// console.log("debug top: " + contr.login("username", "password"))
 
 // Security Issue
 var RateLimit = require('express-rate-limit');
@@ -256,7 +260,9 @@ app.post("/login", async (req: Request, res: Response) => {
                 error = ("password is not defined or is not a string");
                 break;
             }
-            result = "" + contr.login(loginUserName, loginPassword);
+            result = contr.login(loginUserName, loginPassword);
+            // DEBUG
+            // console.log("debug result: " + result)
             break;
         case "logout":
             contr.logout();
@@ -302,6 +308,8 @@ app.post("/controller", async (req: Request, res: Response) => {
             //string
             const addFolderID = req.body.UserID;
             if (!checkID(addFolderID)) {
+                // debug
+                console.log("debug addFolderID: " + addFolderID);
                 error = "Wrong type for User ID";
                 break;
             }

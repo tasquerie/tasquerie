@@ -89,11 +89,7 @@ describe('getTaskByID Function', function () {
         let task = new Task(TEMP_ID_TASK, "", "", [], userID, []);
         task.setID(man.nextTaskID(task));
         let id = task.getID();
-<<<<<<< HEAD
-        assert.strictEqual(man.getTaskByID(userID, id), task);
-=======
         assert.strictEqual( (await man.getTaskByID(userID, id)).content, task);
->>>>>>> origin/main
       }
     });
   });
@@ -116,11 +112,7 @@ describe('getTaskByID Function', function () {
         id: userIDString
       }
       for (let i = 0; i < MAX_CASES; i++) {
-<<<<<<< HEAD
-        assert.strictEqual(man.getTaskByID(userID1, taskID), undefined);
-=======
         assert.strictEqual((await man.getTaskByID(userID, taskID)).content, undefined);
->>>>>>> origin/main
         id_num += 1;
         taskID.id = id_num.toString();
       }

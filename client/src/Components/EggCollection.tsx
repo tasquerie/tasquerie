@@ -71,16 +71,29 @@ class EggCollection extends Component<EggCollectionProps, EggCollectionState> {
 
     try{
       let user = await BackendWrapper.view("getUserInfo", args);
+      // debug
+      // console.log("debug task folder user: " + user)
       let folder;
       let folders = [];
-      for (let i = 0; i < user.taskFolders.length; i++) {
-        args.set("folderName", user.taskFolders[i]);
+      let folderNames:string[] = user.taskFolderKeys;
+      // debug
+      // console.log("debug task folder user After: " + JSON.stringify(folderNames));
+      for (let folderName of folderNames) {
+        // debug
+        // console.log("debug task folder start: ")
+        args.set("folderName", folderName);
         folder = await BackendWrapper.view("getTaskFolderInfo", args);
+        // debug
+        // console.log("debug task folder folder: " + folder)
         folders.push(folder);
       }
+      // debug
+      // console.log("debug task folder before set state: " + user)
       this.setState({
         folders: folders
       })
+      // debug
+      // console.log("debug task folder after set state: " + user)
     } catch (e) {
       console.log("Failure to load task folders");
     }

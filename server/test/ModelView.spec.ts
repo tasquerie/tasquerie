@@ -69,13 +69,8 @@ describe('getTaskInfo', function () {
       let man = new IDManager();
       let eggMan = new EggManager();
       let modelView = new ModelView(man, eggMan);
-<<<<<<< HEAD
-      let user = new User(man, "username", "password");
-      const userID = user.getID();
-=======
       let user = new User(TEMP_ID, "username", "password");
         user.setID(man.nextUserID(user));
->>>>>>> origin/main
       let folder = new TaskFolder("name", "desc", "eggType");
       user.getTaskFolders().set(folder.getName(), folder);
       for (let i = 0; i < MAX_CASES; i++) {
@@ -85,11 +80,7 @@ describe('getTaskInfo', function () {
         folder.getTasks().set(task.getID(), task);
 
         // test here
-<<<<<<< HEAD
-        let actual = modelView.getTaskInfo(userID, task.getID());
-=======
         let actual = await modelView.getTaskInfo(user.getID(), task.getID());
->>>>>>> origin/main
         // console.log(actual)   // to verify data looks good
         assert.strictEqual(task.getJSON() ,  actual);
       }
@@ -99,13 +90,8 @@ describe('getTaskInfo', function () {
         let man = new IDManager();
         let eggMan = new EggManager();
         let modelView = new ModelView(man, eggMan);
-<<<<<<< HEAD
-        let user = new User(man, "username", "password");
-        const userID = user.getID();
-=======
         let user = new User(TEMP_ID, "username", "password");
         user.setID(man.nextUserID(user));
->>>>>>> origin/main
         let folder = new TaskFolder("name", "desc", "eggType");
         let task = new Task(TEMP_ID_TASK, "taskname", "desc", [], user.getID(),[]);
         task.setID(man.nextTaskID(task));
@@ -115,11 +101,7 @@ describe('getTaskInfo', function () {
             id: task.getID() + i.toString()
           };
           // test here
-<<<<<<< HEAD
-          assert.strictEqual("",  modelView.getTaskInfo(userID, id));
-=======
           assert.strictEqual("", await modelView.getTaskInfo(user.getID(), id));
->>>>>>> origin/main
         }
       });
     });
