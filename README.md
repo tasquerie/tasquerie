@@ -1,5 +1,8 @@
 # TASQUERIE
 
+# Link to public URL:
+[Tasquerie Website](https://tasquerie-9e335.web.app/)
+
 ## Project Description
 Tasquerie is a novel task management web app that provides to users all of the standard productivity app functions at their fingertips, with additional game-like features that make staying motivated and incentivised to complete their tasks.
 
