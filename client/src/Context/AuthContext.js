@@ -2,8 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, getAdditionalUserInfo, getAuth, Unsubscribe   } from 'firebase/auth';
 import { auth } from '../firebase/firebase'
 import { User } from '../model/User'
-const axios = require('axios');
-
+import Axios from "axios";
 export const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -37,8 +36,10 @@ export const AuthContextProvider = ({ children }) => {
       console.log(password);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      console.log(user);
-      return user;
+
+      const response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${user.uid}`);
+      console.log(response.data);
+      return response.data;
     } catch (err) {
       // If incorrect password is given for an existing email
       if (err.code === "auth/invalid-credential") {
@@ -60,20 +61,21 @@ export const AuthContextProvider = ({ children }) => {
       const test = getAdditionalUserInfo(result);
 
       if (test.isNewUser) {
-        try {
-          console.log("BEFORE");
-          const reqBody = new User({id: user.uid}).getJSON;
-          const response = await axios.post("http://localhost:3000/api/firebase/user/add", reqBody);
-          console.log(response);
-          console.log("AFTER");
-        } catch (err) {
-          console.error("googleSignIn:", err);
+        const userData = new User({id: user.uid}, user.displayName).getJSON();
+        const data = {
+          userID: user.uid,
+          userData: userData
         }
-      }
-      console.log(user);
-      console.log(test);
-    } catch (err) {
+        const response = await Axios.post("https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/add", data);
+        console.log(response.data);
+        }
 
+        const response = await Axios.get(`https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get?userID=${user.uid}`);
+        console.log(response.data);
+        return response.data
+
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -89,6 +91,14 @@ export const AuthContextProvider = ({ children }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      const userData = new User({id: user.uid}, user.displayName).getJSON();
+      const data = {
+        userID: user.uid,
+        userData: userData
+      }
+
+      const response = await Axios.post("https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/add", data);
+      console.log(response.data);
       return user;
     } catch (err) {
       console.error(err);

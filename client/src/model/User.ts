@@ -1,14 +1,13 @@
-
 import { UserID } from "../types/UserID";
-
 
 export class User {
   private uniqueID: UserID;
   private univCredits: number;
   private streak: number;
-
-  constructor(userID: UserID) {
+  private username: string;
+  constructor(userID: UserID, username: string) {
     this.uniqueID = userID;
+    this.username = username;
     this.univCredits = 0;
     this.streak = 0;
   }
@@ -33,33 +32,16 @@ export class User {
     this.streak = streak;
   }
 
-
-  // TODO: implement this
-  getJSON(): string {
+  getJSON(): any {
     const jsonUser = {
       // Take ID out when testing
       uniqueID: this.uniqueID.id,
       // username:this.username,
       // taskFolderKeys: Array.from(this.taskFolders.keys()),
       univCredits:this.univCredits,
-      streak:this.streak
+      streak:this.streak,
+      username:this.username,
     };
-    return JSON.stringify(jsonUser);
-  }
-
-  toFirestoreObject(): object {
-    return {
-      uniqueID: this.uniqueID.id,
-      // username: this.username,
-      // password: this.password,
-      // taskFolders: Object.fromEntries(
-      //   Array.from(this.taskFolders.entries()).map(([folderName, folder]) => [
-      //     folderName,
-      //     folder.toFirestoreObject(),
-      //   ])
-      // ),
-      univCredits: this.univCredits,
-      streak: this.streak,
-    };
+    return jsonUser;
   }
 }
