@@ -1,4 +1,4 @@
-// The Home Page is what the user sees upon login. It is the topmost level 
+// The Home Page is what the user sees upon login. It is the topmost level
 // of functionality, and should contain four things in some way:
 // Collection of Eggs
 // Upcoming Tasks
@@ -6,7 +6,7 @@
 // General Achievements/Streaks
 // Task Basket
 
-// Additionally, somewhere on the screen the user should be able to see how 
+// Additionally, somewhere on the screen the user should be able to see how
 // many Universal Credits they have.
 
 import React, { Component } from 'react';
@@ -21,7 +21,7 @@ interface HomeProps {
 }
 
 class Home extends Component<HomeProps> {
-    
+
     constructor(props: any) {
         super(props);
     }

@@ -22,7 +22,7 @@ class Howto extends Component<HowToProps> {
 
     render() {
         return (
-            <div 
+            <div
             className="step-box">
                 <div className="step-number">{this.props.stepNumber}</div>
                 <div className="step-content">
@@ -32,7 +32,7 @@ class Howto extends Component<HowToProps> {
             </div>
         );
     }
-    
+
 }
 
 export default Howto;

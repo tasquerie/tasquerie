@@ -1,16 +1,19 @@
-import { Request, Response } from 'express';
-import { db } from "../../../../firebase/firebase"
+import { Request, Response } from "express";
+// import { Request, Response } = require("express");
+// import { db } from "../../../../firebase/firebase"
+import { db } from "../../firebase/firebase";
 const collectionName = "userInfo";
 const FirebaseUserController = {
 
-    // DEBUG: Only for testing purposes, there is no reason for the frontend to try to get
+    // DEBUG: Only for testing purposes, there is no reason for the
+    // frontend to try to get
     // information about all uses in the system, only one at a time
     getAllUsers: async (req: Request, res: Response) => {
         try {
             const collectionRef = db.collection(collectionName);
             const documents = await collectionRef.listDocuments();
             const usersMap: Record<string, any> = {};
-            await Promise.all(
+                await Promise.all(
             documents.map(async (document: { get: () => any; id: string | number; }) => {
                 const snapshot = await document.get();
                 usersMap[document.id] = snapshot.data();
@@ -19,12 +22,12 @@ const FirebaseUserController = {
             res.json(usersMap);
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: "Internal Server Error" });
         }
     },
 
     /*
-    GET http://localhost:3000/api/firebase/user/get
+    GET https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/get
     {
         "userID": "sam_shin"
     }
@@ -33,26 +36,26 @@ const FirebaseUserController = {
         try {
             const { userID } = req.body;
             if (!userID) {
-                res.status(400).json({ error: "Missing fields "})
+                res.status(400).json({ error: "Missing fields "});
             }
 
             const documentRef = db.collection(collectionName).doc(userID);
             const snapshot = await documentRef.get();
 
             if (!snapshot.exists) {
-                res.status(404).json({ error: 'User not found' });
+                res.status(404).json({ error: "User not found" });
                 return;
               }
 
             res.json( snapshot.data() );
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: "Internal Server Error" });
         }
     },
 
     /*
-    POST http://localhost:3000/api/firebase/user/add
+    POST https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/add
     {
     "userID": "sam_shin",
     "userData": {
@@ -66,7 +69,7 @@ const FirebaseUserController = {
             const { userID, userData } = req.body;
 
             if (!userID || !userData) {
-                res.status(400).json({ error: 'Missing fields' });
+                res.status(400).json({ error: "Missing fields" });
                 return;
             }
 
@@ -79,13 +82,13 @@ const FirebaseUserController = {
             res.json({ success: true });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: "Internal Server Error" });
         }
     },
 
 
     /*
-    PATCH http://localhost:3000/api/firebase/user/updateField
+    PATCH https://us-central1-tasquerie-9e335.cloudfunctions.net/api/firebase/user/updateField
     {
     "userID": "sam_shin",
     "fieldName": "name",
@@ -97,19 +100,19 @@ const FirebaseUserController = {
             const { userID, fieldName, fieldValue } = req.body;
 
             if (!userID || !fieldName || !fieldValue) {
-                res.status(400).json({ error: 'Missing fields' });
+                res.status(400).json({ error: "Missing fields" });
                 return;
             }
 
             const documentRef = db.collection(collectionName).doc(userID);
             await documentRef.update({
-                [fieldName]: fieldValue
+                [fieldName]: fieldValue,
             });
 
             res.json({ success: true });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: "Internal Server Error" });
         }
     },
 
@@ -128,24 +131,22 @@ const FirebaseUserController = {
             const snapshot = await documentRef.get();
 
             if (!snapshot.exists) {
-                res.status(404).json({ error: 'User not found' });
+                res.status(404).json({ error: "User not found" });
                 return;
             }
 
             const fieldValue = snapshot.data()?.[fieldName];
 
             if (fieldValue === undefined) {
-                res.status(404).json({ error: 'Field not found' });
+                res.status(404).json({ error: "Field not found" });
                 return;
             }
-
             res.json({ [fieldName]: fieldValue });
-
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: "Internal Server Error" });
         }
-    }
-}
+    },
+};
 
 export default FirebaseUserController;
