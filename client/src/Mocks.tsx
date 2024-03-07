@@ -7,7 +7,7 @@ import { TaskType } from './Components/Task'
 // export let specificCredits: number[] = [
 //     25,
 //     0
-// ];
+// ]
 
 
 // ///// EGG MOCKS /////
