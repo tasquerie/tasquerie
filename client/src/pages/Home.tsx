@@ -65,9 +65,9 @@ class Home extends Component<HomeProps, HomeState> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
-                <TaskFolder folderName={'A'} updateState={function (selected: string): void {
+                {/* <TaskFolder folderName={'A'} updateState={function (selected: string): void {
                     throw new Error('Function not implemented.');
-                } }></TaskFolder>
+                } }></TaskFolder> */}
                 <EggCollection displayTaskFolder={this.props.displaytaskFolder}/>
             </div>
         );
