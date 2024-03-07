@@ -20,13 +20,13 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
     }
   }
 
-  toggleCompletion(taskId: number, rewardCredits: number) {
-      mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
-      mocks.specificCredits[this.props.eggId] += rewardCredits;
-      this.props.updateCredits(mocks.specificCredits[this.props.eggId]);
-      // this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
-      // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
-  }
+  // toggleCompletion(taskId: number, rewardCredits: number) {
+  //     mocks.tasksList[this.props.eggId][taskId].isComplete = !(mocks.tasksList[this.props.eggId][taskId].isComplete);
+  //     mocks.specificCredits[this.props.eggId] += rewardCredits;
+  //     this.props.updateCredits(mocks.specificCredits[this.props.eggId]);
+  //     // this.setState({eggCredits: mocks.specificCredits[this.props.eggId]});
+  //     // mocks.tasksList[this.props.eggId][taskId].isComplete = true;
+  // }
 
   showAddTaskWindow() {
       this.setState({
@@ -41,20 +41,20 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   }
 
   addTask(task: TaskType) {
-      mocks.tasksList[this.props.eggId].push(task);
+      // mocks.tasksList[this.props.eggId].push(task);
   }
 
   render() {
-    let tasks = [];
-    for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
-      let task: TaskType = mocks.tasksList[this.props.eggId][i];
-      tasks.push(
-        <Task
-          toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
-          task={task}
-        />
-      );
-    }
+    let tasks:Task[] = [];
+    // for(let i = 0; i < mocks.tasksList[this.props.eggId].length; i++) {
+    //   let task: TaskType = mocks.tasksList[this.props.eggId][i];
+    //   tasks.push(
+    //     <Task
+    //       toggleCompletion={() => this.toggleCompletion(i, task.creditReward)}
+    //       task={task}
+    //     />
+    //   );
+    // }
 
     let addTaskWindow;
     if (this.state.addTaskWindowState == 'shown') {
@@ -76,7 +76,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
       <div id="taskList">
         {addTaskWindow}
         <button id="newTaskButton" className="invisibleButton" onClick={() => this.showAddTaskWindow()}>Add New Task</button>
-        {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks}
+        {/* {tasks.length == 0? <div>No Tasks - Add One To Get Started!</div> : tasks} */}
       </div>
     )
   }
