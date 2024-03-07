@@ -1,6 +1,18 @@
+// The Home Page is what the user sees upon login. It is the topmost level
+// of functionality, and should contain four things in some way:
+// Collection of Eggs
+// Upcoming Tasks
+// General Settings
+// General Achievements/Streaks
+// Task Basket
+
+// Additionally, somewhere on the screen the user should be able to see how
+// many Universal Credits they have.
+
 import React, { Component } from 'react';
 import '../Components/EggCollection';
 import { withAuth } from './../Context/AuthContext';
+import {TaskList} from '../Components/TaskList';
 
 // import EggCollection from '../Components/EggCollection';
 // import { BackendWrapper } from '../BackendWrapper';
@@ -94,8 +106,9 @@ class Home extends Component<HomeProps, HomeState> {
                         <i className="fa fa-cog" aria-hidden="true"></i>
                     </button>
                 </div>
-                {/* <EggCollection displayTaskFolder={this.props.displaytaskFolder}/> */}
+                <TaskList/>
             </div>
+
         );
     }
 }

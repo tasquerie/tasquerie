@@ -73,7 +73,7 @@ class App extends Component<{}, AppState> {
       case 'home':
         page = <div>
         <Home
-        displaytaskFolder={
+        displayTaskFolder={
           (folderName: string) => {
             this.displayTaskFolder(folderName);
           }

@@ -4,13 +4,15 @@ import React, { Component } from 'react';
 
 export interface TaskType {
     name: string;
-    isComplete: boolean;
     description: string;
+    isComplete: boolean;
+    startDate: string;
+    endDate: string;
     // bare essentials for now
     /**
      * to add: tags, owner, sharedwith, startdate, cycleduration, deadline
      */
-    creditReward: number;
+    
 }
 
 interface TaskProps {

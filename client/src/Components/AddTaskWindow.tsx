@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task';
 
 interface AddTaskWindowProps {
-    addTask(task: TaskType): void;
+    addTask(task:TaskType): void;
     closeBox(): void;
     visible: string;
 }
@@ -10,12 +10,22 @@ interface AddTaskWindowProps {
 interface AddTaskWindowState {
     taskName: string;
     taskDescription: string;
+    taskComplete:boolean;
+    taskStartDate:string;
+    taskEndDate:string;
 }
 
 export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowState> {
     constructor(props: AddTaskWindowProps) {
         super(props);
         // no state for now
+        this.state = {
+            taskName: "",
+            taskDescription:"",
+            taskComplete :false,
+            taskStartDate:"",
+            taskEndDate:""
+        }
     }
 
     render() {
@@ -45,12 +55,44 @@ export class AddTaskWindow extends Component<AddTaskWindowProps, AddTaskWindowSt
                     id="addTaskDescription"
                     placeholder="Task Description"
                 ></textarea>
+                <label>
+                    Check if Completed
+                    <input
+                    type = "checkbox"
+                    checked={this.state.taskComplete}
+                    onChange={() => {
+                        this.setState(prevState =>  ({
+                            taskComplete: !prevState.taskComplete
+                        }))
+                    }}
+                    id="addTaskComplete"
+                    placeholder="Task Complete"
+                /></label>
+                <textarea
+                    onChange={(event) => {
+                        this.setState({
+                            taskStartDate: event.target.value
+                        })
+                    }}
+                    id="addTaskStartDate"
+                    placeholder="Task Start Date"
+                ></textarea>
+                <textarea
+                    onChange={(event) => {
+                        this.setState({
+                            taskEndDate: event.target.value
+                        })
+                    }}
+                    id="addTaskEndDate"
+                    placeholder="Task End Date"
+                ></textarea>
                 <button onClick={() => {
                     let task: TaskType = {
                         name: this.state.taskName,
-                        isComplete: false,
                         description: this.state.taskDescription,
-                        creditReward: 5
+                        isComplete: this.state.taskComplete,
+                        startDate: this.state.taskStartDate,
+                        endDate:this.state.taskEndDate
                     }
                     this.props.addTask(task);
                     this.props.closeBox();
