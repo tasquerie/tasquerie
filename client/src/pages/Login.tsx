@@ -13,23 +13,12 @@ let legalKeys: string[] = [
 interface LoginState {
     username: string;
     password: string;
+    alertBox:boolean;
 }
 
 interface LoginProps {
     updateState(selected: string): void;
 }
-
-// interface AuthProps {
-//     getUser: any,
-//     googleSignIn: any,
-//     signIn: any,
-//     signUp: any,
-//     signOut: any
-//   }
-
-// interface MyComponentProps {
-//     auth: AuthProps;
-//   }
 
 // class Login extends Component<LoginProps, LoginState> {
     class Login extends React.Component<LoginProps, LoginState> {

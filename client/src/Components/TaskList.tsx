@@ -2,23 +2,29 @@ import React, { Component } from 'react';
 import { Task, TaskType } from './Task'
 import { AddTaskCard } from './AddTaskCard';
 import { AddTaskWindow } from '../Components/AddTaskWindow';
-//import { BackendWrapper } from '../BackendWrapper';
-import * as mocks from '../Mocks'
+import { BackendWrapper } from '../BackendWrapper';
+import {AuthContext} from '../Context/AuthContext';
 
 interface TaskListProps {
   //updateCredits(newAmount: number): void;
-  tasks:TaskType[];
+  // contains the ids of the tasks
+  // tasks:string[];
 }
 
 interface TaskListState {
-  addTaskWindowState: string // 'hidden' or 'shown'
+  addTaskWindowState: string; // 'hidden' or 'shown'
+  tasks:string[];
 }
 
 export class TaskList extends Component<TaskListProps, TaskListState> {
+  static contextType = AuthContext;
+  context!: React.ContextType<typeof AuthContext>;
+
   constructor(props: TaskListProps){
     super(props);
     this.state = {
       addTaskWindowState: 'hidden',
+      tasks: []
     }
   }
 
@@ -27,10 +33,20 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   }
 
   async loadTaskList() {
+    const user = this.context.getUser();  
     try {
-      //let list = await BackendWrapper;
-    } catch {
+      let tempList:string[] = []
+      let list = await BackendWrapper.getAllTask(user.id);
 
+      // check if you need to traverse the list and only input the ids to list
+      let taskIDtoTask:Map<string,Task> = list.tasks;
+      taskIDtoTask.forEach((value, key) => {
+        tempList.push(key);
+      });
+
+      this.setState({tasks:tempList});
+    } catch (err){
+      console.error("Failure to load the task folders");
     }
   }
 
@@ -55,7 +71,7 @@ export class TaskList extends Component<TaskListProps, TaskListState> {
   }
 
   addTask(task: TaskType) {
-      // mocks.tasksList[this.props.eggId].push(task);
+    
   }
 
   render() {
