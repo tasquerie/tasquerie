@@ -10,33 +10,89 @@
 // many Universal Credits they have.
 
 import React, { Component } from 'react';
-import UpcomingTasks from '../Components/UpcomingTasks';
-import {TaskList} from '../Components/TaskList'
-// import '../Components/EggCollection';
-// import * as mocks from '../Mocks'
+import '../Components/EggCollection';
+import { withAuth } from './../Context/AuthContext';
+import {TaskList} from '../Components/TaskList';
+
+// import EggCollection from '../Components/EggCollection';
+// import { BackendWrapper } from '../BackendWrapper';
+// import AuthContext from '../Context/AuthContext';
 
 
 interface HomeProps {
-    displayTaskFolder(folderName:string):void;
+    auth: AuthProps;
+    // displaytaskFolder(folderName: string): void;
     updateState(selected: string): void;
 }
 
-class Home extends Component<HomeProps> {
+interface AuthProps {
+    getUser: any,
+    googleSignIn: any,
+    signIn: any,
+    signUp: any,
+    signOut: any
+  }
+
+interface HomeState {
+    universalCredits: number;
+}
+
+class Home extends Component<HomeProps, HomeState> {
+    // static contextType = AuthContext;
+    // context!: React.ContextType<typeof AuthContext>;
 
     constructor(props: any) {
         super(props);
+        this.state = {
+            universalCredits: 0
+        }
+    }
+
+    async handleSignOut() {
+        const { getUser, googleSignIn, signIn, signUp, signOut } = this.props.auth;
+        signOut();
+        this.props.updateState('login');
+    }
+
+    async componentDidMount() {
+        await this.loadUniversalCredits();
+    }
+
+    async loadUniversalCredits() {
+        console.log('loading universal credits');
+        let args: Map<string, any> = new Map();
+        // args.set("UserID", this.context.getUser());
+
+        try {
+            // let user = await BackendWrapper.view("getUserInfo", args);
+            this.setState({
+                // universalCredits: user.univCredits
+            });
+        } catch (e) {
+            console.log("Failure to get universal credits");
+        }
+    }
+
+    disableEvent(e: any) {
+        e.preventDefault();
     }
 
     render() {
+
+
         return (
+
             <div className="content flex-v align-content-center">
                 <div id='tasquerieTitle'>Tasquerie</div>
-                {/* <div id='universalCredits'>You have <span>{mocks.universalCredits}</span> universal credits</div> */}
-                <p>A brief description of Tasquerie goes here...</p>
-                {/* <UpcomingTasks tasks={this.state.tasks} /> */}
-                {/* <TaskCollection tasks={this.state.tasks} /> */}
-                <p>This is the home page</p>
-                {/* Button to switch to profile page */}
+                {/* <button onClick={() => {
+                    this.handleSignOut();
+                })}>Sign Out</button> */}
+                <div>
+                    <button onClick={() => {
+                        this.handleSignOut();
+                    }}>Sign Out</button>
+                </div>
+                <div id='universalCredits'>You have <span>{this.state.universalCredits}</span> universal credits</div>
                 <div id='homeSidebar'>
                     <button className="invisibleButton homeSidebarButton" onClick={() => this.props.updateState('profile')}>
                         <i className="fa fa-user" aria-hidden="true"></i>
@@ -57,4 +113,4 @@ class Home extends Component<HomeProps> {
     }
 }
 
-export default Home;
+export default withAuth(Home);
